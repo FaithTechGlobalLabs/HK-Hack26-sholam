@@ -13,7 +13,7 @@ Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) a
 |---|---|
 | Code | [github.com/FaithTechGlobalLabs/HK-Hack26-sholam](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam) (public) |
 | CI | GitHub Actions: lint, typecheck, tests, seed validation, build |
-| Hosting | Vercel project `owenisas-projects/sholam`; `main` → production, pull requests → previews |
+| Hosting | [sholam.vercel.app](https://sholam.vercel.app) (Vercel project `owenisas-projects/sholam`); `main` → production, pull requests → previews |
 | Database and auth | Supabase project `sholam` (`cpeuhxozfhrldfbjbiwt`), Singapore, free plan |
 
 ## Run locally
