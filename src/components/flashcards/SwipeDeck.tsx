@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
+  type CSSProperties,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   useEffect,
@@ -31,14 +32,14 @@ import { cn } from "@/lib/utils";
  */
 
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-/** The ‹ 12 of 179 › row and the gap above it. */
-const CONTROLS = 40 + 12;
+/** The ‹ 12 of 179 › row (44px targets) and the gap above it. */
+const CONTROLS = 44 + 12;
 /** Card size follows the stage (cq units), all in CSS so the server render
  * already has it. Neighbours sit a card away, turned toward the
  * centre, so they stand just clear of it. `strideFor` mirrors STRIDE. */
 const CARD_W = "clamp(264px, 78cqw, 380px)";
 const STRIDE = `calc(${CARD_W} * 1.06)`;
-const CARD_H = `clamp(320px, calc(100cqh - ${CONTROLS}px), 440px)`;
+const CARD_H = `clamp(280px, calc(100cqh - ${CONTROLS}px), 440px)`;
 const TURN_DEG = 30;
 const DEPTH_PX = 160;
 const TILT_DEG = 7;
@@ -73,20 +74,29 @@ function useReducedMotion() {
 /** Ends with a full stop unless it already ends a sentence. */
 const sentence = (t: string) => (/[.!?]["'”’)]?$/.test(t.trim()) ? t : `${t}.`);
 
+/** Discover tags, minus any that only repeat the category ("Big Question"
+ * under "Big questions"). */
+const sameLabel = (a: string, b: string) =>
+  a.toLowerCase().replace(/s$/, "") === b.toLowerCase().replace(/s$/, "");
+const extraTags = (card: Flashcard) =>
+  card.kind === "discover"
+    ? card.tags.filter((t) => !sameLabel(t, CATEGORY_LABELS[card.category]))
+    : [];
+
 const kindLabel = (card: Flashcard) =>
   card.kind === "discover" ? "Discover" : "Quick fact";
 
-/** Where card `p` (its offset from the centre, in cards) sits in the 3D row. */
-function placement(p: number) {
+/** Where card `p` (its offset from the centre, in cards) sits in the 3D row.
+ * On narrow stages a neighbour is only a sliver at the screen edge, so its
+ * words fade out completely; wider stages keep a faint read of them. */
+function placement(p: number, narrow: boolean) {
   const a = Math.abs(p);
   const side = clampNum(p, -1, 1);
   return {
     transform: `translate(-50%, -50%) translateX(calc(${p} * ${STRIDE})) translateZ(${-Math.min(a, 2) * DEPTH_PX}px) rotateY(${-side * TURN_DEG}deg)`,
     zIndex: 20 - Math.round(a * 4),
     fade: 1 - Math.min(a, 2) * 0.36,
-    /** A neighbour's words fade out, so a peek at the edge shows glass, not
-     * clipped text. */
-    words: 1 - Math.min(a, 1) * 0.8,
+    words: 1 - Math.min(a, 1) * (narrow ? 1 : 0.8),
   };
 }
 
@@ -115,7 +125,7 @@ export function SwipeDeckPlaceholder() {
           <div className="flashcard-face flashcard-front" />
         </div>
       </div>
-      <div className="h-10" />
+      <div className="h-11" />
     </div>
   );
 }
@@ -132,6 +142,7 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
   const showRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
   const [stride, setStride] = useState(() => strideFor(400));
+  const [narrow, setNarrow] = useState(true);
   const dragRef = useRef(0);
   const gesture = useRef<{
     x: number;
@@ -162,7 +173,10 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
   useLayoutEffect(() => {
     const el = stageRef.current;
     if (!el) return;
-    const measure = () => setStride(strideFor(el.clientWidth));
+    const measure = () => {
+      setStride(strideFor(el.clientWidth));
+      setNarrow(el.clientWidth < 640);
+    };
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     measure();
@@ -190,6 +204,8 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
     el.removeAttribute("data-live");
     el.style.setProperty("--tilt-x", "0deg");
     el.style.setProperty("--tilt-y", "0deg");
+    el.style.removeProperty("--light-x");
+    el.style.removeProperty("--light-y");
   };
 
   const go = (next: number) => {
@@ -384,12 +400,12 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
         onPointerLeave={untilt}
         onClick={onStageClick}
         style={{ height: CARD_H, containerType: "inline-size" }}
-        className="flashcard-stage relative w-full touch-pan-y overflow-x-clip select-none [-webkit-touch-callout:none]"
+        className="flashcard-stage relative w-full touch-pan-y select-none [-webkit-touch-callout:none]"
       >
         {cards.map((card, i) => {
           const p = i - index + drag / stride;
           if (Math.abs(p) > 2.6) return null;
-          const { transform, zIndex, fade, words } = placement(p);
+          const { transform, zIndex, fade, words } = placement(p, narrow);
           const active = i === index;
           const open = active && revealed;
           const discover = card.kind === "discover";
@@ -422,7 +438,7 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                 {/* Front: the question on clear glass. */}
                 <div
                   className="flashcard-face flashcard-front flex flex-col p-6"
-                  style={{ opacity: fade, transition: `opacity 600ms ${EASE}` }}
+                  style={{ "--face-fade": fade } as CSSProperties}
                   inert={open}
                 >
                   <span aria-hidden className="flashcard-light" />
@@ -433,24 +449,32 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                       transition: dragging ? "none" : `opacity 600ms ${EASE}`,
                     }}
                   >
-                    <p className="relative text-[13px] leading-none">
-                      <span className="flashcard-kind font-semibold">
-                        {kindLabel(card)}
-                      </span>
-                      <span className="text-white/85">
-                        {" "}
+                    <div className="min-h-0 flex-1 overflow-y-auto">
+                      <p className="text-[13px] leading-[1.35]">
+                        <span className="font-semibold">{kindLabel(card)}</span>{" "}
                         · {CATEGORY_LABELS[card.category]}
-                      </span>
-                    </p>
-                    <h2 className="relative mt-5 text-balance font-semibold text-[26px] leading-[1.2]">
-                      {card.question}
-                    </h2>
-                    {discover && card.tags.length > 0 && (
-                      <p className="relative mt-3 text-[13px] text-white/85">
-                        {card.tags.join(" · ")}
-                        {card.minutes ? ` · ${card.minutes} min` : ""}
                       </p>
-                    )}
+                      <h2
+                        className={cn(
+                          "mt-4 text-balance font-semibold",
+                          card.question.length > 70
+                            ? "text-[22px] leading-[1.25]"
+                            : "text-[26px] leading-[1.2]",
+                        )}
+                      >
+                        {card.question}
+                      </h2>
+                      {discover && (
+                        <p className="mt-3 text-[14px]">
+                          {[
+                            ...extraTags(card),
+                            card.minutes ? `${card.minutes} min` : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+                      )}
+                    </div>
                     {active && (
                       <button
                         ref={showRef}
@@ -458,7 +482,7 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                         onClick={(e) => {
                           if (!afterDrag(e)) reveal();
                         }}
-                        className="flashcard-show relative mt-auto h-12 w-full rounded-2xl font-semibold text-[15px]"
+                        className="flashcard-show mt-4 h-12 w-full shrink-0 rounded-2xl font-semibold text-[15px]"
                       >
                         {discover ? "Where to start" : "Show answer"}
                       </button>
@@ -473,7 +497,7 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                     inert={!open}
                   >
                     <span aria-hidden className="flashcard-light" />
-                    <p className="relative text-[13px] leading-none">
+                    <p className="relative text-[13px] leading-[1.35]">
                       <span className="font-semibold text-[color:var(--card-accent)]">
                         {kindLabel(card)}
                       </span>
@@ -482,10 +506,10 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                         · {CATEGORY_LABELS[card.category]}
                       </span>
                     </p>
-                    <p className="relative mt-3 text-balance font-medium text-[15px] text-[color:var(--card-muted)] leading-snug">
+                    <p className="relative mt-2 line-clamp-2 text-balance font-medium text-[15px] text-[color:var(--card-muted)] leading-snug">
                       {card.question}
                     </p>
-                    <div className="relative mt-4 flex min-h-0 flex-1 flex-col overflow-y-auto border-[color:var(--card-rule)] border-t pt-4">
+                    <div className="flashcard-scroll relative mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto border-[color:var(--card-rule)] border-t pt-3">
                       {discover ? (
                         <>
                           <p className="font-semibold text-[13px] text-[color:var(--card-accent)]">
@@ -495,54 +519,60 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                             {card.refs.map((ref) => (
                               <li
                                 key={ref}
-                                className="font-semibold text-[21px]"
+                                className="font-semibold text-[20px] leading-snug"
                               >
                                 {passageLabel(ref)}
                               </li>
                             ))}
                           </ul>
-                          <p className="mt-3 text-pretty text-[15px] text-[color:var(--card-muted)] leading-relaxed">
-                            An open question, so there is no single answer. Talk
-                            it through with Shalom.
+                          <p className="mt-2 text-pretty text-[15px] text-[color:var(--card-muted)] leading-relaxed">
+                            An open question, so there is no single answer.
                           </p>
                         </>
                       ) : (
                         <>
-                          <p className="text-balance font-semibold text-[23px] leading-snug">
+                          <p
+                            className={cn(
+                              "text-balance font-semibold leading-snug",
+                              (card.answer?.length ?? 0) > 60
+                                ? "text-[19px]"
+                                : "text-[23px]",
+                            )}
+                          >
                             {card.answer}
                           </p>
                           <p className="mt-2 font-medium text-[14px] text-[color:var(--card-accent)]">
                             {card.refs.map(passageLabel).join(" · ")}
                           </p>
                           {card.explanation && (
-                            <p className="mt-3 text-pretty text-[15px] text-[color:var(--card-muted)] leading-relaxed">
+                            <p className="mt-2 text-pretty text-[14px] text-[color:var(--card-muted)] leading-relaxed">
                               {card.explanation}
                             </p>
                           )}
                         </>
                       )}
-                    </div>
-                    <div className="relative mt-auto flex gap-2 pt-4">
                       <button
                         type="button"
                         onClick={(e) => {
                           if (!afterDrag(e)) ask();
                         }}
-                        className="flashcard-secondary h-12 flex-1 rounded-2xl font-semibold text-[15px]"
+                        className="flashcard-ask -ml-3 mt-1 h-11 shrink-0 self-start rounded-xl px-3 text-left font-semibold text-[15px]"
                       >
-                        Ask Shalom
-                      </button>
-                      <button
-                        ref={nextRef}
-                        type="button"
-                        onClick={(e) => {
-                          if (!afterDrag(e)) go(last ? 0 : index + 1);
-                        }}
-                        className="flashcard-primary h-12 flex-1 rounded-2xl font-semibold text-[15px]"
-                      >
-                        {last ? "Start over" : "Next card"}
+                        {discover
+                          ? "Talk it through with Shalom"
+                          : "Ask Shalom about this"}
                       </button>
                     </div>
+                    <button
+                      ref={nextRef}
+                      type="button"
+                      onClick={(e) => {
+                        if (!afterDrag(e)) go(last ? 0 : index + 1);
+                      }}
+                      className="flashcard-primary relative mt-3 h-12 w-full shrink-0 rounded-2xl font-semibold text-[15px]"
+                    >
+                      {last ? "Start over" : "Next card"}
+                    </button>
                   </div>
                 )}
               </div>
@@ -553,14 +583,14 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
 
       <nav
         aria-label="Card position"
-        className="flex h-10 items-center gap-1 text-white"
+        className="flex h-11 items-center gap-1 text-white"
       >
         <button
           type="button"
           aria-label="Previous card"
           disabled={index === 0}
           onClick={() => go(index - 1)}
-          className="grid size-10 place-items-center rounded-full hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white/80 disabled:opacity-40 disabled:hover:bg-transparent"
+          className="grid size-11 place-items-center rounded-full hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white/80 disabled:opacity-40 disabled:hover:bg-transparent"
         >
           <ChevronLeft className="size-5" />
         </button>
@@ -572,7 +602,7 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
           aria-label="Next card"
           disabled={last}
           onClick={() => go(index + 1)}
-          className="grid size-10 place-items-center rounded-full hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white/80 disabled:opacity-40 disabled:hover:bg-transparent"
+          className="grid size-11 place-items-center rounded-full hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white/80 disabled:opacity-40 disabled:hover:bg-transparent"
         >
           <ChevronRight className="size-5" />
         </button>
