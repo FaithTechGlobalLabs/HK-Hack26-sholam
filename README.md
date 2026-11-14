@@ -13,7 +13,8 @@ Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) a
 |---|---|
 | Code | [github.com/FaithTechGlobalLabs/HK-Hack26-sholam](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam) (public) |
 | CI | GitHub Actions: lint, typecheck, tests, seed validation, build |
-| Hosting | [sholam.vercel.app](https://sholam.vercel.app) (Vercel project `owenisas-projects/sholam`); `main` → production, pull requests → previews |
+| Hosting | [sholam.vercel.app](https://sholam.vercel.app) (Vercel project `owenisas-projects/sholam`); `main` → production, pull requests → previews. [`/api/health`](https://sholam.vercel.app/api/health) shows the model route, agent mode and database status without secrets |
+| Model | OpenRouter chat completions, `baidu/ernie-5.5-flash-preview:free` by default (key set in Vercel env) |
 | Database and auth | Supabase project `sholam` (`cpeuhxozfhrldfbjbiwt`), Singapore, free plan |
 
 ## Run locally
@@ -45,6 +46,7 @@ npm run bible:import         # download BSB v5.19, verify checksum, upsert 31,08
 npm run seed:flashcards      # upsert both decks by slug (every passage must resolve in verses)
 npm run faithmap:convert     # regenerate data/faithmap.cards.json from data/sources/*.md
 npm run search:baseline      # keyword vs heading search on data/search-eval.json (see docs/SEARCH.md)
+npm run model:smoke          # one tiny OpenRouter chat completion (see .env.example)
 ```
 
 `npm run bible:import -- --dry-run` parses and checks without touching the database. Schema changes: edit `src/db/schema.ts`, then `npm run db:generate` and `npm run db:migrate`.
@@ -64,6 +66,7 @@ npm run typecheck && npm run lint && npm test && npm run build
 ## Docs
 
 - [AGENTS.md](AGENTS.md): rules for coding agents (`CLAUDE.md` links here)
+- [docs/TEAM.md](docs/TEAM.md): who works on what, how changes land, branch status, the flashcard data contract
 - [docs/PLAN.md](docs/PLAN.md): roadmap, decisions, open questions
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): agent harness, SSE protocol, data model, citations
 - [docs/SEARCH.md](docs/SEARCH.md): how the agent searches the Bible (agentic search, indexes, tools, evaluation)

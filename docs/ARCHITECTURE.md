@@ -45,6 +45,10 @@ Without env vars the app still runs: `/api/chat` streams `lib/agent/demo.ts`, an
 
 Each tool gets a `ToolContext` with the user id, translation, `emit()` and `versesSeen` (verse id → record) for the citation check.
 
+## Model route (`src/lib/agent/openrouter.ts`)
+
+Chat calls OpenRouter's OpenAI-compatible chat completions. `OPENROUTER_API_KEY` selects the live guide; with no key, `/api/chat` streams the demo. `SHOLAM_MODEL` overrides the default `baidu/ernie-5.5-flash-preview:free`. `GET /api/health` reports the route, model id, agent mode and a database ping without secrets. `npm run model:smoke` sends one tiny chat completion.
+
 ## SSE protocol (`events.ts`)
 
 One frame per event: `event: <type>\ndata: <json>\n\n`. The browser uses fetch + `ReadableStream` (EventSource cannot POST) and `SseDecoder`, which tolerates arbitrary chunk splits and drops unknown or malformed frames.

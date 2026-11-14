@@ -43,6 +43,8 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 - Components that call `usePathname`/`useSearchParams` must sit under `<Suspense>` (see `ModeToggle`), or `next build` fails on `/c/[chatId]`. `next dev` does not catch this; run `npm run build` before pushing UI changes.
 - Scripts load `.env.local` through `scripts/_env.ts`; the app uses `DATABASE_URL` (transaction pooler), scripts and drizzle-kit use `DIRECT_URL` (session pooler).
 - Deploys: Vercel's Git integration builds `main` to production and PRs to previews. Never add secrets to the repo; env vars live in Vercel and `.env.local`.
+- Model route: `src/lib/agent/openrouter.ts` calls OpenRouter chat completions (`OPENROUTER_API_KEY`, default model `baidu/ernie-5.5-flash-preview:free`). Check a deployment with `/api/health` and a key with `npm run model:smoke`.
+- Several people work in parallel (docs/TEAM.md). Merge `origin/main` into your branch before a PR, don't push to someone else's branch, and run `npm run build` before pushing: Vercel previews build with `DATABASE_URL` set.
 
 ## Non-negotiable product rules
 
@@ -80,4 +82,4 @@ Before designing or restyling any screen, load the `deslop-law` and `hallmark` s
 
 ## Docs
 
-One canonical doc per topic, updated in place with `Last updated: YYYY-MM-DD`: plan and decisions in `docs/PLAN.md`, system design in `docs/ARCHITECTURE.md`, search in `docs/SEARCH.md`, harness and agent UI in `docs/HARNESS-UI.md`, data provenance in `docs/SOURCES.md`, setup in `README.md`. Do not add status logs here.
+One canonical doc per topic, updated in place with `Last updated: YYYY-MM-DD`: plan and decisions in `docs/PLAN.md`, system design in `docs/ARCHITECTURE.md`, search in `docs/SEARCH.md`, harness and agent UI in `docs/HARNESS-UI.md`, data provenance in `docs/SOURCES.md`, team and workflow in `docs/TEAM.md`, setup in `README.md`. Do not add status logs here.
