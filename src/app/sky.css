@@ -1,0 +1,147 @@
+/* ---------- Sky + glass UI (jeffs-uis) ---------- */
+/* Inside the shell everything sits on a blue sky, so text goes white and
+   surfaces become translucent blue. Overlays outside the shell (login) keep
+   the default light theme. */
+.sky-theme {
+  --background: rgb(74 128 214 / 0.55);
+  --foreground: #fff;
+  --card: rgb(110 165 245 / 0.35);
+  --card-foreground: #fff;
+  --popover: rgb(74 128 214 / 0.85);
+  --popover-foreground: #fff;
+  --primary: #fff;
+  --primary-foreground: #2f68c2;
+  --secondary: rgb(255 255 255 / 0.2);
+  --secondary-foreground: #fff;
+  --muted: rgb(255 255 255 / 0.16);
+  --muted-foreground: rgb(255 255 255 / 0.75);
+  --accent: rgb(255 255 255 / 0.2);
+  --accent-foreground: #fff;
+  --border: rgb(255 255 255 / 0.3);
+  --input: rgb(255 255 255 / 0.3);
+  --ring: rgb(255 255 255 / 0.6);
+  --sidebar-foreground: #fff;
+  color: #fff;
+}
+.sky-theme main {
+  text-shadow: 0 1px 3px rgb(25 60 120 / 0.25);
+}
+.sky-theme ::placeholder {
+  color: rgb(255 255 255 / 0.7);
+}
+
+@layer components {
+  /* Frosted blue panel (sidebar, composer, cards, toggle). */
+  .glass {
+    background-color: transparent;
+    background-image: linear-gradient(
+      180deg,
+      rgb(120 175 255 / 0.55) 0%,
+      rgb(88 148 240 / 0.45) 100%
+    );
+    backdrop-filter: blur(22px) saturate(1.6);
+    -webkit-backdrop-filter: blur(22px) saturate(1.6);
+    border: 1px solid rgb(255 255 255 / 0.35);
+    box-shadow:
+      0 12px 40px rgb(35 75 150 / 0.22),
+      inset 0 1px 0 rgb(255 255 255 / 0.4),
+      inset 0 -1px 0 rgb(255 255 255 / 0.08);
+    color: #fff;
+  }
+
+  /* Pill button: translucent white on blue, white text. */
+  .glass-btn,
+  .glass-ghost {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    color: #fff;
+    transition:
+      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.35s ease,
+      border-color 0.35s ease,
+      box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.3s ease;
+    will-change: transform;
+  }
+  .glass-btn {
+    background-color: rgb(255 255 255 / 0.2);
+    backdrop-filter: blur(14px) saturate(1.5);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+    border: 1px solid rgb(255 255 255 / 0.3);
+    box-shadow:
+      0 4px 14px rgb(35 75 150 / 0.15),
+      inset 0 1px 0 rgb(255 255 255 / 0.35);
+    font-weight: 500;
+  }
+  .glass-ghost {
+    border: 1px solid transparent;
+  }
+  .glass-btn::after,
+  .glass-ghost::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      rgb(255 255 255 / 0.35) 50%,
+      transparent 70%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .glass-btn:hover:not(:disabled) {
+    background-color: rgb(255 255 255 / 0.32);
+    border-color: rgb(255 255 255 / 0.5);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow:
+      0 10px 26px rgb(35 75 150 / 0.25),
+      inset 0 1px 0 rgb(255 255 255 / 0.5);
+  }
+  .glass-ghost:hover:not(:disabled) {
+    background-color: rgb(255 255 255 / 0.16);
+    border-color: rgb(255 255 255 / 0.25);
+    transform: translateX(3px);
+  }
+  .glass-btn:hover:not(:disabled)::after,
+  .glass-ghost:hover:not(:disabled)::after {
+    transform: translateX(120%);
+  }
+  .glass-btn:active:not(:disabled),
+  .glass-ghost:active:not(:disabled) {
+    transform: scale(0.96);
+    transition-duration: 0.15s;
+  }
+
+  .glass-float {
+    animation: glass-float 6s ease-in-out infinite;
+  }
+  @keyframes glass-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glass-btn,
+    .glass-ghost,
+    .glass-btn::after,
+    .glass-ghost::after {
+      transition: none;
+    }
+    .glass-btn:hover:not(:disabled),
+    .glass-ghost:hover:not(:disabled) {
+      transform: none;
+    }
+    .glass-float {
+      animation: none;
+    }
+  }
+}

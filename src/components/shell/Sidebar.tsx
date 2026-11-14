@@ -9,10 +9,10 @@ import Link from "next/link";
  */
 export function Sidebar({ onNavigate }: { onNavigate: () => void }) {
   const item =
-    "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-sidebar-accent";
+    "glass-ghost flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm";
 
   return (
-    <aside className="flex h-full flex-col border-r bg-sidebar text-sidebar-foreground">
+    <aside className="glass flex h-full flex-col rounded-none md:rounded-2xl">
       <div className="px-3 pt-3 pb-2 font-semibold tracking-tight">sholam</div>
 
       <nav className="flex flex-col gap-0.5 px-2">
@@ -39,7 +39,7 @@ export function Sidebar({ onNavigate }: { onNavigate: () => void }) {
         </p>
       </section>
 
-      <div className="border-t p-2">
+      <div className="border-white/25 border-t p-2">
         <Link href="/login" className={item} onClick={onNavigate}>
           <LogIn className="size-4" /> Sign in
         </Link>

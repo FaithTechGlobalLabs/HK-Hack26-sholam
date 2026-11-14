@@ -48,7 +48,7 @@ export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
           </Button>
         </div>
 
-        <label className="mt-4 flex items-center gap-2 rounded-lg border px-3">
+        <label className="glass mt-4 flex items-center gap-2 rounded-xl px-3">
           <Search className="size-4 text-muted-foreground" />
           <input
             value={query}
@@ -67,10 +67,10 @@ export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
               aria-pressed={category === c}
               onClick={() => setCategory(c)}
               className={cn(
-                "rounded-full border px-3 py-1 text-sm",
+                "glass-btn rounded-full px-3 py-1 text-sm",
                 category === c
-                  ? "bg-foreground text-background"
-                  : "hover:bg-muted",
+                  ? "bg-white/85 text-[#2f68c2] hover:bg-white"
+                  : "",
               )}
             >
               {c ? CATEGORY_LABELS[c] : "All"}

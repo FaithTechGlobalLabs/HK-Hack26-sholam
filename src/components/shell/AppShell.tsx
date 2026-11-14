@@ -3,6 +3,7 @@
 import { Menu } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
+import { CloudSky } from "./CloudSky";
 import { ModeToggle } from "./ModeToggle";
 import { Sidebar } from "./Sidebar";
 
@@ -14,10 +15,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="flex h-dvh overflow-hidden bg-background text-foreground">
+    <div className="sky-theme relative isolate flex h-dvh overflow-hidden text-foreground">
+      <CloudSky />
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 -translate-x-full transition-transform md:static md:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 w-64 -translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:static md:w-68 md:translate-x-0 md:p-3 md:pr-0",
           drawerOpen && "translate-x-0",
         )}
       >
@@ -27,7 +29,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <button
           type="button"
           aria-label="Close sidebar"
-          className="fixed inset-0 z-30 bg-black/30 md:hidden"
+          className="fixed inset-0 z-30 bg-sky-950/20 backdrop-blur-[2px] md:hidden"
           onClick={() => setDrawerOpen(false)}
         />
       )}
@@ -37,7 +39,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             aria-label="Open sidebar"
-            className="justify-self-start rounded-md p-2 hover:bg-muted md:invisible"
+            className="glass-ghost justify-self-start rounded-md p-2 md:invisible"
             onClick={() => setDrawerOpen(true)}
           >
             <Menu className="size-5" />
