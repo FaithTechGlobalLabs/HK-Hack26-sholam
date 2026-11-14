@@ -1,3 +1,5 @@
+import { SIGN_IN_EMAIL_HAS_CODE } from "./email";
+
 /**
  * Turns Supabase Auth errors into a short list of problems the sign-in
  * screens explain in plain words. Error codes come from
@@ -98,18 +100,25 @@ export function isAuthProblem(value: unknown): value is AuthProblem {
   );
 }
 
-/** What the person reads. Short, calm, and says what to do next. */
-export function problemMessage({
-  problem,
-  seconds,
-}: ClassifiedProblem): string {
+/**
+ * What the person reads. Short, calm, and says what to do next. With
+ * `codes` off (the email has only a link, see email.ts) nothing mentions a
+ * code.
+ */
+export function problemMessage(
+  { problem, seconds }: ClassifiedProblem,
+  codes: boolean = SIGN_IN_EMAIL_HAS_CODE,
+): string {
+  const wait = seconds ? `${seconds} seconds` : "a minute";
   switch (problem) {
     case "email_limit":
-      return "We've sent as many sign-in emails as we can for now. If you already have a code from us, enter it. Otherwise try again in an hour.";
+      return codes
+        ? "We've sent as many sign-in emails as we can for now. If you already have a code from us, enter it. Otherwise try again in an hour."
+        : "We've sent as many sign-in emails as we can for now. Use the link in an email we already sent, or try again in an hour.";
     case "email_cooldown":
-      return seconds
-        ? `We just sent you an email. Use the code in it, or ask for another in ${seconds} seconds.`
-        : "We just sent you an email. Use the code in it, or ask for another in a minute.";
+      return codes
+        ? `We just sent you an email. Use the code in it, or ask for another in ${wait}.`
+        : `We just sent you an email. Open its link, or ask for another in ${wait}.`;
     case "too_many_tries":
       return "Too many tries. Wait a few minutes, then try again.";
     case "invalid_email":
@@ -119,11 +128,17 @@ export function problemMessage({
     case "code_invalid":
       return "That code didn't work. Check it against the latest email, or ask for a new one. Codes last an hour.";
     case "link_invalid":
-      return "That sign-in link has expired or was already used. Enter the code from the same email, or ask for a new one.";
+      return codes
+        ? "That sign-in link has expired or was already used. Enter the code from the same email, or ask for a new one."
+        : "That sign-in link has expired or was already used. Ask for a new one here.";
     case "link_other_browser":
-      return "That link was opened in a different browser from the one that asked for it. Enter the code from the email instead.";
+      return codes
+        ? "That link was opened in a different browser from the one that asked for it. Enter the code from the email instead."
+        : "That link was opened in a different browser from the one that asked for it. Open it in the same browser, or ask for a new link here.";
     case "link_missing":
-      return "That sign-in link is incomplete. Enter the code from the email, or ask for a new one.";
+      return codes
+        ? "That sign-in link is incomplete. Enter the code from the email, or ask for a new one."
+        : "That sign-in link is incomplete. Ask for a new one here.";
     case "signups_closed":
       return "New accounts are closed right now.";
     case "network":
