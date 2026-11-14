@@ -1,0 +1,454 @@
+[
+  {
+    "id": "seed-shortest-verse",
+    "question": "What is the shortest verse in most English Bibles?",
+    "answer": "\"Jesus wept.\"",
+    "explanation": "At the tomb of His friend Lazarus, Jesus wept, even though He was about to raise him from the dead.",
+    "refs": ["JHN.11.35"],
+    "category": "jesus",
+    "tone": "fun",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-methuselah",
+    "question": "Who is the oldest person recorded in the Bible, and how old was he?",
+    "answer": "Methuselah, who lived 969 years.",
+    "refs": ["GEN.5.27"],
+    "category": "people",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-balaam-donkey",
+    "question": "Which animal spoke to the prophet Balaam?",
+    "answer": "His donkey, after Balaam had beaten her three times.",
+    "refs": ["NUM.22.28"],
+    "category": "old-testament",
+    "tone": "fun",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-first-sign",
+    "question": "In John's Gospel, what was the first of Jesus's signs?",
+    "answer": "Turning water into wine at a wedding in Cana of Galilee.",
+    "refs": ["JHN.2.9", "JHN.2.11"],
+    "category": "miracles",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-jonah-fish",
+    "question": "How long was Jonah inside the great fish?",
+    "answer": "Three days and three nights.",
+    "refs": ["JON.1.17"],
+    "category": "numbers",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-matthew-tax",
+    "question": "Which of Jesus's disciples was sitting at a tax booth when he was called?",
+    "answer": "Matthew.",
+    "refs": ["MAT.9.9"],
+    "category": "people",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-five-thousand",
+    "question": "Feeding the five thousand: who wasn't counted in the five thousand?",
+    "answer": "The women and children. About five thousand men were fed, besides women and children.",
+    "refs": ["MAT.14.21"],
+    "category": "miracles",
+    "tone": "fun",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-immanuel",
+    "question": "What does the name \"Immanuel\" mean?",
+    "answer": "\"God with us.\"",
+    "refs": ["MAT.1.23"],
+    "category": "jesus",
+    "tone": "deep",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-ehud",
+    "question": "Which judge of Israel was left-handed, a detail that let him surprise King Eglon of Moab?",
+    "answer": "Ehud son of Gera, a Benjamite.",
+    "refs": ["JDG.3.15", "JDG.3.21"],
+    "category": "old-testament",
+    "tone": "fun",
+    "difficulty": 3
+  },
+  {
+    "id": "seed-zacchaeus",
+    "question": "What did Zacchaeus climb to see Jesus over the crowd?",
+    "answer": "A sycamore tree.",
+    "refs": ["LUK.19.4"],
+    "category": "people",
+    "tone": "fun",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-first-king",
+    "question": "Who was the first king of Israel?",
+    "answer": "Saul, son of Kish.",
+    "refs": ["1SA.10.21", "1SA.11.15"],
+    "category": "people",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-flood-rain",
+    "question": "How long did it rain during Noah's flood?",
+    "answer": "Forty days and forty nights.",
+    "refs": ["GEN.7.12"],
+    "category": "numbers",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-first-day",
+    "question": "What did God create on the first day?",
+    "answer": "Light, which He separated from the darkness.",
+    "refs": ["GEN.1.3", "GEN.1.5"],
+    "category": "old-testament",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-joseph-dreams",
+    "question": "Who interpreted Pharaoh's dreams of seven fat cows and seven thin cows?",
+    "answer": "Joseph, who said the interpretation came from God, not from him.",
+    "refs": ["GEN.41.16", "GEN.41.25"],
+    "category": "people",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-sarah-laughed",
+    "question": "Who laughed when she overheard that she would have a son in her old age?",
+    "answer": "Sarah, Abraham's wife.",
+    "refs": ["GEN.18.10", "GEN.18.12"],
+    "category": "people",
+    "tone": "fun",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-abraham-100",
+    "question": "How old was Abraham when his son Isaac was born?",
+    "answer": "One hundred years old.",
+    "refs": ["GEN.21.5"],
+    "category": "numbers",
+    "tone": "fact",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-jericho",
+    "question": "Which city's walls fell after the Israelites marched around it and shouted?",
+    "answer": "Jericho.",
+    "refs": ["JOS.6.15", "JOS.6.20"],
+    "category": "places",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-five-stones",
+    "question": "How many smooth stones did David choose before facing Goliath?",
+    "answer": "Five.",
+    "refs": ["1SA.17.40"],
+    "category": "numbers",
+    "tone": "fun",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-lions-den",
+    "question": "Who was thrown into a den of lions, and why did he survive?",
+    "answer": "Daniel. God sent His angel to shut the lions' mouths.",
+    "refs": ["DAN.6.16", "DAN.6.22"],
+    "category": "miracles",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-fiery-furnace",
+    "question": "Name the three men thrown into the fiery furnace.",
+    "answer": "Shadrach, Meshach, and Abednego.",
+    "explanation": "King Nebuchadnezzar then saw a fourth figure walking with them in the fire.",
+    "refs": ["DAN.3.23", "DAN.3.25"],
+    "category": "miracles",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-samson-hair",
+    "question": "Whose great strength was bound up with never cutting his hair?",
+    "answer": "Samson, a Nazirite from birth.",
+    "refs": ["JDG.16.17"],
+    "category": "people",
+    "tone": "fun",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-esther-perish",
+    "question": "Which queen went to the king against the law, saying \"if I perish, I perish\"?",
+    "answer": "Queen Esther.",
+    "refs": ["EST.4.16"],
+    "category": "people",
+    "tone": "deep",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-solomon-wisdom",
+    "question": "When God offered Solomon anything, what did he ask for?",
+    "answer": "A discerning heart to govern God's people and to tell good from evil.",
+    "refs": ["1KI.3.5", "1KI.3.9", "1KI.3.12"],
+    "category": "people",
+    "tone": "deep",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-bethlehem",
+    "question": "In which town was Jesus born?",
+    "answer": "Bethlehem in Judea.",
+    "refs": ["MAT.2.1"],
+    "category": "jesus",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-manger",
+    "question": "Where did Mary lay the newborn Jesus, and why?",
+    "answer": "In a manger, because there was no room for them in the inn.",
+    "refs": ["LUK.2.7"],
+    "category": "jesus",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-baptism",
+    "question": "Who baptized Jesus, and in which river?",
+    "answer": "John the Baptist, in the Jordan.",
+    "refs": ["MAT.3.13"],
+    "category": "jesus",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-forty-days",
+    "question": "How many days did Jesus fast in the wilderness before He was tempted?",
+    "answer": "Forty days and forty nights.",
+    "refs": ["MAT.4.2"],
+    "category": "numbers",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-peter-water",
+    "question": "Which disciple stepped out of the boat and walked on the water toward Jesus?",
+    "answer": "Peter.",
+    "refs": ["MAT.14.29"],
+    "category": "miracles",
+    "tone": "fun",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-peter-denial",
+    "question": "How many times did Peter deny knowing Jesus before the rooster crowed?",
+    "answer": "Three times.",
+    "refs": ["MAT.26.75"],
+    "category": "numbers",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-greatest-commandment",
+    "question": "What did Jesus call the greatest commandment?",
+    "answer": "\"Love the Lord your God with all your heart and with all your soul and with all your mind,\" and the second is like it: love your neighbor as yourself.",
+    "refs": ["MAT.22.37", "MAT.22.38", "MAT.22.39"],
+    "category": "jesus",
+    "tone": "deep",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-good-samaritan",
+    "question": "In Jesus's parable, who stopped to care for the man beaten by robbers?",
+    "answer": "A Samaritan, after a priest and a Levite had passed by.",
+    "refs": ["LUK.10.31", "LUK.10.32", "LUK.10.33"],
+    "category": "jesus",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-ten-lepers",
+    "question": "Jesus healed ten men of leprosy. How many came back to thank Him?",
+    "answer": "Only one, and he was a Samaritan.",
+    "refs": ["LUK.17.15", "LUK.17.16", "LUK.17.17"],
+    "category": "miracles",
+    "tone": "deep",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-lazarus-four-days",
+    "question": "How long had Lazarus been in the tomb when Jesus raised him?",
+    "answer": "Four days.",
+    "refs": ["JHN.11.39", "JHN.11.44"],
+    "category": "miracles",
+    "tone": "fact",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-way-truth-life",
+    "question": "Who did Jesus say is \"the way and the truth and the life\"?",
+    "answer": "Himself: \"No one comes to the Father except through Me.\"",
+    "refs": ["JHN.14.6"],
+    "category": "jesus",
+    "tone": "deep",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-doubting-thomas",
+    "question": "Which disciple said he would not believe until he touched Jesus's wounds?",
+    "answer": "Thomas, who then said, \"My Lord and my God!\"",
+    "refs": ["JHN.20.25", "JHN.20.28"],
+    "category": "people",
+    "tone": "deep",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-pentecost",
+    "question": "What happened to the disciples on the day of Pentecost?",
+    "answer": "They were filled with the Holy Spirit and began to speak in other tongues.",
+    "refs": ["ACT.2.1", "ACT.2.4"],
+    "category": "new-testament",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-damascus-road",
+    "question": "On the road to which city did Saul meet the risen Jesus?",
+    "answer": "Damascus, when a light from heaven flashed around him.",
+    "refs": ["ACT.9.3"],
+    "category": "places",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-fruit-of-spirit",
+    "question": "What is the fruit of the Spirit?",
+    "answer": "Love, joy, peace, patience, kindness, goodness, faithfulness, gentleness, and self-control.",
+    "refs": ["GAL.5.22", "GAL.5.23"],
+    "category": "god",
+    "tone": "deep",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-greatest-love",
+    "question": "Of faith, hope, and love, which does Paul call the greatest?",
+    "answer": "Love.",
+    "refs": ["1CO.13.13"],
+    "category": "new-testament",
+    "tone": "deep",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-after-gods-heart",
+    "question": "Whom did God describe as \"a man after My own heart\"?",
+    "answer": "David son of Jesse.",
+    "refs": ["ACT.13.22"],
+    "category": "people",
+    "tone": "deep",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-first-plague",
+    "question": "What was the first plague God sent on Egypt?",
+    "answer": "The water of the Nile was turned to blood.",
+    "refs": ["EXO.7.20"],
+    "category": "old-testament",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-manna",
+    "question": "What did the Israelites name the bread God sent them in the wilderness, and what did it taste like?",
+    "answer": "Manna. It tasted like wafers made with honey.",
+    "refs": ["EXO.16.31"],
+    "category": "old-testament",
+    "tone": "fun",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-sinai",
+    "question": "On which mountain did God give Moses the two stone tablets?",
+    "answer": "Mount Sinai.",
+    "refs": ["EXO.31.18"],
+    "category": "places",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-elijah-whirlwind",
+    "question": "Which prophet was taken up to heaven in a whirlwind?",
+    "answer": "Elijah, after a chariot of fire separated him from Elisha.",
+    "refs": ["2KI.2.11"],
+    "category": "miracles",
+    "tone": "fun",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-hannah-samuel",
+    "question": "Who prayed for a son and named him Samuel?",
+    "answer": "Hannah.",
+    "refs": ["1SA.1.20"],
+    "category": "people",
+    "tone": "fact",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-twelve-sons",
+    "question": "How many sons did Jacob have?",
+    "answer": "Twelve.",
+    "refs": ["GEN.35.22"],
+    "category": "numbers",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-fathers-house",
+    "question": "What did the 12-year-old Jesus tell his parents when they found him in the temple?",
+    "answer": "“Did you not know that I had to be in My Father’s house?”",
+    "refs": ["LUK.2.42", "LUK.2.49"],
+    "category": "jesus",
+    "tone": "deep",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-shepherd-psalm",
+    "question": "Which psalm begins \"The LORD is my shepherd\"?",
+    "answer": "Psalm 23.",
+    "refs": ["PSA.23.1"],
+    "category": "old-testament",
+    "tone": "fun",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-ark-eight",
+    "question": "How many people were saved in Noah's ark?",
+    "answer": "Eight.",
+    "refs": ["1PE.3.20"],
+    "category": "numbers",
+    "tone": "fun",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-simon-cyrene",
+    "question": "Who was made to carry Jesus's cross?",
+    "answer": "Simon of Cyrene.",
+    "refs": ["MAT.27.32"],
+    "category": "people",
+    "tone": "fact",
+    "difficulty": 2
+  }
+]

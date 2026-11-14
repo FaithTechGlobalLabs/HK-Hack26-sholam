@@ -5,6 +5,7 @@ import {
   openRouterConfig,
   shouldUseLiveAgent,
 } from "@/lib/agent/openrouter-config";
+import { stripeConfigGaps } from "@/lib/billing/plans";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 /**
@@ -33,5 +34,9 @@ export async function GET() {
     agent: mode.live ? "live" : "demo",
     database,
     auth: isSupabaseConfigured() ? "configured" : "unconfigured",
+    billing: {
+      ready: stripeConfigGaps().length === 0,
+      missing: stripeConfigGaps(),
+    },
   });
 }

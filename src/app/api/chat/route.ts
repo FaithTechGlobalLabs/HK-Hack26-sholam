@@ -16,6 +16,8 @@ import {
   visitorKey,
 } from "@/lib/agent/usage-limit";
 import { usageStore } from "@/lib/agent/usage-store";
+import { admitIosQuestion } from "@/lib/billing/access";
+import { isCustomerId, isDeviceId } from "@/lib/billing/plans";
 import { appendTurn, isChatId } from "@/lib/chat/store";
 import {
   assistantContentFromTurn,
@@ -49,6 +51,7 @@ const SSE_HEADERS = {
   "Content-Type": "text/event-stream; charset=utf-8",
   "Cache-Control": "no-cache, no-transform",
   Connection: "keep-alive",
+  "Access-Control-Allow-Origin": "*",
 };
 
 /**
@@ -69,6 +72,37 @@ export async function POST(request: Request) {
     );
   }
   const { chatId, message } = parsed.data;
+  if (request.headers.get("x-shalom-client") === "ios") {
+    const deviceId = request.headers.get("x-shalom-device");
+    if (!isDeviceId(deviceId)) {
+      return Response.json(
+        { error: "The iOS app needs an x-shalom-device header." },
+        { status: 400 },
+      );
+    }
+    const customer = request.headers.get("x-shalom-customer");
+    const allowance = await admitIosQuestion(
+      deviceId,
+      isCustomerId(customer) ? customer : null,
+    );
+    if (!allowance.ok) {
+      return Response.json(
+        {
+          error: allowance.message,
+          code: "plan_limit",
+          used: allowance.used,
+          limit: allowance.limit,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(allowance.retryAfterSec),
+            "Access-Control-Allow-Origin": "*",
+          },
+        },
+      );
+    }
+  }
   const history = (parsed.data.history ?? [])
     .slice(-LIMITS.client.historyTurns)
     .map((t) => ({

@@ -252,3 +252,26 @@ export const usageCounters = pgTable(
     index("usage_counters_updated_idx").on(t.updatedAt),
   ],
 ).enableRLS();
+
+/**
+ * iOS subscription state written by the Stripe webhook (and by a
+ * server-side read of a paid Checkout Session). One row per app install.
+ * RLS is on with no policies: the phone never reads this table directly.
+ */
+export const entitlements = pgTable(
+  "entitlements",
+  {
+    deviceId: text().primaryKey(),
+    customerId: text(),
+    subscriptionId: text(),
+    /** Stripe subscription status, or inactive before a purchase. */
+    status: text().notNull().default("inactive"),
+    priceId: text(),
+    currentPeriodEnd: timestamp({ withTimezone: true }),
+    updatedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("entitlements_customer_idx").on(t.customerId),
+    index("entitlements_subscription_idx").on(t.subscriptionId),
+  ],
+).enableRLS();

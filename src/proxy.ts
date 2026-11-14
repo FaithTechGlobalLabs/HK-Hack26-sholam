@@ -11,8 +11,29 @@ import { supabaseEnv } from "@/lib/supabase/config";
  * to the site URL when the requested redirect is not on its allow list) is
  * forwarded there with its parameters.
  */
+const API_CORS: Record<string, string> = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "Content-Type, x-shalom-client, x-shalom-device, x-shalom-customer",
+  "Access-Control-Max-Age": "86400",
+};
+
+/** The iOS app calls these routes from Expo, which is a different origin. */
+function apiCors(request: NextRequest) {
+  if (request.method === "OPTIONS") {
+    return new NextResponse(null, { status: 204, headers: API_CORS });
+  }
+  const response = NextResponse.next();
+  for (const [key, value] of Object.entries(API_CORS)) {
+    response.headers.set(key, value);
+  }
+  return response;
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
+  if (pathname.startsWith("/api/")) return apiCors(request);
   if (searchParams.has("token_hash") && pathname !== "/auth/confirm") {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/confirm";
@@ -44,6 +65,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

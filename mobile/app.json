@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Shalom",
+    "slug": "shalom",
+    "scheme": "shalom",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#2F68C2",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.shalom.guide",
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        },
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "app.shalom.guide",
+      "adaptiveIcon": {
+        "backgroundColor": "#2F68C2",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-web-browser"
+    ]
+  }
+}

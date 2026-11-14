@@ -46,3 +46,6 @@ next-env.d.ts
 # drizzle-kit scratch, test output
 /test-results
 /tmp
+
+# iOS billing entitlements when Postgres is not configured
+/.data
