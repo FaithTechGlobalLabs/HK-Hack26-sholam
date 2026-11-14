@@ -11,7 +11,10 @@ Browser (React client components)
      └── SseDecoder ◄──────────────────────────────────────────┤  tools ──► BSB (helloao) + seed deck
   FlashcardsView ◄── cached deck in the static /flashcards page (deck.ts ──► repo)
   FlashcardsView ── POST /api/flashcards ──► repo ─────────────┘
-  LoginForm ── Supabase Auth (magic link) ──► /auth/callback
+  LoginForm ── signInWithOtp ──► one email: 8-digit code + link
+     ├─ code ──► verifyOtp (this browser)
+     └─ link ──► /auth/confirm (button) ──► POST /auth/verify ──► verifyOtp (token_hash)
+  Sidebar / Chats panel ── GET /api/account, GET /api/chats ──► chat store (per user)
 src/proxy.ts refreshes the Supabase session cookie on page requests.
 ```
 
@@ -75,20 +78,33 @@ The model cites as markdown links: `[John 3:16](verse:JHN.3.16)`. A citation is 
 |---|---|---|
 | `profiles` | `id` = `auth.users.id`, `display_name` | read/update own |
 | `chats` | `user_id`, `title`, timestamps | owner only |
-| `messages` | `chat_id`, `seq`, `role`, `content` jsonb (verbatim blocks) | read via owned chat |
+| `messages` | `chat_id`, `seq`, `role`, `content` jsonb (shape below, "Chat storage") | read via owned chat |
 | `flashcards` | `kind` (`fact` \| `discover`), `slug` (seed key), `question`, `answer`, `explanation`, `category`, `tone`, `difficulty`, `refs` text[] (passage refs), `tags`, `minutes`, `section`, `source`, `author_id`, `status`, `search` tsvector (generated, GIN). Check `flashcards_fact_fields`: fact cards need answer, tone and difficulty | anyone reads `published`; authors insert/update own |
 | `flashcard_reports` | `flashcard_id`, `user_id`, `reason` (one per user per card) | insert own |
 | `verses` | PK (`translation`, `id`), `book`, `book_order`, `testament`, `chapter`, `verse`, `text`, `search` tsvector (generated, GIN) | public read |
 
-Until `DATABASE_URL` is set, flashcards come from `data/flashcards.seed.json` and BSB text is fetched/cached from helloao (see SOURCES.md). Chat threads are kept in the browser `sessionStorage` and resent as text history with each turn.
+Until `DATABASE_URL` is set, flashcards come from `data/flashcards.seed.json` and BSB text is fetched/cached from helloao (see SOURCES.md). Signed-out chat threads are kept in the browser `sessionStorage`; signed-in chats are stored per account (see "Chat storage"). Either way the browser still resends text history with each turn.
 
 The server queries through Drizzle as the database owner when configured, which **bypasses RLS**. Server code must scope chats and messages to the signed-in user itself.
 
 ## Auth
 
-Supabase magic link. `src/proxy.ts` refreshes the session on page requests (`auth.getClaims()`); `src/lib/supabase/server.ts` gives Server Components and Route Handlers a client and `currentUserId()`. Reading flashcards needs no account; live chat works signed out with local history.
+One flow for sign-in and sign-up (`src/components/shell/LoginForm.tsx`, steps in `src/lib/auth/login-state.ts`):
 
-Supabase Auth settings (set 2026-11-14 through the Management API): site URL `https://sholam.vercel.app`; redirect allow-list `https://sholam.vercel.app/**`, `https://sholam-*-owenisas-projects.vercel.app/**` (previews) and `http://localhost:5310/**`. The magic link returns to `/auth/callback`. Supabase's built-in mailer is rate-limited on the free plan; a custom SMTP sender is a Phase 5 item.
+1. The person enters an email; `signInWithOtp` (`shouldCreateUser: true`, `emailRedirectTo: <origin>/auth/callback`) sends **one email with an 8-digit code and a link** (once the templates below are applied; until then Supabase's default email carries only its PKCE link, which returns to `/auth/callback?code=` and works in the browser that asked, as before).
+2. **Code:** typed on the device that asked, `verifyOtp({ email, token, type: "email" })`. Works whichever browser or device the email is read on.
+3. **Link:** the template's link is `{{ .RedirectTo }}?token_hash=…&type=email`, i.e. `/auth/callback?token_hash=…`, which `src/proxy.ts` forwards to `/auth/confirm`: a page with a "Sign in" button; the button posts to `/auth/verify`, which calls `verifyOtp({ token_hash, type })` on the server and sets the session cookies. Nothing is spent on GET, so mail scanners that open links can't use them up, and there is no PKCE verifier, so it works in any browser. A link that lands elsewhere (Supabase falls back to the site URL when a redirect is not allowed) is forwarded to `/auth/confirm` by `src/proxy.ts`.
+4. New accounts (no `profiles.display_name`) get a name step (`PATCH /api/account`), then go to `next` (same-site paths only, `src/lib/auth/next-path.ts`).
+
+Errors map to plain messages in `src/lib/auth/problems.ts`: code sent, wrong or expired code, link expired or already used, link opened in another browser (PKCE, `/auth/callback` only), the project's hourly email cap ("enter the code you already have"), the 60 s per-address gap (countdown), and the built-in mailer's team-only rule. `/auth/callback` (code exchange) stays for Google sign-in later and now reports Supabase's `error` / `error_code` parameters instead of redirecting as if it worked.
+
+Signed-in state: `GET /api/account` (`{ enabled, account: { email, displayName }, canSave }`) feeds one client store, `useAccount()` (`src/lib/account/use-account.ts`): one request per page load, "loading" during the server render so hydration matches and the static shell reads no cookies. Desktop shows the account at the bottom of the sidebar (initial + name, a menu with the email and **Sign out**); phones show Jeff's chip top-right (`AccountButton.tsx`). Sign out is a same-origin `POST /auth/signout` (`signOut({ scope: "local" })`) and first clears the tab's chat history. Every state-changing route checks `Origin` / `Sec-Fetch-Site` (`src/lib/http.ts`), and JSON routes require `application/json`.
+
+Supabase Auth settings (read 2026-11-14 through the Management API): site URL `https://sholam.vercel.app`; redirect allow-list `https://sholam.vercel.app/**`, `https://sholam-*-owenisas-projects.vercel.app/**` (previews) and `http://localhost:5310/**`; email confirmation on; code length 8, lifetime 3600 s; 60 s between emails to one address. The email templates must contain the code and the `/auth/confirm` link (below); until they do, emails carry only Supabase's default PKCE link.
+
+| Template | Subject | Body (HTML) |
+|---|---|---|
+| Magic link (returning users) and Confirm signup (new users) | `Your Shalom sign-in code: {{ .Token }}` | The code in large type, then `<a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email">Sign in to Shalom</a>`, and a line that the code and link last an hour |
 
 Status (2026-11-14):
 
@@ -96,11 +112,28 @@ Status (2026-11-14):
 |---|---|
 | Supabase Auth: email provider on, sign-ups open, email confirmation required, site URL + redirect list | Done (read back from the Auth settings API) |
 | `profiles` row per new user (`on_auth_user_created` trigger) | Done, migration `0001` applied |
-| `/login` magic-link form, `/auth/callback` code exchange, `src/proxy.ts` session refresh, `currentUserId()` | Written; **not yet tested end to end** (no real sign-in has been done) |
-| Built-in Supabase mailer | Works but limited to **2 emails per hour** for the whole project; enough to test, not to launch. Custom SMTP (e.g. Resend) before real users |
-| Signed-in state in the UI (the sidebar and the dock still always say "Sign in"; no account menu or sign-out) | Not started (Phase 2) |
-| Chats saved per user, history list, protected routes | Not started (Phase 2, with the agent loop) |
+| Code + link sign-in, confirm page, name step, error messages, sign-out | Built on branch `accounts`. Code path checked against live Supabase with a wrong code (correct message); link path checked with a fake token (confirm page → POST → "expired or already used"). A real sign-in waits for the template change |
+| Email templates with code and `/auth/confirm` link | Proposed above; needs the owner's approval to apply |
+| Built-in Supabase mailer | **2 emails per hour for the whole project, and only to addresses in the project's team** (`email_address_not_authorized` otherwise). Custom SMTP needed before anyone outside the team can sign in |
+| Signed-in state in the UI (sidebar account menu, phone header chip, sign-out) | Built (checked at 1280 and 375 px with stubbed account data) |
+| Chats saved per user, history list, owner-only `/c/[chatId]` | Store, APIs, lists and owner check built; saving each turn and loading a saved chat into the chat view wait for `chat-harness-fixes` (it owns `route.ts` and `useChatStream.ts`) |
 | Google sign-in | Not configured (needs a Google OAuth client) |
+
+## Chat storage (`src/lib/chat/store.ts`, `stored-content.ts`)
+
+Signed-in chats live in `chats` / `messages`. The server connects as the owner, so every store function takes the signed-in user's id and every query filters on `chats.user_id` (tests check the SQL, and run the store against a real Postgres when `TEST_DATABASE_URL` is set). Ids are browser-made UUIDs; a write to an id owned by another account throws `ChatOwnershipError`.
+
+- `appendTurn(db, userId, chatId, rows)`: creates the chat on its first turn (title from the first user message), locks it, and appends rows after the highest `seq`. Nothing updates or deletes a message.
+- `listChats` (newest first, with message counts) backs `GET /api/chats`; `loadChat` backs `GET /api/chats/[chatId]` and `/c/[chatId]`: `owned` (messages), `not-yours` (404 page), `missing` (a signed-out tab's chat, read from the tab).
+- `importTabChats` backs `POST /api/chats/import`: on sign-in, the sidebar and phone panel offer to keep the tab's chats; chats already saved get only the messages after the ones they have.
+- The sidebar and the phone Chats panel read `useChatList()`: signed out, the tab's history; signed in, the account's chats plus any tab chats not saved yet.
+
+`messages.content` (version 1), one row per side of a turn:
+
+| Role | Shape |
+|---|---|
+| `user` | `{ v: 1, text }`: what the person typed. The personalization note the server appends is rebuilt each turn, not stored |
+| `assistant` | `{ v: 1, source: "openrouter" \| "demo" \| "tab-import", model?, turn, text, verses, cards?, proposal?, stopReason?, error? }`. `turn` holds the OpenAI-format messages the model produced that turn, verbatim and in order (assistant with `tool_calls`, `tool` results, final assistant); any `reasoning` / `reasoning_details` the provider returns stay on those messages. `text` is the answer shown. `verses` are the records tools returned that turn, the only verses the answer may cite: reloading renders citations against them, never against new lookups. Imported tab answers carry text only (`turn` empty, no verses), so their citations show as unverified |
 
 ## Bible references (`src/lib/bible/`)
 

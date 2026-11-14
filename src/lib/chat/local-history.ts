@@ -1,6 +1,8 @@
 /**
- * Browser-only chat continuity until Postgres message storage lands.
- * Keeps recent threads in sessionStorage (tab lifetime).
+ * Chat history for signed-out visitors: recent threads in sessionStorage
+ * (tab lifetime). Signed-in chats are saved per account in Postgres
+ * (store.ts); on sign-in the tab's chats can be kept (KeepTabChats), and
+ * signing out clears them.
  */
 
 export interface LocalChatMessage {
@@ -46,6 +48,15 @@ export function upsertLocalChat(chat: LocalChat) {
   const all = readAll().filter((c) => c.id !== chat.id);
   all.unshift(chat);
   writeAll(all);
+}
+
+/** Forgets this tab's chats (on sign-out, so the next person can't read them). */
+export function clearLocalChats() {
+  try {
+    sessionStorage.removeItem(KEY);
+  } catch {
+    // Storage unavailable: nothing was kept.
+  }
 }
 
 export function titleFromMessage(text: string): string {

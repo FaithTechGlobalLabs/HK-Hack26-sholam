@@ -46,6 +46,10 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Switching views animates with React `<ViewTransition>`: the page slides left going to Flashcards and right coming back; the toggle pill, the sidebar highlight and the dock tile glide to the new item | Owner request. Built on Next 16's view transitions, so unsupported browsers switch instantly and reduced motion turns the slide into a quick crossfade |
 | 2026-11-14 | Free OpenRouter models only, default `nvidia/nemotron-3-ultra-550b-a55b:free`: `SHOLAM_MODEL` must end in `:free`, otherwise the default is used. `OPENROUTER_API_KEY` (sensitive) and `SHOLAM_MODEL` are set in Vercel for Production and Preview | Owner decision, replacing the DeepSeek row. The key also carries a $3 credit limit on the OpenRouter side |
 | 2026-11-14 | The public deck is cached (`"use cache"`, hourly, tag `flashcards`) and `/flashcards` is a static page; the browser shuffles it once per visit; functions run in `sin1` next to the database | The page took seconds: every request ran a function in `iad1` that opened a connection to Singapore before the deck could stream. Now the CDN serves the cards (first card 1.4 s → 0.18 s locally). Numbers in ARCHITECTURE.md |
+| 2026-11-14 | Sign-in and sign-up are one email flow: the email carries an 8-digit code and a link. The code is typed where you asked (works across devices); the link opens a confirm page whose button signs in that browser (token_hash, no PKCE). New accounts pick a display name | Owner report: the email link "not working really well". The PKCE link only worked in the browser that asked, mail scanners could spend it, and the UI never showed you were signed in |
+| 2026-11-14 | Signed in, the account sits at the bottom of the desktop sidebar (menu with Sign out) and top-right on phones (Jeff's chip); sign-out clears the tab's chat history | ChatGPT's placement on desktop; Jeff's design (jeffs-uis `30df585`) on phones. Clearing protects shared devices |
+| 2026-11-14 | Signed-in chats are saved per account in Postgres and listed newest first; `/c/[chatId]` opens a saved chat only for its owner (others get not-found). Signed-out chats stay in the tab; on sign-in the tab's chats can be kept | Product rule 4 (chats are private). The server bypasses RLS, so the store filters every query by user id |
+| 2026-11-14 | `messages.content` v1: user rows `{ v, text }`; assistant rows keep the OpenRouter turn's messages verbatim plus the shown text and the verse records fetched that turn | Rule 7 (append-only, verbatim) for an OpenAI-format provider; rule 1 needs the turn's verses to re-render citations honestly |
 
 ## In flight
 
@@ -68,10 +72,10 @@ Project structure, docs, `AGENTS.md` + `CLAUDE.md` symlink, app shell with Chat 
 ### Phase 2: chat
 The OpenRouter streaming loop is already in `harness.ts` (helloao text, keyword card ranking, browser history). Still open:
 
-- Magic-link sign-in; protect chat history routes in `src/proxy.ts`.
+- Accounts (branch `accounts`): code + link sign-in, account menu, sign-out, per-account chat store and lists, owner-only `/c/[chatId]`. Left: save each turn in `route.ts` and load saved chats into `useChatStream` once `chat-harness-fixes` lands; owner decisions on the email templates and SMTP (ARCHITECTURE.md, Auth).
 - Search per SEARCH.md §8: `verses.pos`, a `sections` table from the importer, `search_bible` (verses + headings + any-term fallback), `read_passage`, `lookup_verses` on `parseReference`, the search policy in the prompt, and the eval on the real loop.
 - `search_flashcards` and `propose_flashcard` on the database; discover cards open in chat with their starting points.
-- The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, history and search. The desktop sidebar and the phone Chats panel both read `useLocalChats()`; point it at the database when chats are stored.
+- The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, history and search. The desktop sidebar and the phone Chats panel read `useChatList()` (account chats when signed in).
 - Review of the OpenRouter loop (2026-11-14), to fix before real traffic: unfetched citations are fetched after the answer and shown as verified (`harness.ts`); no per-visitor limit on `/api/chat`; the browser sends the whole history and the server rejects more than 40 turns; a closed tab does not cancel model calls; verses come from `bible.helloao.org` instead of the imported `verses` table; the answer is sent in one piece instead of streamed.
 - Server-side citation check before `done`; refusal and `max_tokens` handling; per-user rate limit.
 
@@ -90,7 +94,7 @@ The OpenRouter streaming loop is already in `harness.ts` (helloao text, keyword 
 - Topical index (OpenBible topics) and typo-tolerant name search.
 
 ### Phase 5: ship
-Vercel + Supabase production, a citation-accuracy eval set (does every quoted verse match the database, are cites well-formed), cost and usage dashboard, abuse limits.
+Vercel + Supabase production, custom SMTP for sign-in emails (the built-in mailer sends 2 an hour, to team addresses only), a citation-accuracy eval set (does every quoted verse match the database, are cites well-formed), cost and usage dashboard, abuse limits.
 
 ## Open questions
 

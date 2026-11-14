@@ -14,17 +14,22 @@ import {
   ViewTransition,
 } from "react";
 import { Logo, LogoMark } from "@/components/brand/Logo";
+import { accountLabel } from "@/lib/account/types";
+import { useAccount } from "@/lib/account/use-account";
 import { BRAND_NAME } from "@/lib/brand";
-import { useLocalChats } from "@/lib/chat/use-local-chats";
+import { useChatList } from "@/lib/chat/use-chat-list";
 import { cn } from "@/lib/utils";
+import { AccountBadge, AccountMenu } from "./AccountMenu";
+import { KeepTabChats } from "./KeepTabChats";
 import { sectionOf, sectionTransition } from "./nav";
 
 const STORE = "shalom.sidebar";
 
 /**
  * The desktop sidebar, laid out like ChatGPT's: logo and collapse at the
- * top, New chat / Search chats / Flashcards, this tab's chats, Sign in at
- * the bottom. It collapses to an icon rail (remembered per browser). Phones
+ * top, New chat / Search chats / Flashcards, the chat list (the account's
+ * saved chats when signed in, this tab's otherwise), and the account at the
+ * bottom (Sign in, or the account menu with Sign out). It collapses to an icon rail (remembered per browser). Phones
  * use the dock instead (ShellDock); CSS decides which one shows.
  *
  * The highlight on the current item is one shared <ViewTransition>, so it
@@ -191,14 +196,7 @@ function SidebarBody({
           width(collapsed),
         )}
       >
-        <NavItem
-          href="/login"
-          from={pathname}
-          collapsed={collapsed}
-          active={false}
-          icon={<LogIn />}
-          label="Sign in"
-        />
+        <SidebarAccount pathname={pathname} collapsed={collapsed} />
       </div>
     </div>
   );
@@ -271,7 +269,7 @@ function ChatList({
   searching: boolean;
   onEndSearch: () => void;
 }) {
-  const chats = useLocalChats();
+  const { account, chats, unsaved, keepTabChats } = useChatList();
   const [query, setQuery] = useState("");
   const input = useRef<HTMLInputElement>(null);
 
@@ -323,11 +321,16 @@ function ChatList({
           Chats
         </h2>
       )}
+      {unsaved.length > 0 && !query && (
+        <KeepTabChats count={unsaved.length} onKeep={keepTabChats} />
+      )}
       {shown.length === 0 ? (
         <p className="px-3 py-1 text-[13px] text-white/85 leading-snug">
           {query
             ? "No chat titles match."
-            : "Your chats in this tab show up here."}
+            : account.status === "signed-in"
+              ? "Your chats show up here."
+              : "Chats in this tab show up here. Sign in to keep them."}
         </p>
       ) : (
         <ul className="-mr-2 flex min-h-0 flex-col gap-0.5 overflow-y-auto pr-2 pb-2">
@@ -351,5 +354,58 @@ function ChatList({
         </ul>
       )}
     </section>
+  );
+}
+
+/**
+ * The bottom row: nothing while the account loads (so a signed-in person
+ * never sees "Sign in" flash), "Sign in" when signed out, else the
+ * account's initial and name, which opens the account menu upward.
+ */
+function SidebarAccount({
+  pathname,
+  collapsed,
+}: {
+  pathname: string | null;
+  collapsed: boolean;
+}) {
+  const state = useAccount();
+  if (state.status === "loading") return <div aria-hidden className="h-10" />;
+  if (state.status === "signed-out") {
+    const href =
+      pathname && pathname !== "/"
+        ? `/login?next=${encodeURIComponent(pathname)}`
+        : "/login";
+    return (
+      <NavItem
+        href={href}
+        from={pathname}
+        collapsed={collapsed}
+        active={false}
+        icon={<LogIn />}
+        label="Sign in"
+      />
+    );
+  }
+  const label = accountLabel(state.account);
+  return (
+    <AccountMenu
+      account={state.account}
+      side="top"
+      align="start"
+      popupWidth={collapsed ? "w-60" : "w-[var(--anchor-width)]"}
+      triggerLabel={`Account: ${label}`}
+      triggerClassName={cn(
+        ITEM,
+        width(collapsed),
+        "gap-2 px-2 data-popup-open:bg-white/15",
+      )}
+      trigger={
+        <>
+          <AccountBadge account={state.account} />
+          <span className="relative truncate">{label}</span>
+        </>
+      }
+    />
   );
 }
