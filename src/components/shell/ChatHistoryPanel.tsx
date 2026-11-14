@@ -2,14 +2,14 @@
 
 import { X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { type LocalChat, listLocalChats } from "@/lib/chat/local-history";
+import { useEffect } from "react";
+import { useLocalChats } from "@/lib/chat/use-local-chats";
 import { cn } from "@/lib/utils";
 
 /**
  * Recent chats (MustyDusty's sessionStorage history) in a panel opened from
- * the dock's Chats item, since the dock replaced the sidebar. Postgres-backed
- * history replaces the source in Phase 2; the panel can stay.
+ * the dock's Chats item on phones; desktop lists them in the sidebar.
+ * Postgres-backed history replaces the source in Phase 2.
  */
 export function ChatHistoryPanel({
   pathname,
@@ -18,22 +18,14 @@ export function ChatHistoryPanel({
   pathname: string | null;
   onClose: () => void;
 }) {
-  const [chats, setChats] = useState<LocalChat[]>([]);
+  const chats = useLocalChats();
 
   useEffect(() => {
-    const refresh = () => setChats(listLocalChats());
-    refresh();
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
-    window.addEventListener("shalom:chats", refresh);
-    window.addEventListener("storage", refresh);
     window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("shalom:chats", refresh);
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener("keydown", onKey);
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
   return (

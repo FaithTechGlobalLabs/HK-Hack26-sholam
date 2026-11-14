@@ -60,7 +60,7 @@ describe("tools", () => {
 });
 
 describe("request", () => {
-  it("defaults to ERNIE flash via OpenRouter", () => {
+  it("defaults to the free Nemotron model via OpenRouter", () => {
     const cfg = agentConfig({});
     expect(cfg.model).toBe("nvidia/nemotron-3-ultra-550b-a55b:free");
     expect(cfg.maxSteps).toBe(3);
@@ -85,10 +85,25 @@ describe("request", () => {
   it("does not put the API key in openRouterConfig serialization", () => {
     const cfg = openRouterConfig({
       OPENROUTER_API_KEY: "secret-test-key",
-      SHOLAM_MODEL: "test/model",
+      SHOLAM_MODEL: "test/model:free",
     });
     expect(cfg.apiKey).toBe("secret-test-key");
-    expect(cfg.model).toBe("test/model");
+    expect(cfg.model).toBe("test/model:free");
+  });
+
+  it("only runs free models: a paid or empty SHOLAM_MODEL falls back", () => {
+    const fallback = "nvidia/nemotron-3-ultra-550b-a55b:free";
+    expect(openRouterConfig({ SHOLAM_MODEL: "claude-opus-5-5" }).model).toBe(
+      fallback,
+    );
+    expect(
+      openRouterConfig({ SHOLAM_MODEL: "nvidia/nemotron-3-ultra-550b-a55b" })
+        .model,
+    ).toBe(fallback);
+    expect(openRouterConfig({ SHOLAM_MODEL: "  " }).model).toBe(fallback);
+    expect(
+      openRouterConfig({ SHOLAM_MODEL: " google/gemma-4-31b-it:free " }).model,
+    ).toBe("google/gemma-4-31b-it:free");
   });
 });
 

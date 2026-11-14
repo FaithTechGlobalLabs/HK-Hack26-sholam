@@ -122,6 +122,7 @@ function AssistantMessage({
             <li key={card.id}>
               <Link
                 href={`/flashcards?card=${encodeURIComponent(card.id)}`}
+                transitionTypes={["to-cards"]}
                 className="block text-sm underline-offset-4 hover:underline"
               >
                 {card.question}

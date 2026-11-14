@@ -1,4 +1,5 @@
 import { ChatView } from "@/components/shell/ChatView";
+import { SectionTransition } from "@/components/shell/SectionTransition";
 
 const SUGGESTIONS = [
   "Who is Jesus?",
@@ -8,5 +9,9 @@ const SUGGESTIONS = [
 ];
 
 export default function NewChatPage() {
-  return <ChatView suggestions={SUGGESTIONS} />;
+  return (
+    <SectionTransition>
+      <ChatView suggestions={SUGGESTIONS} />
+    </SectionTransition>
+  );
 }

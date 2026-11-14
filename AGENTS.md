@@ -40,10 +40,10 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 - Drizzle uses `casing: "snake_case"` in both `drizzle.config.ts` and `src/db/index.ts`; keep them in step. The server connects as the DB owner and **bypasses RLS**: every chat/message query must filter by the signed-in user.
 - shadcn `base-nova` style on Base UI; `cn` comes from the `cn` package (shadcn's own), re-exported by `src/lib/utils.ts`.
 - Everything must run with no env vars set: Supabase helpers return null, flashcards fall back to `data/flashcards.seed.json`, `/api/chat` streams the scripted demo unless `OPENROUTER_API_KEY` is set (or `SHOLAM_AGENT=live`). Never put secrets in `NEXT_PUBLIC_*` or client code. CI builds this way on purpose.
-- Components that call `usePathname`/`useSearchParams` must sit under `<Suspense>` (see `ShellDock`), or `next build` fails on `/c/[chatId]`. `next dev` does not catch this; run `npm run build` before pushing UI changes.
+- Components that call `usePathname`/`useSearchParams` must sit under `<Suspense>` (see `ShellDock`, `DesktopSidebar`, `ModeToggle`), or `next build` fails on `/c/[chatId]`. `next dev` does not catch this; run `npm run build` before pushing UI changes.
 - Scripts load `.env.local` through `scripts/_env.ts`; the app uses `DATABASE_URL` (transaction pooler), scripts and drizzle-kit use `DIRECT_URL` (session pooler).
 - Deploys: Vercel's Git integration builds `main` to production and PRs to previews. Never add secrets to the repo; env vars live in Vercel and `.env.local`.
-- Model route: `src/lib/agent/openrouter.ts` calls OpenRouter chat completions (`OPENROUTER_API_KEY`, default model `nvidia/nemotron-3-ultra-550b-a55b:free`). Check a deployment with `/api/health` and a key with `npm run model:smoke`.
+- Model route: `src/lib/agent/openrouter.ts` calls OpenRouter chat completions (`OPENROUTER_API_KEY`, default model `nvidia/nemotron-3-ultra-550b-a55b:free`). Free models only: a `SHOLAM_MODEL` without `:free` is ignored. Check a deployment with `/api/health` and a key with `npm run model:smoke`.
 - Never trigger a model call from URL parameters (`?q=` may only pre-fill). Use `src/lib/chat/handoff.ts`. The app must not be frameable (`frame-ancestors 'none'` in `next.config.ts`).
 - `src/components/ui/dock.tsx` and `src/components/flashcards/GradientASCII.tsx` are React Bits code under MIT + Commons Clause: keep their licence headers.
 - Several people work in parallel (docs/TEAM.md). Merge `origin/main` into your branch before a PR, don't push to someone else's branch, and run `npm run build` before pushing: Vercel previews build with `DATABASE_URL` set.
@@ -68,11 +68,13 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 src/app/(shell)/        Chat (/ and /c/[chatId]) and Flashcards (/flashcards) inside the app shell
 src/app/api/            chat (SSE), flashcards (GET list, POST create)
 src/components/shell/   AppShell, ChatView, Composer, MessageList, VerseChip, SourcesPanel
-src/components/ui/dock.tsx  React Bits dock (replaces the sidebar), wired in shell/ShellDock.tsx
+src/components/shell/DesktopSidebar.tsx, ModeToggle.tsx  desktop (md+): ChatGPT-style sidebar and the Chat | Flashcards toggle
+src/components/ui/dock.tsx  React Bits dock, phones only, wired in shell/ShellDock.tsx
+src/components/shell/nav.ts, SectionTransition.tsx  view-transition types and the page slide between Chat and Flashcards (CSS in app/sky.css)
 src/components/shell/CloudSky.tsx  animated sky behind the app (sky.css holds the glass styles)
 src/components/brand/Logo.tsx  the cross-cloud mark + wordmark (same geometry as app/icon.svg, public/brand/)
 src/lib/chat/handoff.ts  one-shot hand-off of a question from another view to chat (never a URL "send" flag)
-src/components/shell/ChatHistoryPanel.tsx  recent chats, opened from the dock's Chats item
+src/components/shell/ChatHistoryPanel.tsx  recent chats on phones, opened from the dock's Chats item (desktop lists them in the sidebar)
 src/lib/brand.ts  BRAND_NAME, the product name shown in the UI
 src/components/flashcards/  FlashcardsView, SwipeDeck (+ GradientASCII), FlashcardCard, StudyMode, NewCardDialog, FlashcardProposal
 src/lib/agent/          harness (loop), events (SSE protocol), citations, system-prompt, tools/, demo

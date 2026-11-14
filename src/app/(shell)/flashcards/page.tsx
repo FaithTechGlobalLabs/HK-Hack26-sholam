@@ -1,16 +1,19 @@
 import { Suspense } from "react";
 import { FlashcardsView } from "@/components/flashcards/FlashcardsView";
+import { SectionTransition } from "@/components/shell/SectionTransition";
 import { listFlashcards } from "@/lib/flashcards/repo";
 
 export default function FlashcardsPage() {
   return (
-    <Suspense
-      fallback={
-        <p className="p-6 text-sm text-muted-foreground">Loading cards…</p>
-      }
-    >
-      <Deck />
-    </Suspense>
+    <SectionTransition>
+      <Suspense
+        fallback={
+          <p className="p-6 text-sm text-muted-foreground">Loading cards…</p>
+        }
+      >
+        <Deck />
+      </Suspense>
+    </SectionTransition>
   );
 }
 

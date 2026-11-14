@@ -4,6 +4,16 @@
 
 /** Free endpoint only. The paid id `nvidia/nemotron-3-ultra-550b-a55b` is never used. */
 export const DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free";
+
+/**
+ * Shalom runs on free OpenRouter models only (decision 2026-11-14,
+ * docs/PLAN.md). A `SHOLAM_MODEL` that is not a `:free` id is ignored, so a
+ * typo or a paid id in an env file can never spend credits.
+ */
+export function freeModelOrDefault(requested: string | undefined): string {
+  const id = requested?.trim();
+  return id?.endsWith(":free") ? id : DEFAULT_MODEL;
+}
 export const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 
 export interface OpenRouterConfig {
@@ -20,7 +30,7 @@ export function openRouterConfig(
   return {
     apiKey: env.OPENROUTER_API_KEY?.trim() || undefined,
     baseUrl: (env.OPENROUTER_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, ""),
-    model: env.SHOLAM_MODEL || DEFAULT_MODEL,
+    model: freeModelOrDefault(env.SHOLAM_MODEL),
     maxTokens: 700,
     maxSteps: 3,
   };

@@ -21,6 +21,11 @@
   --input: rgb(255 255 255 / 0.3);
   --ring: rgb(255 255 255 / 0.6);
   --sidebar-foreground: #fff;
+  /* Shell tokens: the frosted rail behind the sidebar and toggle, the deep
+     blue of active text on white, and the active tile/button blue. */
+  --sky-rail: rgb(18 48 110 / 0.34);
+  --sky-ink: #1f4f9e;
+  --sky-accent: #2f68c2;
   color: #fff;
 }
 .sky-theme main {
@@ -143,5 +148,83 @@
     .glass-float {
       animation: none;
     }
+  }
+}
+
+/* ---------- Switching views (React <ViewTransition>, Next 16) ----------
+   Chat sits left of Flashcards, so going to Flashcards slides the page left
+   and coming back slides it right (types from components/shell/nav.ts). The
+   toggle pill, the sidebar highlight and the dock tile glide to the new item
+   ("nav-glide"). The sky and frame do not animate. Browsers without view
+   transitions switch instantly. */
+:root {
+  --vt-exit: 140ms;
+  --vt-enter: 220ms;
+  --vt-move: 380ms;
+  --vt-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+::view-transition-group(.nav-glide) {
+  animation-duration: var(--vt-move);
+  animation-timing-function: var(--vt-ease);
+}
+::view-transition-old(.slide-to-left) {
+  --vt-offset: -48px;
+}
+::view-transition-new(.slide-from-right) {
+  --vt-offset: 48px;
+}
+::view-transition-old(.slide-to-right) {
+  --vt-offset: 48px;
+}
+::view-transition-new(.slide-from-left) {
+  --vt-offset: -48px;
+}
+::view-transition-old(.slide-to-left),
+::view-transition-old(.slide-to-right) {
+  animation:
+    var(--vt-exit) ease-in both vt-fade reverse,
+    var(--vt-move) var(--vt-ease) both vt-slide reverse;
+}
+::view-transition-new(.slide-from-right),
+::view-transition-new(.slide-from-left) {
+  animation:
+    var(--vt-enter) ease-out var(--vt-exit) both vt-fade,
+    var(--vt-move) var(--vt-ease) both vt-slide;
+}
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes vt-slide {
+  from {
+    translate: var(--vt-offset) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+/* Reduced motion: no sliding or gliding, just a quick crossfade. Same
+   selectors as above, later in the file, so these win without !important. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(.nav-glide) {
+    animation-duration: 0s;
+  }
+  ::view-transition-old(.slide-to-left),
+  ::view-transition-old(.slide-to-right),
+  ::view-transition-new(.slide-from-right),
+  ::view-transition-new(.slide-from-left) {
+    --vt-offset: 0px;
+    animation-delay: 0s;
   }
 }

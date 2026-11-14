@@ -5,9 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Dock, { type DockItemData } from "@/components/ui/dock";
 import { ChatHistoryPanel } from "./ChatHistoryPanel";
+import { sectionTransition } from "./nav";
 
 /**
- * The bottom dock (Ricky's navigation). Reading the pathname suspends on
+ * The bottom dock (Ricky's navigation), on phones only; desktop has the
+ * sidebar and the top toggle (AppShell). Reading the pathname suspends on
  * routes with unknown params (/c/[chatId]) under Cache Components, so the
  * prerendered shell shows the dock with nothing highlighted until the
  * client knows the route. Without the Suspense boundary `next build` fails.
@@ -24,8 +26,13 @@ function ActiveDock() {
   return <NavDock pathname={usePathname()} />;
 }
 
-/** The current page's tile in the deep sky blue, instead of a small dot. */
-const ACTIVE = "[--dock-tile:#2f68c2] [--dock-ink:#fff]";
+/**
+ * The current page's tile in the deep sky blue, instead of a small dot. The
+ * view-transition name makes the blue tile glide to the new item when the
+ * page switches (same "nav-glide" timing as the sidebar, app/sky.css).
+ */
+const ACTIVE =
+  "[--dock-tile:var(--sky-accent)] [--dock-ink:#fff] [view-transition-name:dock-current] [view-transition-class:nav-glide]";
 
 function NavDock({ pathname }: { pathname: string | null }) {
   const router = useRouter();
@@ -46,14 +53,20 @@ function NavDock({ pathname }: { pathname: string | null }) {
         label: "New chat",
         active: onChat,
         className: onChat ? ACTIVE : undefined,
-        onClick: () => router.push("/"),
+        onClick: () =>
+          router.push("/", {
+            transitionTypes: sectionTransition(pathname, "/"),
+          }),
       },
       {
         icon: <Layers />,
         label: "Flashcards",
         active: onCards,
         className: onCards ? ACTIVE : undefined,
-        onClick: () => router.push("/flashcards"),
+        onClick: () =>
+          router.push("/flashcards", {
+            transitionTypes: sectionTransition(pathname, "/flashcards"),
+          }),
       },
       {
         icon: <MessagesSquare />,
@@ -68,7 +81,7 @@ function NavDock({ pathname }: { pathname: string | null }) {
         onClick: () => router.push("/login"),
       },
     ],
-    [onChat, onCards, chatsOpen, router],
+    [pathname, onChat, onCards, chatsOpen, router],
   );
   return (
     <>

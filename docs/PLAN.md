@@ -41,6 +41,9 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Logo: a cross drawn as a cloud (billows on its sunlit top edges), bare mark + lowercase wordmark top-left like ChatGPT; favicon blue on light tabs, near-white on dark; iOS icon on the app's sky | Grows out of the sky's cross cloud, so the brand and the theme are one idea. The wordmark uses the UI font for now; custom lettering is a later polish |
 | 2026-11-14 | Chat history lives in a Chats panel opened from the dock; the UI name is one constant (`BRAND_NAME`) | Combining MustyDusty's sidebar history with PR #2's dock. The name ("Shalom" on main, "sholam" for the repo) is for the team to confirm |
 | 2026-11-14 | Chat never sends from a URL; questions from other views use a one-shot same-origin hand-off; the site cannot be framed | Engineering review of PR #2: `?send=1` let any link or hidden iframe spend the OpenRouter key |
+| 2026-11-14 | Desktop (768px and up) keeps ChatGPT's layout: a collapsible left sidebar (New chat, Search chats, Flashcards, this tab's chats, Sign in) and a Chat \| Flashcards toggle at the top centre. The dock is for phones only | Owner decision. The dock suits thumbs; on a desktop the ChatGPT layout is what people expect |
+| 2026-11-14 | Switching views animates with React `<ViewTransition>`: the page slides left going to Flashcards and right coming back; the toggle pill, the sidebar highlight and the dock tile glide to the new item | Owner request. Built on Next 16's view transitions, so unsupported browsers switch instantly and reduced motion turns the slide into a quick crossfade |
+| 2026-11-14 | Free OpenRouter models only: `SHOLAM_MODEL` must end in `:free`, otherwise the default is used. `OPENROUTER_API_KEY` is set in Vercel (Production and Preview, sensitive) | Owner decision; the key also carries a $3 credit limit on the OpenRouter side |
 
 ## In flight
 
@@ -66,7 +69,8 @@ The OpenRouter streaming loop is already in `harness.ts` (helloao text, keyword 
 - Magic-link sign-in; protect chat history routes in `src/proxy.ts`.
 - Search per SEARCH.md §8: `verses.pos`, a `sections` table from the importer, `search_bible` (verses + headings + any-term fallback), `read_passage`, `lookup_verses` on `parseReference`, the search policy in the prompt, and the eval on the real loop.
 - `search_flashcards` and `propose_flashcard` on the database; discover cards open in chat with their starting points.
-- The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, history and search. History no longer has a sidebar; it needs a home that fits the dock.
+- The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, history and search. The desktop sidebar and the phone Chats panel both read `useLocalChats()`; point it at the database when chats are stored.
+- Review of the OpenRouter loop (2026-11-14), to fix before real traffic: unfetched citations are fetched after the answer and shown as verified (`harness.ts`); no per-visitor limit on `/api/chat`; the browser sends the whole history and the server rejects more than 40 turns; a closed tab does not cancel model calls; verses come from `bible.helloao.org` instead of the imported `verses` table; the answer is sent in one piece instead of streamed.
 - Server-side citation check before `done`; refusal and `max_tokens` handling; per-user rate limit.
 
 ### Phase 3: flashcards and semantic search

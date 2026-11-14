@@ -97,7 +97,7 @@ Status (2026-11-14):
 | `profiles` row per new user (`on_auth_user_created` trigger) | Done, migration `0001` applied |
 | `/login` magic-link form, `/auth/callback` code exchange, `src/proxy.ts` session refresh, `currentUserId()` | Written; **not yet tested end to end** (no real sign-in has been done) |
 | Built-in Supabase mailer | Works but limited to **2 emails per hour** for the whole project; enough to test, not to launch. Custom SMTP (e.g. Resend) before real users |
-| Signed-in state in the UI (dock still always says "Sign in"; no account menu or sign-out) | Not started (Phase 2) |
+| Signed-in state in the UI (the sidebar and the dock still always say "Sign in"; no account menu or sign-out) | Not started (Phase 2) |
 | Chats saved per user, history list, protected routes | Not started (Phase 2, with the agent loop) |
 | Google sign-in | Not configured (needs a Google OAuth client) |
 

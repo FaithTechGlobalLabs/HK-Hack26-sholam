@@ -52,6 +52,12 @@ MustyDusty pushed four commits to `main` while PR #2 was being merged (live Open
 - The UI name lives in one constant, `src/lib/brand.ts` (`BRAND_NAME`, currently "Shalom"); the logo wordmark, header and sign-in page read it.
 - One Vitest config remains (theirs, with the `server-only` mock).
 
+### Desktop layout and switching animation, 2026-11-14
+
+- Desktop (768px and up) is back to ChatGPT's layout: `DesktopSidebar.tsx` (collapsible to an icon rail, with Search chats over this tab's chats) and `ModeToggle.tsx` (Chat | Flashcards, top centre). Ricky's dock stays as the phone navigation; CSS picks one by width.
+- Switching between Chat and Flashcards animates: pages wrap in `SectionTransition`, links carry `transitionTypes` from `nav.ts`, and the CSS lives at the end of `app/sky.css`. Any new link between the two sections should pass `sectionTransition(from, to)`.
+- `SHOLAM_MODEL` now only accepts `:free` ids (`openrouter-config.ts`).
+
 Please push to a branch and open a PR rather than pushing to `main` directly: it gives CI and a preview a chance to catch problems first, and avoids two people merging over each other.
 
 ## Contract for flashcard UI work

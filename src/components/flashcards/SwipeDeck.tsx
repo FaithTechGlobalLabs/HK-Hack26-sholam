@@ -120,7 +120,7 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
     suppressClick.current = true;
     clearHold();
     queueChatQuestion(chatRequest(card));
-    router.push("/");
+    router.push("/", { transitionTypes: ["to-chat"] });
   };
 
   const onPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
