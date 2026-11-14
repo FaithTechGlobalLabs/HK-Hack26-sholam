@@ -5,6 +5,7 @@ import {
   buildMessages,
   shouldUseLiveAgent,
 } from "@/lib/agent/harness";
+import { LIMITS } from "@/lib/agent/limits";
 import {
   mapProviderError,
   openRouterConfig,
@@ -63,7 +64,8 @@ describe("request", () => {
   it("defaults to the free Nemotron model via OpenRouter", () => {
     const cfg = agentConfig({});
     expect(cfg.model).toBe("nvidia/nemotron-3-ultra-550b-a55b:free");
-    expect(cfg.maxSteps).toBe(3);
+    expect(cfg.maxSteps).toBe(LIMITS.turn.maxModelCalls);
+    expect(cfg.maxTokens).toBe(LIMITS.model.maxTokens);
   });
 
   it("builds messages with a stable system prompt and session note", () => {
@@ -80,6 +82,11 @@ describe("request", () => {
 
   it("keeps the system prompt free of per-request values", () => {
     expect(SYSTEM_PROMPT).not.toMatch(/\d{4}-\d{2}-\d{2}/);
+  });
+
+  it("tells the model to fetch before quoting, not to skip tools", () => {
+    expect(SYSTEM_PROMPT).not.toContain("Do not call a tool before answering");
+    expect(SYSTEM_PROMPT).toContain("Never quote Scripture from memory");
   });
 
   it("does not put the API key in openRouterConfig serialization", () => {

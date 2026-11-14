@@ -1,11 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { IssueReason } from "@/lib/agent/citations";
+import { trimHistory } from "@/lib/agent/context";
 import {
   type AgentEvent,
   SseDecoder,
   type VerseRecord,
 } from "@/lib/agent/events";
+import { LIMITS } from "@/lib/agent/limits";
 import {
   getLocalChat,
   type LocalChatMessage,
@@ -28,6 +31,10 @@ export interface ChatMessage {
   text: string;
   /** Verses tools returned during this turn, by id. Drives citation chips. */
   verses: Record<string, VerseRecord>;
+  /** Citations the server's final check did not verify, by verse id. */
+  unverified: Record<string, IssueReason>;
+  /** Plain references whose quoted words were not checked. */
+  quoteWarnings: string[];
   tools: ToolStatus[];
   cards: FlashcardSummary[];
   proposal?: FlashcardDraft;
@@ -39,6 +46,16 @@ function applyEvent(message: ChatMessage, event: AgentEvent): ChatMessage {
   switch (event.type) {
     case "text_delta":
       return { ...message, text: message.text + event.text };
+    case "reset":
+      return { ...message, text: event.text ?? "" };
+    case "citations":
+      return {
+        ...message,
+        unverified: Object.fromEntries(
+          event.unverified.map((c) => [c.verseId, c.reason]),
+        ),
+        quoteWarnings: event.quoteWarnings,
+      };
     case "tool_start":
       return {
         ...message,
@@ -80,6 +97,8 @@ const newMessage = (role: ChatMessage["role"], text = ""): ChatMessage => ({
   role,
   text,
   verses: {},
+  unverified: {},
+  quoteWarnings: [],
   tools: [],
   cards: [],
   streaming: role === "assistant",
@@ -145,11 +164,18 @@ export function useChatStream(chatId?: string) {
       });
       setBusy(true);
 
-      const history = snapshot
-        .slice(0, -2)
-        .filter((m) => m.role === "user" || m.role === "assistant")
-        .filter((m) => m.text)
-        .map((m) => ({ role: m.role, content: m.text }));
+      // Recent turns only; the server trims again to what the model gets.
+      const history = trimHistory(
+        snapshot
+          .slice(0, -2)
+          .filter((m) => m.text)
+          .map((m) => ({ role: m.role, content: m.text })),
+        {
+          turns: LIMITS.client.historyTurns,
+          turnChars: LIMITS.model.historyTurnChars,
+          totalChars: LIMITS.client.historyChars,
+        },
+      );
 
       const update = (fn: (m: ChatMessage) => ChatMessage) =>
         setMessages((prev) => {
@@ -170,8 +196,16 @@ export function useChatStream(chatId?: string) {
           }),
           signal: controller.signal,
         });
-        if (!res.ok || !res.body)
-          throw new Error(`Request failed (${res.status})`);
+        if (!res.ok || !res.body) {
+          const body = (await res.json().catch(() => null)) as {
+            error?: unknown;
+          } | null;
+          throw new Error(
+            typeof body?.error === "string"
+              ? body.error
+              : `Request failed (${res.status})`,
+          );
+        }
 
         const reader = res.body
           .pipeThrough(new TextDecoderStream())
@@ -214,6 +248,9 @@ export function useChatStream(chatId?: string) {
   );
 
   const stop = useCallback(() => abortRef.current?.abort(), []);
+
+  // Leaving the chat mid-answer stops the server-side turn too.
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   return { messages, busy, send, stop, chatId: activeChatId };
 }

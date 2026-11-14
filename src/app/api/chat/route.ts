@@ -1,7 +1,16 @@
 import { z } from "zod";
+import { clip } from "@/lib/agent/context";
 import { demoTurn } from "@/lib/agent/demo";
-import { eventStream } from "@/lib/agent/events";
+import { type AgentEvent, eventStream } from "@/lib/agent/events";
 import { runAgentTurn, shouldUseLiveAgent } from "@/lib/agent/harness";
+import { LIMITS } from "@/lib/agent/limits";
+import {
+  admitTurn,
+  reserveModelCall,
+  visitorHashSecret,
+  visitorKey,
+} from "@/lib/agent/usage-limit";
+import { usageStore } from "@/lib/agent/usage-store";
 import {
   formatCardForPrompt,
   rankFlashcards,
@@ -12,18 +21,31 @@ import { currentUserId } from "@/lib/supabase/server";
 
 const historyTurnSchema = z.strictObject({
   role: z.enum(["user", "assistant"]),
-  content: z.string().trim().min(1).max(8000),
+  content: z.string().max(LIMITS.request.maxHistoryItemChars),
 });
 
 const bodySchema = z.strictObject({
-  chatId: z.string().optional(),
-  message: z.string().trim().min(1).max(8000),
-  history: z.array(historyTurnSchema).max(40).optional(),
+  chatId: z.string().max(100).optional(),
+  message: z.string().trim().min(1).max(LIMITS.request.maxMessageChars),
+  // Long chats are trimmed to the recent turns, never rejected for length.
+  history: z
+    .array(historyTurnSchema)
+    .max(LIMITS.request.maxHistoryItems)
+    .optional(),
 });
+
+const SSE_HEADERS = {
+  "Content-Type": "text/event-stream; charset=utf-8",
+  "Cache-Control": "no-cache, no-transform",
+  Connection: "keep-alive",
+};
 
 /**
  * Streams one assistant turn as server-sent events (see lib/agent/events.ts).
  * Live OpenRouter guide when a key is present (unless SHOLAM_AGENT=demo).
+ * Live turns are counted per visitor and against a global daily ceiling
+ * (lib/agent/usage-limit.ts); over a limit the answer is a 429 with a
+ * friendly `{ error }`.
  */
 export async function POST(request: Request) {
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
@@ -33,7 +55,14 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  const { chatId, message, history = [] } = parsed.data;
+  const { chatId, message } = parsed.data;
+  const history = (parsed.data.history ?? [])
+    .slice(-LIMITS.client.historyTurns)
+    .map((t) => ({
+      role: t.role,
+      content: clip(t.content.trim(), LIMITS.model.historyTurnChars),
+    }))
+    .filter((t) => t.content.length > 0);
   const mode = shouldUseLiveAgent();
 
   if (mode.live && mode.reason) {
@@ -44,53 +73,70 @@ export async function POST(request: Request) {
           yield { type: "error" as const, message: reason };
         })(),
       ),
+      { headers: SSE_HEADERS },
+    );
+  }
+
+  if (!mode.live) {
+    return new Response(eventStream(demoTurn(message)), {
+      headers: SSE_HEADERS,
+    });
+  }
+
+  const userId = await currentUserId();
+  const store = usageStore();
+  const allowance = await admitTurn(
+    store,
+    visitorKey(request.headers, userId, visitorHashSecret()),
+  );
+  if (!allowance.ok) {
+    return Response.json(
+      { error: allowance.message },
       {
-        headers: {
-          "Content-Type": "text/event-stream; charset=utf-8",
-          "Cache-Control": "no-cache, no-transform",
-          Connection: "keep-alive",
-        },
+        status: 429,
+        headers: { "Retry-After": String(allowance.retryAfterSec) },
       },
     );
   }
 
+  // Stop button, closed tab or dropped connection: abort the model call,
+  // tool fetches and retry waits.
+  const abort = new AbortController();
+  const onClientGone = () => abort.abort();
+  request.signal.addEventListener("abort", onClientGone, { once: true });
+
   let matchedCardLines: string[] = [];
   let matchedSummaries: ReturnType<typeof toSummary>[] = [];
-  if (mode.live) {
-    try {
-      const cards = await listFlashcards({ limit: 200 });
-      const ranked = rankFlashcards(cards, message, 3);
-      matchedCardLines = ranked.map((r) => formatCardForPrompt(r.card));
-      matchedSummaries = ranked.map((r) => toSummary(r.card));
-    } catch {
-      matchedCardLines = [];
-      matchedSummaries = [];
-    }
+  try {
+    const cards = await listFlashcards({ limit: 200 });
+    const ranked = rankFlashcards(cards, message, LIMITS.model.matchedCards);
+    matchedCardLines = ranked.map((r) => formatCardForPrompt(r.card));
+    matchedSummaries = ranked.map((r) => toSummary(r.card));
+  } catch {
+    matchedCardLines = [];
+    matchedSummaries = [];
   }
 
-  const events = mode.live
-    ? (async function* () {
-        if (matchedSummaries.length) {
-          yield {
-            type: "flashcards" as const,
-            cards: matchedSummaries,
-          };
-        }
-        yield* runAgentTurn({
-          chatId: chatId ?? crypto.randomUUID(),
-          userId: await currentUserId(),
-          userMessage: message,
-          history,
-          matchedCardLines,
-        });
-      })()
-    : demoTurn(message);
+  const events = (async function* (): AsyncGenerator<AgentEvent> {
+    try {
+      if (matchedSummaries.length) {
+        yield { type: "flashcards", cards: matchedSummaries };
+      }
+      yield* runAgentTurn({
+        chatId: chatId ?? crypto.randomUUID(),
+        userId,
+        userMessage: message,
+        history,
+        matchedCardLines,
+        signal: abort.signal,
+        reserveModelCall: () => reserveModelCall(store),
+      });
+    } finally {
+      request.signal.removeEventListener("abort", onClientGone);
+    }
+  })();
 
-  return new Response(eventStream(events), {
-    headers: {
-      "Content-Type": "text/event-stream; charset=utf-8",
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
-    },
+  return new Response(eventStream(events, { onCancel: onClientGone }), {
+    headers: SSE_HEADERS,
   });
 }

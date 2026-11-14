@@ -34,6 +34,8 @@ It runs with no environment variables: flashcards come from `data/flashcards.see
 | `OPENROUTER_BASE_URL` | Optional; default `https://openrouter.ai/api/v1` |
 | `SHOLAM_MODEL` | Default `nvidia/nemotron-3-ultra-550b-a55b:free`. Free ids only: one without `:free` is ignored. Free ids allow about 20 requests/minute; the daily cap is 50, or 1000 once the account has bought $10 of credits. |
 | `SHOLAM_AGENT` | Unset = live when a key is present; `demo` forces the scripted stream; `live` forces live (errors if the key is missing) |
+| `SHOLAM_DAILY_MODEL_CALLS` | Optional. Model requests per UTC day for all visitors together (default 800, under OpenRouter's 1000/day free cap). Needs migration `0003_usage_counters` and `DATABASE_URL` to hold across instances |
+| `SHOLAM_RATE_LIMIT_SALT` | Optional. Secret for hashing visitor IPs in the usage counters; falls back to another server secret |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project (auth, browser access under RLS) |
 | `DATABASE_URL` | Postgres via the transaction pooler (port 6543), used by the app |
 | `DIRECT_URL` | Postgres via the session pooler (port 5432), used by migrations and scripts |

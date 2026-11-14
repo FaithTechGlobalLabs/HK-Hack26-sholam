@@ -232,3 +232,23 @@ export const verses = pgTable(
     }),
   ],
 ).enableRLS();
+
+/**
+ * Fixed-window usage counters for `/api/chat`, shared by every serverless
+ * instance. `subject` is `global`, `u:<user id>` or `ip:<keyed hash>` (never
+ * a raw IP); `period` is `d:2026-11-14` (UTC day) or `h:2026-11-14T05`.
+ * Server-only: RLS is on with no policies, so browsers cannot read it.
+ */
+export const usageCounters = pgTable(
+  "usage_counters",
+  {
+    subject: text().notNull(),
+    period: text().notNull(),
+    count: integer().notNull().default(0),
+    updatedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.subject, t.period] }),
+    index("usage_counters_updated_idx").on(t.updatedAt),
+  ],
+).enableRLS();

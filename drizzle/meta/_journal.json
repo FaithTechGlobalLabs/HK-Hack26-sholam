@@ -22,6 +22,20 @@
       "when": 1794632918213,
       "tag": "0002_discover_cards",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794643137951,
+      "tag": "0003_usage_counters",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794645802600,
+      "tag": "0004_discover_takeaway",
+      "breakpoints": true
     }
   ]
 }
