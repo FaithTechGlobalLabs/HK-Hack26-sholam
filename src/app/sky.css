@@ -468,3 +468,62 @@
     animation: none;
   }
 }
+
+/* ---------- Bible references in answers (VerseChip) ----------
+   A reference reads as a small glass pill with a book icon, so it looks
+   tappable without shouting over the sentence. A reference that was not
+   checked has a dashed outline and a question mark. Tapping either opens
+   a paper card (rendered outside the shell, so it carries its own colours). */
+.verse-ref {
+  cursor: pointer;
+  color: #fff;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+.verse-ref-checked {
+  background: rgb(255 255 255 / 0.18);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.42);
+}
+.verse-ref-checked:hover,
+.verse-ref-checked[data-popup-open] {
+  background: rgb(255 255 255 / 0.3);
+}
+.verse-ref-unchecked {
+  color: rgb(255 255 255 / 0.88);
+  background: transparent;
+  outline: 1px dashed rgb(255 255 255 / 0.55);
+  outline-offset: -1px;
+}
+.verse-ref-unchecked:hover,
+.verse-ref-unchecked[data-popup-open] {
+  background: rgb(255 255 255 / 0.12);
+}
+.verse-ref:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+.verse-card {
+  --verse-muted: #4a5568;
+  --verse-accent: #2f68c2;
+  color: #172033;
+  background: #f8fbff;
+  border: 1px solid rgb(23 32 51 / 0.08);
+  box-shadow:
+    0 1px 2px rgb(14 38 96 / 0.12),
+    0 12px 28px -14px rgb(14 38 96 / 0.4);
+  transform-origin: var(--transform-origin);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+.verse-card[data-starting-style],
+.verse-card[data-ending-style] {
+  opacity: 0;
+  transform: scale(0.97);
+}
+@media (prefers-reduced-motion: reduce) {
+  .verse-card {
+    transition: none;
+  }
+}

@@ -1,13 +1,29 @@
 "use client";
 
-import { BookOpen, Check, Copy, Layers, Loader2 } from "lucide-react";
+import {
+  BookOpen,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Copy,
+  Layers,
+  Loader2,
+} from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import {
+  Children,
+  isValidElement,
+  type ReactNode,
+  useMemo,
+  useState,
+} from "react";
 import Markdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { FlashcardProposal } from "@/components/flashcards/FlashcardProposal";
-import { VERSE_PROTOCOL } from "@/lib/agent/citations";
+import { extractCitations, VERSE_PROTOCOL } from "@/lib/agent/citations";
 import type { VerseRecord } from "@/lib/agent/events";
+import { citedVerses, verseNumber } from "@/lib/chat/cited-verses";
+import { cn } from "@/lib/utils";
 import type { ChatMessage } from "./useChatStream";
 import { VerseChip } from "./VerseChip";
 
@@ -22,13 +38,16 @@ const TOOL_LABELS: Record<string, string> = {
   propose_flashcard: "Drafting a flashcard",
 };
 
-export function MessageList({
-  messages,
-  onShowSources,
-}: {
-  messages: ChatMessage[];
-  onShowSources: (verses: VerseRecord[]) => void;
-}) {
+/** Plain text of a markdown link's children (the reference label). */
+function textOf(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(textOf).join("");
+  if (isValidElement<{ children?: ReactNode }>(node))
+    return textOf(node.props.children);
+  return Children.toArray(node).map(textOf).join("");
+}
+
+export function MessageList({ messages }: { messages: ChatMessage[] }) {
   return (
     <ol className="flex flex-col gap-8">
       {messages.map((m) =>
@@ -41,7 +60,7 @@ export function MessageList({
           </li>
         ) : (
           <li key={m.id}>
-            <AssistantMessage message={m} onShowSources={onShowSources} />
+            <AssistantMessage message={m} />
           </li>
         ),
       )}
@@ -49,16 +68,11 @@ export function MessageList({
   );
 }
 
-function AssistantMessage({
-  message,
-  onShowSources,
-}: {
-  message: ChatMessage;
-  onShowSources: (verses: VerseRecord[]) => void;
-}) {
+function AssistantMessage({ message }: { message: ChatMessage }) {
   const [copied, setCopied] = useState(false);
-  const verses = Object.values(message.verses);
+  const [versesOpen, setVersesOpen] = useState(false);
   const running = message.tools.filter((t) => !t.done);
+  const passages = useMemo(() => answerPassages(message), [message]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -81,11 +95,12 @@ function AssistantMessage({
               if (href?.startsWith(VERSE_PROTOCOL)) {
                 const id = href.slice(VERSE_PROTOCOL.length);
                 const issue = message.unverified[id];
+                const label = textOf(children);
                 return (
                   <VerseChip
-                    verse={issue ? undefined : message.verses[id]}
+                    label={label}
+                    verses={issue ? [] : citedVerses(id, label, message.verses)}
                     reason={issue}
-                    label={children}
                   />
                 );
               }
@@ -117,22 +132,28 @@ function AssistantMessage({
       </div>
 
       {message.cards.length > 0 && !message.streaming && (
-        <ul className="flex flex-col gap-2 rounded-xl border bg-muted/40 p-3">
-          <li className="flex items-center gap-1.5 text-muted-foreground text-xs">
-            <Layers className="size-3.5" /> Related in Shalom
-          </li>
-          {message.cards.map((card) => (
-            <li key={card.id}>
-              <Link
-                href={`/flashcards?card=${encodeURIComponent(card.id)}`}
-                transitionTypes={["to-cards"]}
-                className="block text-sm underline-offset-4 hover:underline"
-              >
-                {card.question}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <section
+          aria-label="Related flashcards"
+          className="rounded-2xl bg-[rgb(20_52_115/0.35)] p-2 backdrop-blur-xl"
+        >
+          <h3 className="flex items-center gap-1.5 px-2 pt-1 pb-1.5 font-medium text-[13px] text-white/90">
+            <Layers aria-hidden className="size-3.5" /> Related flashcards
+          </h3>
+          <ul className="flex flex-col">
+            {message.cards.map((card) => (
+              <li key={card.id}>
+                <Link
+                  href={`/flashcards?card=${encodeURIComponent(card.id)}`}
+                  transitionTypes={["to-cards"]}
+                  className="flex min-h-11 items-center justify-between gap-3 rounded-xl px-2 py-2 text-[15px] hover:bg-white/12 focus-visible:outline-2 focus-visible:outline-white/80"
+                >
+                  <span>{card.question}</span>
+                  <ChevronRight aria-hidden className="size-4 shrink-0" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {message.quoteWarnings.length > 0 && !message.streaming && (
@@ -148,11 +169,10 @@ function AssistantMessage({
       )}
 
       {!message.streaming && message.text && (
-        <div className="flex gap-1 text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-1 text-white/90">
           <button
             type="button"
-            aria-label="Copy"
-            className="rounded-md p-1.5 hover:bg-muted"
+            className="flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-[14px] hover:bg-white/12 focus-visible:outline-2 focus-visible:outline-white/80"
             onClick={async () => {
               await navigator.clipboard.writeText(message.text);
               setCopied(true);
@@ -160,22 +180,90 @@ function AssistantMessage({
             }}
           >
             {copied ? (
-              <Check className="size-4" />
+              <Check aria-hidden className="size-4" />
             ) : (
-              <Copy className="size-4" />
+              <Copy aria-hidden className="size-4" />
             )}
+            {copied ? "Copied" : "Copy"}
           </button>
-          {verses.length > 0 && (
+          {passages.checked.length > 0 && (
             <button
               type="button"
-              className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
-              onClick={() => onShowSources(verses)}
+              aria-expanded={versesOpen}
+              aria-controls={`verses-${message.id}`}
+              onClick={() => setVersesOpen((o) => !o)}
+              className="flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-[14px] hover:bg-white/12 focus-visible:outline-2 focus-visible:outline-white/80"
             >
-              <BookOpen className="size-4" /> Sources
+              <BookOpen aria-hidden className="size-4" />
+              {passages.checked.length === 1
+                ? "1 Bible passage"
+                : `${passages.checked.length} Bible passages`}
+              <ChevronDown
+                aria-hidden
+                className={cn(
+                  "size-4 transition-transform duration-200 motion-reduce:transition-none",
+                  versesOpen && "rotate-180",
+                )}
+              />
             </button>
           )}
         </div>
       )}
+
+      {versesOpen && !message.streaming && (
+        <section
+          id={`verses-${message.id}`}
+          aria-label="Bible passages in this answer"
+          className="rounded-2xl bg-[rgb(20_52_115/0.42)] px-5 py-4 backdrop-blur-xl"
+        >
+          <p className="text-[13px] text-white/85">
+            Text from the Berean Standard Bible, looked up before answering.
+          </p>
+          <ol className="mt-3 flex flex-col gap-4">
+            {passages.checked.map((p) => (
+              <li key={p.verseId}>
+                <h3 className="font-semibold text-[15px]">{p.label}</h3>
+                <div className="mt-1 space-y-1 text-[15px] text-white/95 leading-relaxed">
+                  {p.verses.map((v) => (
+                    <p key={v.id}>
+                      <sup className="mr-1 font-semibold text-[11px] text-white/75">
+                        {verseNumber(v.id)}
+                      </sup>
+                      {v.text}
+                    </p>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ol>
+          {passages.unchecked.length > 0 && (
+            <p className="mt-4 border-white/20 border-t pt-3 text-[13px] text-white/85">
+              Not checked: {passages.unchecked.join(", ")}. Shalom did not look
+              these up before answering, so their wording may not match the
+              Bible text.
+            </p>
+          )}
+        </section>
+      )}
     </div>
   );
+}
+
+/** The passages an answer cites, in order: the checked ones with their
+ * fetched text, and the labels of the ones that were not checked. */
+function answerPassages(message: ChatMessage) {
+  const checked: { verseId: string; label: string; verses: VerseRecord[] }[] =
+    [];
+  const unchecked: string[] = [];
+  const seen = new Set<string>();
+  for (const c of extractCitations(message.text)) {
+    if (seen.has(c.verseId)) continue;
+    seen.add(c.verseId);
+    const verses = message.unverified[c.verseId]
+      ? []
+      : citedVerses(c.verseId, c.label, message.verses);
+    if (verses.length) checked.push({ ...c, verses });
+    else unchecked.push(c.label);
+  }
+  return { checked, unchecked };
 }
