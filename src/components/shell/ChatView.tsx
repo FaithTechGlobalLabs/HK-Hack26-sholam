@@ -45,7 +45,7 @@ export function ChatView({
       <div className="flex min-w-0 flex-1 flex-col">
         {empty ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
-            <h1 className="text-center font-medium text-2xl">
+            <h1 className="text-center font-medium text-2xl drop-shadow-[0_2px_10px_rgb(25_60_120/0.35)]">
               Ask about the Bible, or test what you know.
             </h1>
             <div className="w-full max-w-2xl">
@@ -64,7 +64,7 @@ export function ChatView({
                     <button
                       type="button"
                       onClick={() => send(s)}
-                      className="rounded-full border px-3 py-1.5 text-muted-foreground text-sm hover:bg-muted"
+                      className="glass-btn rounded-full px-3.5 py-1.5 text-sm"
                     >
                       {s}
                     </button>

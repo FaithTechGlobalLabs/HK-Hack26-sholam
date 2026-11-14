@@ -54,7 +54,7 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 ```
 src/app/(shell)/        Chat (/ and /c/[chatId]) and Flashcards (/flashcards) inside the app shell
 src/app/api/            chat (SSE), flashcards (GET list, POST create)
-src/components/shell/   AppShell, ModeToggle, ChatView, Composer, MessageList, VerseChip, SourcesPanel
+src/components/shell/   AppShell, ChatView, Composer, MessageList, VerseChip, SourcesPanel
 src/components/ui/dock.tsx  React Bits dock (replaces the sidebar)
 src/components/flashcards/  FlashcardsView, FlashcardCard, StudyMode, NewCardDialog, FlashcardProposal
 src/lib/agent/          harness (loop), events (SSE protocol), citations, system-prompt, tools/, demo

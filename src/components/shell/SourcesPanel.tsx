@@ -14,7 +14,7 @@ export function SourcesPanel({
   return (
     <aside
       aria-label="Sources"
-      className="fixed inset-y-0 right-0 z-40 flex w-80 flex-col border-l bg-background md:static md:z-auto"
+      className="fixed inset-y-0 right-0 z-40 flex w-80 flex-col border-l bg-background md:static md:z-auto backdrop-blur-2xl"
     >
       <div className="flex h-12 items-center justify-between border-b px-4">
         <h2 className="font-medium text-sm">Sources</h2>

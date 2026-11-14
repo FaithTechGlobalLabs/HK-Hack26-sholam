@@ -4,11 +4,11 @@ import { Layers, LogIn, SquarePen } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useMemo } from "react";
 import Dock, { type DockItemData } from "@/components/ui/dock";
-import { ModeToggle } from "./ModeToggle";
+import { CloudSky } from "./CloudSky";
 
 /**
- * App frame: a header with the Chat | Flashcards toggle, the routed view,
- * and a dock in place of the sidebar.
+ * App frame: the wordmark, the routed view, and a dock in place of the
+ * sidebar. The sky comes from jeffs-uis.
  */
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -39,13 +39,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
-      <header className="grid h-12 shrink-0 grid-cols-[1fr_auto_1fr] items-center px-3">
-        <span className="justify-self-start font-semibold tracking-tight">
-          sholam
-        </span>
-        <ModeToggle />
-        <span />
+    <div className="sky-theme relative isolate flex h-dvh flex-col overflow-hidden text-foreground">
+      <CloudSky />
+      <header className="flex h-12 shrink-0 items-center px-3">
+        <span className="font-semibold tracking-tight">sholam</span>
       </header>
       <main className="min-h-0 flex-1">{children}</main>
       <footer className="relative h-24 shrink-0">

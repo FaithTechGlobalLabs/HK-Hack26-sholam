@@ -34,7 +34,7 @@ export function Composer({
   return (
     <form
       onSubmit={submit}
-      className="flex items-end gap-2 rounded-3xl border bg-background p-2 shadow-sm"
+      className="glass flex items-end gap-2 rounded-3xl p-2 transition-shadow duration-500 focus-within:shadow-xl"
     >
       <textarea
         aria-label="Message"
@@ -50,7 +50,7 @@ export function Composer({
           type="button"
           aria-label="Stop"
           onClick={onStop}
-          className="rounded-full bg-foreground p-2 text-background"
+          className="glass-btn rounded-full bg-white/85 p-2 text-[#2f68c2] hover:bg-white"
         >
           <Square className="size-4" />
         </button>
@@ -59,7 +59,7 @@ export function Composer({
           type="submit"
           aria-label="Send"
           disabled={!value.trim()}
-          className="rounded-full bg-foreground p-2 text-background disabled:opacity-30"
+          className="glass-btn rounded-full bg-white/85 p-2 text-[#2f68c2] hover:bg-white disabled:opacity-40"
         >
           <ArrowUp className="size-4" />
         </button>
