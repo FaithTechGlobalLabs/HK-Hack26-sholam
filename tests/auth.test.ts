@@ -123,6 +123,27 @@ describe("classifyAuthError", () => {
   });
 });
 
+describe("messages while the email carries only a link", () => {
+  it.each([
+    "email_limit",
+    "email_cooldown",
+    "link_invalid",
+    "link_other_browser",
+    "link_missing",
+  ] as const)("%s mentions no code", (problem) => {
+    expect(problemMessage({ problem, seconds: 30 }, false)).not.toMatch(
+      /code/i,
+    );
+    expect(problemMessage({ problem, seconds: 30 }, true)).toMatch(/code/i);
+  });
+
+  it("tells a cross-browser link to use the same browser", () => {
+    expect(problemMessage({ problem: "link_other_browser" }, false)).toMatch(
+      "same browser",
+    );
+  });
+});
+
 describe("login form states", () => {
   const at = 1_000_000;
 
