@@ -1,7 +1,8 @@
 /**
- * OpenRouter free-model limits (checked 2026-11-14):
- * under $10 of purchased credits, :free models are about 20 requests/minute
- * and 50/day, shared across free models. Paid model ids are not in that cap.
+ * OpenRouter free-model limits (docs checked 2026-11-14): 20 requests/minute;
+ * 50/day for accounts that bought under 10 credits, 1000/day from 10 credits
+ * (this account bought 15). The day is shared across free models. Paid model
+ * ids are not in that cap. Our own ceiling is in limits.ts (usage).
  */
 
 export function isFreeModel(model: string): boolean {
@@ -22,7 +23,7 @@ const BRIEF =
   "Shalom Guide is briefly busy. Wait a few seconds and send that again.";
 
 const DAILY =
-  "Today's free OpenRouter allowance is used up (about 50 requests a day). Every free model shares that cap, so switching models does not reset it. It resets at midnight UTC. Please try again tomorrow.";
+  "Today's free OpenRouter allowance is used up. Every free model shares that cap, so switching models does not reset it. It resets at midnight UTC. Please try again tomorrow.";
 
 /**
  * Decide whether a 429 should be retried. A long reset is the daily cap:

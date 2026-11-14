@@ -74,3 +74,46 @@ describe("demo turn", () => {
     expect(types.at(-1)).toBe("done");
   });
 });
+
+describe("eventStream cancel", () => {
+  it("pulls lazily, and on cancel aborts first and then stops the source", async () => {
+    const order: string[] = [];
+    let produced = 0;
+    async function* source(): AsyncGenerator<AgentEvent> {
+      try {
+        for (;;) {
+          produced++;
+          yield { type: "text_delta", text: "x" };
+        }
+      } finally {
+        order.push("source-stopped");
+      }
+    }
+    const stream = eventStream(source(), {
+      onCancel: () => order.push("aborted"),
+    });
+    const reader = stream.getReader();
+    await reader.read();
+    await reader.read();
+    expect(produced).toBeLessThanOrEqual(3);
+    await reader.cancel();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(order).toEqual(["aborted", "source-stopped"]);
+  });
+
+  it("decodes reset and citations events", () => {
+    const events: AgentEvent[] = [
+      { type: "reset", reason: "verse_check" },
+      {
+        type: "citations",
+        unverified: [
+          { verseId: "JHN.3.16", label: "John 3:16", reason: "not_fetched" },
+        ],
+        quoteWarnings: ["Romans 8:28"],
+      },
+    ];
+    expect(new SseDecoder().push(events.map(encodeEvent).join(""))).toEqual(
+      events,
+    );
+  });
+});

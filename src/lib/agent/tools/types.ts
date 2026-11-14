@@ -9,6 +9,8 @@ export interface ToolContext {
   emit: (event: AgentEvent) => void;
   /** Verses fetched this turn, keyed by verse id; the citation check reads it. */
   versesSeen: Map<string, VerseRecord>;
+  /** Aborts when the client stops the turn; pass it to every fetch. */
+  signal?: AbortSignal;
 }
 
 export interface SholamTool<Schema extends z.ZodType = z.ZodType> {

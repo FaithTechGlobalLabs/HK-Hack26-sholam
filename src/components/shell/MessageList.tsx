@@ -79,9 +79,12 @@ function AssistantMessage({
           components={{
             a: ({ href, children }) => {
               if (href?.startsWith(VERSE_PROTOCOL)) {
+                const id = href.slice(VERSE_PROTOCOL.length);
+                const issue = message.unverified[id];
                 return (
                   <VerseChip
-                    verse={message.verses[href.slice(VERSE_PROTOCOL.length)]}
+                    verse={issue ? undefined : message.verses[id]}
+                    reason={issue}
                     label={children}
                   />
                 );
@@ -130,6 +133,13 @@ function AssistantMessage({
             </li>
           ))}
         </ul>
+      )}
+
+      {message.quoteWarnings.length > 0 && !message.streaming && (
+        <p className="text-muted-foreground text-xs">
+          Quoted words for {message.quoteWarnings.join(", ")} were not checked
+          against the Bible text.
+        </p>
       )}
 
       {message.proposal && <FlashcardProposal draft={message.proposal} />}

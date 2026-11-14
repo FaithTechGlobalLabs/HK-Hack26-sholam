@@ -5,6 +5,7 @@
  */
 
 import type { FlashcardDraft, FlashcardSummary } from "@/lib/flashcards/types";
+import type { CitationIssue } from "./citations";
 
 export interface VerseRecord {
   /** `JHN.3.16` */
@@ -28,6 +29,26 @@ export type AgentEvent =
   | { type: "verses"; verses: VerseRecord[] }
   | { type: "flashcards"; cards: FlashcardSummary[] }
   | { type: "flashcard_proposal"; draft: FlashcardDraft }
+  /**
+   * Replace the answer text streamed so far with `text` (default empty):
+   * a preamble before a tool call, a draft before its corrected rewrite, or
+   * the draft restored when the rewrite failed.
+   */
+  | {
+      type: "reset";
+      reason: "tool_call" | "verse_check" | "restore";
+      text?: string;
+    }
+  /**
+   * Final citation check, sent before `done`. Listed verse links show as
+   * unverified even if their text was fetched; `quoteWarnings` names plain
+   * references whose quoted words were not checked.
+   */
+  | {
+      type: "citations";
+      unverified: CitationIssue[];
+      quoteWarnings: string[];
+    }
   | { type: "done"; messageId?: string; stopReason: string }
   | { type: "error"; message: string };
 
@@ -40,6 +61,8 @@ const EVENT_TYPES = new Set<AgentEventType>([
   "verses",
   "flashcards",
   "flashcard_proposal",
+  "reset",
+  "citations",
   "done",
   "error",
 ]);
@@ -49,24 +72,46 @@ export function encodeEvent(event: AgentEvent): string {
   return `event: ${type}\ndata: ${JSON.stringify(data)}\n\n`;
 }
 
-/** Wraps an async event source as an SSE `Response` body. */
+/**
+ * Wraps an async event source as an SSE `Response` body. Pulls one event at
+ * a time, so nothing runs ahead of the client. When the client goes away
+ * (`cancel`), `onCancel` runs first (abort the model call), then the source
+ * is told to stop.
+ */
 export function eventStream(
   events: AsyncIterable<AgentEvent>,
+  options: { onCancel?: () => void } = {},
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
+  const iterator = events[Symbol.asyncIterator]();
+  let closed = false;
   return new ReadableStream({
-    async start(controller) {
+    async pull(controller) {
       try {
-        for await (const event of events)
-          controller.enqueue(encoder.encode(encodeEvent(event)));
+        const next = await iterator.next();
+        if (closed) return;
+        if (next.done) {
+          closed = true;
+          controller.close();
+          return;
+        }
+        controller.enqueue(encoder.encode(encodeEvent(next.value)));
       } catch (err) {
+        if (closed) return;
+        closed = true;
         const message = err instanceof Error ? err.message : "Unknown error";
         controller.enqueue(
           encoder.encode(encodeEvent({ type: "error", message })),
         );
-      } finally {
         controller.close();
       }
+    },
+    cancel() {
+      closed = true;
+      options.onCancel?.();
+      // Don't await: a generator busy in a model call returns once the
+      // abort above unblocks it.
+      iterator.return?.(undefined)?.catch(() => undefined);
     },
   });
 }

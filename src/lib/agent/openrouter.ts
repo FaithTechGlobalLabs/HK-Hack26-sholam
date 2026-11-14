@@ -6,6 +6,7 @@ import {
   type OpenRouterConfig,
   OpenRouterError,
   openRouterConfig,
+  TurnAborted,
 } from "./openrouter-config";
 import {
   FREE_MIN_GAP_MS,
@@ -14,6 +15,7 @@ import {
   planRateLimit,
 } from "./rate-limit";
 import { createReasoningFilter } from "./reasoning-filter";
+import { createToolCallTextFilter } from "./tool-call-text";
 
 export type { ChatMessage, OpenAiTool, ToolCall };
 export {
@@ -32,7 +34,41 @@ export {
  */
 
 const REQUEST_TIMEOUT_MS = 45_000;
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Resolves after `ms`, or rejects with TurnAborted as soon as `signal` aborts. */
+export function sleep(ms: number, signal?: AbortSignal): Promise<void> {
+  if (signal?.aborted) return Promise.reject(new TurnAborted());
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      clearTimeout(timer);
+      reject(new TurnAborted());
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+function raceAbort<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
+  if (!signal) return promise;
+  if (signal.aborted) return Promise.reject(new TurnAborted());
+  return new Promise<T>((resolve, reject) => {
+    const onAbort = () => reject(new TurnAborted());
+    signal.addEventListener("abort", onAbort, { once: true });
+    promise.then(
+      (v) => {
+        signal.removeEventListener("abort", onAbort);
+        resolve(v);
+      },
+      (e) => {
+        signal.removeEventListener("abort", onAbort);
+        reject(e);
+      },
+    );
+  });
+}
 
 /** Serialises free-model calls so a tool loop cannot burst past ~20/minute. */
 const recentFreeCalls: number[] = [];
@@ -69,16 +105,22 @@ export interface StreamChunk {
 }
 
 /**
- * Streams one chat.completions call. Yields text deltas, then a final
- * tool_calls_done (if any) and done. Never includes the API key in errors.
+ * Streams one chat.completions call. Yields visible text deltas, then a final
+ * tool_calls_done (if any) and done. Tool calls the model wrote into the text
+ * (`<tool_call>…`) are held back from the text and returned as real calls.
+ * Aborting `signal` cancels the request and any retry wait (TurnAborted).
+ * Never includes the API key in errors.
  */
 export async function* streamChatCompletion(options: {
   messages: ChatMessage[];
   tools?: OpenAiTool[];
+  /** "none" sends the tool list (byte-stable prompt) but forbids calls. */
+  toolChoice?: "auto" | "none";
   config?: OpenRouterConfig;
   signal?: AbortSignal;
 }): AsyncGenerator<StreamChunk> {
   const config = options.config ?? openRouterConfig();
+  const { signal } = options;
   if (!config.apiKey) {
     throw new OpenRouterError(
       "OPENROUTER_API_KEY is missing. Add it to .env.local and restart the dev server.",
@@ -88,14 +130,16 @@ export async function* streamChatCompletion(options: {
   let lastError: OpenRouterError | null = null;
 
   for (let attempt = 0; attempt < 3; attempt++) {
-    if (isFreeModel(config.model)) await paceFreeModel();
+    if (signal?.aborted) throw new TurnAborted();
+    if (isFreeModel(config.model)) await raceAbort(paceFreeModel(), signal);
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     const onAbort = () => controller.abort();
-    options.signal?.addEventListener("abort", onAbort);
+    signal?.addEventListener("abort", onAbort);
 
     try {
+      const tools = options.tools?.length ? options.tools : undefined;
       const res = await fetch(`${config.baseUrl}/chat/completions`, {
         method: "POST",
         headers: {
@@ -107,8 +151,8 @@ export async function* streamChatCompletion(options: {
         body: JSON.stringify({
           model: config.model,
           messages: options.messages,
-          tools: options.tools?.length ? options.tools : undefined,
-          tool_choice: options.tools?.length ? "auto" : undefined,
+          tools,
+          tool_choice: tools ? (options.toolChoice ?? "auto") : undefined,
           stream: true,
           temperature: 0.4,
           max_tokens: config.maxTokens,
@@ -132,7 +176,7 @@ export async function* streamChatCompletion(options: {
           res.status,
         );
         if (plan.action === "retry") {
-          await sleep(plan.waitMs);
+          await sleep(plan.waitMs, signal);
           continue;
         }
         throw lastError;
@@ -155,6 +199,7 @@ export async function* streamChatCompletion(options: {
       let sawContent = false;
       let retryMidStream = false;
       const hideReasoning = createReasoningFilter();
+      const toolText = createToolCallTextFilter();
 
       for (;;) {
         const { value, done } = await reader.read();
@@ -203,7 +248,7 @@ export async function* streamChatCompletion(options: {
           if (choice.finish_reason) finishReason = choice.finish_reason;
           const delta = choice.delta;
           if (delta?.content) {
-            const visible = hideReasoning(delta.content);
+            const visible = toolText.push(hideReasoning(delta.content));
             if (visible) {
               sawContent = true;
               yield { type: "text", text: visible };
@@ -230,32 +275,45 @@ export async function* streamChatCompletion(options: {
         const plan = planRateLimit({ get: () => null }, attempt);
         lastError = new OpenRouterError(plan.message, 429);
         if (plan.action === "retry") {
-          await sleep(plan.waitMs);
+          await sleep(plan.waitMs, signal);
           continue;
         }
         throw lastError;
       }
 
-      const toolCalls: ToolCall[] = [...toolAcc.entries()]
-        .sort(([a], [b]) => a - b)
-        .map(([, t]) => ({
-          id: t.id || crypto.randomUUID(),
-          type: "function" as const,
-          function: { name: t.name, arguments: t.arguments || "{}" },
-        }))
-        .filter((t) => t.function.name);
+      const tail = toolText.flush();
+      if (tail.text) {
+        sawContent = true;
+        yield { type: "text", text: tail.text };
+      }
+
+      const toolCalls: ToolCall[] = [
+        ...[...toolAcc.entries()]
+          .sort(([a], [b]) => a - b)
+          .map(([, t]) => ({
+            id: t.id || crypto.randomUUID(),
+            type: "function" as const,
+            function: { name: t.name, arguments: t.arguments || "{}" },
+          }))
+          .filter((t) => t.function.name),
+        ...tail.calls,
+      ];
 
       if (toolCalls.length) {
         yield { type: "tool_calls_done", toolCalls, finishReason };
-      } else if (!sawContent && !finishReason) {
+      } else if (!sawContent) {
         throw new OpenRouterError(
-          "The model returned an empty reply. Please try again.",
+          tail.malformed
+            ? "Shalom Guide sent a garbled reply. Please send that again."
+            : "The model returned an empty reply. Please try again.",
         );
       }
       yield { type: "done", finishReason };
       return;
     } catch (err) {
-      if (err instanceof OpenRouterError) throw err;
+      if (signal?.aborted) throw new TurnAborted();
+      if (err instanceof OpenRouterError || err instanceof TurnAborted)
+        throw err;
       if (err instanceof Error && err.name === "AbortError") {
         throw new OpenRouterError(
           "The model took too long to reply. Please try again.",
@@ -265,7 +323,7 @@ export async function* streamChatCompletion(options: {
       throw mapProviderError(undefined);
     } finally {
       clearTimeout(timer);
-      options.signal?.removeEventListener("abort", onAbort);
+      signal?.removeEventListener("abort", onAbort);
     }
   }
 
