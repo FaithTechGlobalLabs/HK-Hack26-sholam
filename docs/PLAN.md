@@ -22,6 +22,7 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Berean Standard Bible (BSB) as the default text | Public domain (CC0) since 2023-04-30, modern English; see SOURCES.md |
 | 2026-11-14 | Doctrinal default: historic creedal Christianity, no denomination; differences described fairly | Fits "answer like a Christian, with peace" for a broad audience; open to revision below |
 | 2026-11-14 | Agent proposes cards; only the user saves them | Public deck needs a human in the loop |
+| 2026-11-14 | The left sidebar is a bottom dock (React Bits) | Navigation is New chat, Flashcards, and Sign in. Chat history still needs a home in phase 2 |
 
 ## Phases
 
@@ -37,7 +38,7 @@ Project structure, docs, `AGENTS.md` + `CLAUDE.md` symlink, app shell with Chat 
 ### Phase 2: chat
 - Magic-link sign-in; protect chat history routes in `src/proxy.ts`.
 - `parseReference` and the four tools on the database.
-- The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, sidebar history and search.
+- The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, history and search. History no longer has a sidebar; it needs a home that fits the dock.
 - Server-side citation check before `done`; refusal and `max_tokens` handling; per-user rate limit.
 
 ### Phase 3: flashcards

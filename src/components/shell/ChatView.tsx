@@ -18,12 +18,21 @@ export function ChatView({
   const [sources, setSources] = useState<VerseRecord[] | null>(null);
   const [draft, setDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
+  const sentQuery = useRef(false);
 
-  // "Ask about this in chat" from the flashcards view arrives as ?q=.
+  // "Ask about this in chat" arrives as ?q=. A hold on a flashcard adds send=1.
   useEffect(() => {
-    const q = new URLSearchParams(window.location.search).get("q");
-    if (q) setDraft(q);
-  }, []);
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q");
+    if (!q || sentQuery.current) return;
+    if (params.get("send") === "1") {
+      sentQuery.current = true;
+      window.history.replaceState(null, "", "/");
+      send(q);
+      return;
+    }
+    setDraft(q);
+  }, [send]);
 
   useEffect(() => {
     if (messages.length) bottomRef.current?.scrollIntoView({ block: "end" });
