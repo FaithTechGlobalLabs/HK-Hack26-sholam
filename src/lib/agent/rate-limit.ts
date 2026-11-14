@@ -22,7 +22,7 @@ const BRIEF =
   "Shalom Guide is briefly busy. Wait a few seconds and send that again.";
 
 const DAILY =
-  "Today's free OpenRouter allowance is used up (about 50 requests a day until the account has purchased credits). It resets at midnight UTC. Set SHOLAM_MODEL to a paid model and restart the dev server to remove that cap.";
+  "Today's free OpenRouter allowance is used up (about 50 requests a day). Every free model shares that cap, so switching models does not reset it. It resets at midnight UTC. Add credits on the OpenRouter account, or set SHOLAM_MODEL to a paid model and restart the dev server.";
 
 /**
  * Decide whether a 429 should be retried. A long reset is the daily cap:

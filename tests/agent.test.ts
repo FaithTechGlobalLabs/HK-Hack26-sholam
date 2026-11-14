@@ -62,7 +62,7 @@ describe("tools", () => {
 describe("request", () => {
   it("defaults to ERNIE flash via OpenRouter", () => {
     const cfg = agentConfig({});
-    expect(cfg.model).toBe("baidu/ernie-5.5-flash-preview:free");
+    expect(cfg.model).toBe("nvidia/nemotron-3-ultra-550b-a55b:free");
     expect(cfg.maxSteps).toBe(3);
   });
 

@@ -7,7 +7,7 @@ const headers = (values: Record<string, string>) => ({
 
 describe("free model detection", () => {
   it("treats :free ids as capped and paid ids as not", () => {
-    expect(isFreeModel("baidu/ernie-5.5-flash-preview:free")).toBe(true);
+    expect(isFreeModel("nvidia/nemotron-3-ultra-550b-a55b:free")).toBe(true);
     expect(isFreeModel("openai/gpt-4.1-mini")).toBe(false);
   });
 });

@@ -111,6 +111,11 @@ export async function* streamChatCompletion(options: {
           stream: true,
           temperature: 0.4,
           max_tokens: config.maxTokens,
+          // Nemotron is a reasoning model. Keep thinking off so a reply stays
+          // inside max_tokens and does not spend a reasoning budget.
+          reasoning: { effort: "none", exclude: true },
+          // Never fall through to the paid Nemotron endpoint if the free one is busy.
+          provider: { allow_fallbacks: false },
         }),
         signal: controller.signal,
       });

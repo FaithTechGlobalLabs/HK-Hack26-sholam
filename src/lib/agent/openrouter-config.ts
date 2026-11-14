@@ -2,7 +2,8 @@
  * OpenRouter env helpers — safe to import from tests (no server-only).
  */
 
-export const DEFAULT_MODEL = "baidu/ernie-5.5-flash-preview:free";
+/** Free endpoint only. The paid id `nvidia/nemotron-3-ultra-550b-a55b` is never used. */
+export const DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free";
 export const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 
 export interface OpenRouterConfig {
