@@ -43,6 +43,7 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 - Components that call `usePathname`/`useSearchParams` must sit under `<Suspense>` (see `ShellDock`, `DesktopSidebar`, `ModeToggle`), or `next build` fails on `/c/[chatId]`. `next dev` does not catch this; run `npm run build` before pushing UI changes.
 - Scripts load `.env.local` through `scripts/_env.ts`; the app uses `DATABASE_URL` (transaction pooler), scripts and drizzle-kit use `DIRECT_URL` (session pooler).
 - Deploys: Vercel's Git integration builds `main` to production and PRs to previews. Never add secrets to the repo; env vars live in Vercel and `.env.local`.
+- `/flashcards` is a static page: the deck comes from `getPublicDeck()` (`"use cache"`, tag `flashcards`), shared by every visitor. Keep user data out of it, and call `revalidateDeck()` after any write to cards. Functions run in `sin1` (`vercel.json`), next to the Singapore database.
 - Model route: `src/lib/agent/openrouter.ts` calls OpenRouter chat completions (`OPENROUTER_API_KEY`, default model `nvidia/nemotron-3-ultra-550b-a55b:free`). Free models only: a `SHOLAM_MODEL` without `:free` is ignored. Check a deployment with `/api/health` and a key with `npm run model:smoke`.
 - Never trigger a model call from URL parameters (`?q=` may only pre-fill). Use `src/lib/chat/handoff.ts`. The app must not be frameable (`frame-ancestors 'none'` in `next.config.ts`).
 - `src/components/ui/dock.tsx` and `src/components/flashcards/GradientASCII.tsx` are React Bits code under MIT + Commons Clause: keep their licence headers.
@@ -79,7 +80,7 @@ src/lib/brand.ts  BRAND_NAME, the product name shown in the UI
 src/components/flashcards/  FlashcardsView, SwipeDeck (+ GradientASCII), FlashcardCard, StudyMode, NewCardDialog, FlashcardProposal
 src/lib/agent/          harness (loop), events (SSE protocol), citations, system-prompt, tools/, demo
 src/lib/bible/          books (canon table), refs (verse ids, reference parser)
-src/lib/flashcards/     types (zod schema), repo (DB or seed)
+src/lib/flashcards/     types (zod schema), repo (DB or seed), deck (cached public deck + revalidateDeck), shuffle (tested Fisher–Yates + deckView)
 src/db/                 Drizzle schema + RLS policies, client
 scripts/                import-bible (BSB), seed-flashcards, convert-faithmap, experiments/
 data/                   flashcards.seed.json, faithmap.cards.json (generated), sources/, search-eval.json

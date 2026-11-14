@@ -22,8 +22,10 @@ export async function GET(request: Request) {
 /**
  * Create a public card (from the form or an accepted chat proposal).
  * Phase 3: require a signed-in user, check refs against `verses`, insert
- * with author_id = user, return the card. Until then the draft is validated
- * and the request is refused.
+ * with author_id = user, call `revalidateDeck()` (lib/flashcards/deck) so
+ * /flashcards drops its cached deck, return the card. Until then the draft
+ * is validated and the request is refused, and nothing is invalidated
+ * because nothing changed.
  */
 export async function POST(request: Request) {
   const parsed = flashcardDraftSchema.safeParse(
