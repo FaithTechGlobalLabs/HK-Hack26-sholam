@@ -1,11 +1,17 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   type AgentEvent,
   SseDecoder,
   type VerseRecord,
 } from "@/lib/agent/events";
+import {
+  getLocalChat,
+  type LocalChatMessage,
+  titleFromMessage,
+  upsertLocalChat,
+} from "@/lib/chat/local-history";
 import type { FlashcardDraft, FlashcardSummary } from "@/lib/flashcards/types";
 
 export interface ToolStatus {
@@ -79,22 +85,77 @@ const newMessage = (role: ChatMessage["role"], text = ""): ChatMessage => ({
   streaming: role === "assistant",
 });
 
+function toLocal(messages: ChatMessage[]): LocalChatMessage[] {
+  return messages
+    .filter((m) => m.text || m.role === "user")
+    .map((m) => ({ id: m.id, role: m.role, text: m.text }));
+}
+
 export function useChatStream(chatId?: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
+  // Empty until mount/first send — crypto.randomUUID() is not prerender-safe.
+  const [activeChatId, setActiveChatId] = useState(chatId ?? "");
   const abortRef = useRef<AbortController | null>(null);
+  const hydrated = useRef(false);
+
+  useEffect(() => {
+    if (hydrated.current) return;
+    hydrated.current = true;
+    if (chatId) {
+      const existing = getLocalChat(chatId);
+      if (existing) {
+        setActiveChatId(existing.id);
+        setMessages(
+          existing.messages.map((m) => ({
+            ...newMessage(m.role, m.text),
+            streaming: false,
+          })),
+        );
+        return;
+      }
+      setActiveChatId(chatId);
+      return;
+    }
+    setActiveChatId(crypto.randomUUID());
+  }, [chatId]);
+
+  const persist = useCallback((next: ChatMessage[], id: string) => {
+    const firstUser = next.find((m) => m.role === "user");
+    upsertLocalChat({
+      id,
+      title: firstUser ? titleFromMessage(firstUser.text) : "New chat",
+      updatedAt: new Date().toISOString(),
+      messages: toLocal(next),
+    });
+    window.dispatchEvent(new Event("shalom:chats"));
+  }, []);
 
   const send = useCallback(
     async (text: string) => {
+      const threadId = activeChatId || crypto.randomUUID();
+      if (!activeChatId) setActiveChatId(threadId);
+
       const user = newMessage("user", text);
       const assistant = newMessage("assistant");
-      setMessages((prev) => [...prev, user, assistant]);
+      let snapshot: ChatMessage[] = [];
+      setMessages((prev) => {
+        snapshot = [...prev, user, assistant];
+        return snapshot;
+      });
       setBusy(true);
 
+      const history = snapshot
+        .slice(0, -2)
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .filter((m) => m.text)
+        .map((m) => ({ role: m.role, content: m.text }));
+
       const update = (fn: (m: ChatMessage) => ChatMessage) =>
-        setMessages((prev) =>
-          prev.map((m) => (m.id === assistant.id ? fn(m) : m)),
-        );
+        setMessages((prev) => {
+          const next = prev.map((m) => (m.id === assistant.id ? fn(m) : m));
+          return next;
+        });
 
       const controller = new AbortController();
       abortRef.current = controller;
@@ -102,7 +163,11 @@ export function useChatStream(chatId?: string) {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chatId, message: text }),
+          body: JSON.stringify({
+            chatId: threadId,
+            message: text,
+            history,
+          }),
           signal: controller.signal,
         });
         if (!res.ok || !res.body)
@@ -131,12 +196,24 @@ export function useChatStream(chatId?: string) {
       } finally {
         abortRef.current = null;
         setBusy(false);
+        setMessages((prev) => {
+          const snapshot = prev;
+          queueMicrotask(() => {
+            persist(snapshot, threadId);
+            if (!chatId && snapshot.some((m) => m.role === "user")) {
+              const url = `/c/${threadId}`;
+              if (window.location.pathname !== url)
+                window.history.replaceState(null, "", url);
+            }
+          });
+          return prev;
+        });
       }
     },
-    [chatId],
+    [activeChatId, chatId, persist],
   );
 
   const stop = useCallback(() => abortRef.current?.abort(), []);
 
-  return { messages, busy, send, stop };
+  return { messages, busy, send, stop, chatId: activeChatId };
 }

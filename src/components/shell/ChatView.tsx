@@ -45,9 +45,19 @@ export function ChatView({
       <div className="flex min-w-0 flex-1 flex-col">
         {empty ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
-            <h1 className="text-center font-medium text-2xl drop-shadow-[0_2px_10px_rgb(25_60_120/0.35)]">
-              Ask about the Bible, or test what you know.
-            </h1>
+            <div className="max-w-xl text-center drop-shadow-[0_2px_10px_rgb(25_60_120/0.35)]">
+              <p className="text-sm text-white/90 tracking-wide">
+                Shalom Guide
+              </p>
+              <h1 className="mt-2 text-balance font-medium text-2xl">
+                Ask about the Bible, Jesus, faith, or anything you are curious
+                about.
+              </h1>
+              <p className="mt-2 text-sm text-white/90">
+                Clear answers, honest about uncertainty, with pathways into
+                Shalom when a real card fits.
+              </p>
+            </div>
             <div className="w-full max-w-2xl">
               <Composer
                 value={draft}
@@ -90,8 +100,8 @@ export function ChatView({
                 busy={busy}
               />
               <p className="mt-2 text-center text-[13px] text-white/90">
-                Verse text is from the Berean Standard Bible. sholam can still
-                make mistakes; check what matters.
+                Verse text is from the Berean Standard Bible. Shalom Guide can
+                still make mistakes; check what matters.
               </p>
             </div>
           </>

@@ -10,7 +10,8 @@ How the people (and their coding agents) working on sholam split the work and ke
 |---|---|---|
 | Visual theme: cloud sky, blue glass UI | Jeff ([`jeffleunglife`](https://github.com/jeffleunglife)) | `src/components/shell/CloudSky.tsx`, `src/app/sky.css`; merged through PR #2 |
 | Flashcard UI/UX: one card at a time, swipe deck, hand a card to chat, bottom dock navigation | Ricky ([`RedTotally`](https://github.com/RedTotally)) | `src/components/flashcards/SwipeDeck.tsx`, `src/components/ui/dock.tsx`; PR #2 merged 2026-11-14 |
-| Data (Bible import, decks, FaithMap), search, agent harness, model route, Supabase/Vercel/CI, docs | owenisas ([`owenisas`](https://github.com/owenisas)) with coding agents | `main` |
+| Live chat: OpenRouter agent loop ("Shalom Guide"), tools, rate limits, browser chat history | MustyDusty | `src/lib/agent/` (`openrouter.ts`, `harness.ts`, `rate-limit.ts`, tools), `src/lib/chat/local-history.ts`; pushed to `main` |
+| Data (Bible import, decks, FaithMap), search, model route, Supabase/Vercel/CI, docs | owenisas ([`owenisas`](https://github.com/owenisas)) with coding agents | `main` |
 
 Both now build on `main`. New work starts from the latest `main` on a fresh branch.
 
@@ -41,6 +42,18 @@ Both branches had started from the first skeleton commit, so their Vercel previe
 - Jeff's PR #1 commit is part of this merge, so PR #1 closes as merged.
 - `StudyMode.tsx` and the grid `FlashcardCard.tsx` are no longer used by any page; Ricky decides whether to delete them.
 
+### MustyDusty's OpenRouter work + PR #2, combined 2026-11-14
+
+MustyDusty pushed four commits to `main` while PR #2 was being merged (live OpenRouter chat, tools, rate limits, local history, the "Shalom" name). Both were combined without dropping either:
+
+- Their agent, model route, copy and tests are kept as they are.
+- Their sidebar (which listed recent chats) is replaced by PR #2's dock, so the history list moved into a **Chats** panel opened from the dock (`ChatHistoryPanel.tsx`).
+- Their "Related in Shalom" link (`/flashcards?card=<id>`) now opens the swipe deck on that card.
+- The UI name lives in one constant, `src/lib/brand.ts` (`BRAND_NAME`, currently "Shalom"); the logo wordmark, header and sign-in page read it.
+- One Vitest config remains (theirs, with the `server-only` mock).
+
+Please push to a branch and open a PR rather than pushing to `main` directly: it gives CI and a preview a chance to catch problems first, and avoids two people merging over each other.
+
 ## Contract for flashcard UI work
 
 The deck has two kinds of card. Types: `src/lib/flashcards/types.ts`; data access: `src/lib/flashcards/repo.ts`.
@@ -69,6 +82,6 @@ DiscoverCard  { kind: "discover"; id; question; refs: string[] /* passages: MAT.
 | Production | [sholam.vercel.app](https://sholam.vercel.app); health check at [`/api/health`](https://sholam.vercel.app/api/health) | Vercel team `owenisas-projects` (Hobby) |
 | Previews | one per PR, from Vercel's Git integration | same |
 | Database and auth | Supabase project `sholam`, Singapore, free plan | owenisas |
-| Model | OpenRouter (`anthropic/claude-opus-5.5` by default); key in Vercel env only | team |
+| Model | OpenRouter chat completions (`nvidia/nemotron-3-ultra-550b-a55b:free` by default); key in Vercel env only | team |
 
 Secrets never go into the repo, issues or chat. Production and preview env vars are managed in Vercel; local values in `.env.local` (gitignored, see `.env.example`).

@@ -1,9 +1,10 @@
 "use client";
 
-import { Layers, LogIn, SquarePen } from "lucide-react";
+import { Layers, LogIn, MessagesSquare, SquarePen } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { Suspense, useEffect, useMemo } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Dock, { type DockItemData } from "@/components/ui/dock";
+import { ChatHistoryPanel } from "./ChatHistoryPanel";
 
 /**
  * The bottom dock (Ricky's navigation). Reading the pathname suspends on
@@ -28,6 +29,8 @@ const ACTIVE = "[--dock-tile:#2f68c2] [--dock-ink:#fff]";
 
 function NavDock({ pathname }: { pathname: string | null }) {
   const router = useRouter();
+  const [chatsOpen, setChatsOpen] = useState(false);
+  const closeChats = useCallback(() => setChatsOpen(false), []);
   // The dock navigates with router.push, so prefetch what <Link> would have.
   useEffect(() => {
     router.prefetch("/");
@@ -52,6 +55,12 @@ function NavDock({ pathname }: { pathname: string | null }) {
         className: onCards ? ACTIVE : undefined,
         onClick: () => router.push("/flashcards"),
       },
+      {
+        icon: <MessagesSquare />,
+        label: "Chats",
+        active: chatsOpen,
+        onClick: () => setChatsOpen((open) => !open),
+      },
       { separator: true },
       {
         icon: <LogIn />,
@@ -59,7 +68,14 @@ function NavDock({ pathname }: { pathname: string | null }) {
         onClick: () => router.push("/login"),
       },
     ],
-    [onChat, onCards, router],
+    [onChat, onCards, chatsOpen, router],
   );
-  return <Dock theme="light" items={items} showIndicators={false} />;
+  return (
+    <>
+      {chatsOpen && (
+        <ChatHistoryPanel pathname={pathname} onClose={closeChats} />
+      )}
+      <Dock theme="light" items={items} showIndicators={false} />
+    </>
+  );
 }

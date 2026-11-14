@@ -1,5 +1,7 @@
+import { BRAND_NAME } from "@/lib/brand";
+
 /**
- * sholam's mark: a cross drawn as a cloud, billowing only along its sunlit
+ * The mark: a cross drawn as a cloud, billowing only along its sunlit
  * top edges. It echoes the cross-shaped cloud in the sky behind the app.
  * The same geometry lives in src/app/icon.svg (favicon) and
  * public/brand/sholam-mark.svg; keep them in step.
@@ -52,7 +54,7 @@ export function Logo({ className }: { className?: string }) {
     >
       <LogoMark className="size-6 shrink-0" />
       <span className="font-semibold text-[17px] leading-none tracking-tight">
-        sholam
+        {BRAND_NAME}
       </span>
     </span>
   );

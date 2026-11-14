@@ -1,7 +1,10 @@
 import { sql } from "drizzle-orm";
 import { connection } from "next/server";
 import { getDb, isDatabaseConfigured } from "@/db";
-import { defaultModel, modelRoute } from "@/lib/agent/client";
+import {
+  openRouterConfig,
+  shouldUseLiveAgent,
+} from "@/lib/agent/openrouter-config";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 /**
@@ -20,10 +23,14 @@ export async function GET() {
       database = "error";
     }
   }
-  const route = modelRoute();
+  const config = openRouterConfig();
+  const mode = shouldUseLiveAgent();
   return Response.json({
-    model: { route, id: route === "none" ? null : defaultModel() },
-    agent: process.env.SHOLAM_AGENT === "live" ? "live" : "demo",
+    model: {
+      route: config.apiKey ? "openrouter" : "none",
+      id: config.apiKey ? config.model : null,
+    },
+    agent: mode.live ? "live" : "demo",
     database,
     auth: isSupabaseConfigured() ? "configured" : "unconfigured",
   });

@@ -23,6 +23,17 @@ export interface Passage {
   endVerse: number | null;
 }
 
+/** One chapter span for the BSB chapter fetcher. */
+export interface VerseRange {
+  book: string;
+  chapter: number;
+  verseStart: number;
+  verseEnd: number;
+}
+
+/** Whole-chapter fetches use this so the loader can clamp to real verse counts. */
+export const WHOLE_CHAPTER_END = Number.MAX_SAFE_INTEGER;
+
 const VERSE_ID = /^([1-3]?[A-Z]{2,3})\.(\d{1,3})\.(\d{1,3})$/;
 const POINT = /^([1-3]?[A-Z]{2,3})\.(\d{1,3})(?:\.(\d{1,3}))?$/;
 
@@ -115,6 +126,48 @@ export function passageEndpoints(p: Passage): {
     lastChapter: p.endChapter,
     lastVerse: p.endVerse,
   };
+}
+
+/**
+ * Expands a passage into one range per chapter. Open chapter ends use
+ * `WHOLE_CHAPTER_END` so the fetcher can stop at the last real verse.
+ */
+export function passageToVerseRanges(p: Passage): VerseRange[] {
+  const startVerse = p.startVerse ?? 1;
+  const endVerse = p.endVerse ?? WHOLE_CHAPTER_END;
+  if (p.startChapter === p.endChapter) {
+    return [
+      {
+        book: p.book,
+        chapter: p.startChapter,
+        verseStart: startVerse,
+        verseEnd: endVerse,
+      },
+    ];
+  }
+  const ranges: VerseRange[] = [
+    {
+      book: p.book,
+      chapter: p.startChapter,
+      verseStart: startVerse,
+      verseEnd: WHOLE_CHAPTER_END,
+    },
+  ];
+  for (let chapter = p.startChapter + 1; chapter < p.endChapter; chapter++) {
+    ranges.push({
+      book: p.book,
+      chapter,
+      verseStart: 1,
+      verseEnd: WHOLE_CHAPTER_END,
+    });
+  }
+  ranges.push({
+    book: p.book,
+    chapter: p.endChapter,
+    verseStart: 1,
+    verseEnd: endVerse,
+  });
+  return ranges;
 }
 
 const BOOK_AND_REST = /^((?:[1-3]\s*)?[A-Za-z][A-Za-z.\s]*?)\s*(\d.*)$/;

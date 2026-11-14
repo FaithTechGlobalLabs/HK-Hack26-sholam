@@ -1,11 +1,13 @@
 import { z } from "zod";
+import { rankFlashcards, toSummary } from "@/lib/flashcards/rank";
+import { listFlashcards } from "@/lib/flashcards/repo";
 import { CATEGORIES, KINDS } from "@/lib/flashcards/types";
-import { defineTool, NotImplementedError } from "./types";
+import { defineTool } from "./types";
 
 export const searchFlashcards = defineTool({
   name: "search_flashcards",
   description:
-    "Search sholam's public Bible card deck by keywords. The deck has two kinds: fact cards (a question with an answer and verse ids) and discover cards (an open question with Scripture starting points and no fixed answer). Use it before answering trivia or fact questions, when a question sounds like a discover card, and before proposing a new card, to avoid duplicates. Returns matching cards with ids, kind, question, answer (fact cards) and passage refs.",
+    "Search sholam's public Bible card deck by keywords. The deck has two kinds: fact cards (a question with an answer and verse ids) and discover cards (an open question with Scripture starting points and no fixed answer). Use it before answering trivia or fact questions, when a question sounds like a discover card, and before proposing a new card, to avoid duplicates. Returns matching cards with ids, kind, question, answer (fact cards) and passage refs. Returns nothing when no card is a strong match.",
   inputSchema: z.strictObject({
     query: z
       .string()
@@ -21,9 +23,24 @@ export const searchFlashcards = defineTool({
       .describe("Only search one category"),
     limit: z.number().int().min(1).max(10).default(5),
   }),
-  // Phase 2: Postgres FTS over flashcards.search (websearch_to_tsquery), emit
-  // { type: "flashcards" } so the UI can render the hits as cards.
-  async run() {
-    throw new NotImplementedError("search_flashcards");
+  async run(input, ctx) {
+    const cards = await listFlashcards({
+      kind: input.kind,
+      category: input.category,
+      limit: 200,
+    });
+    const ranked = rankFlashcards(cards, input.query, input.limit);
+    if (!ranked.length)
+      return `No strong flashcard match for "${input.query}".`;
+
+    const summaries = ranked.map((r) => toSummary(r.card));
+    ctx.emit({ type: "flashcards", cards: summaries });
+
+    return summaries
+      .map((c) => {
+        const answer = c.answer ? ` | A: ${c.answer}` : "";
+        return `${c.id} | ${c.kind} | Q: ${c.question}${answer} | refs: ${c.refs.join(", ")} | /flashcards?card=${c.id}`;
+      })
+      .join("\n");
   },
 });

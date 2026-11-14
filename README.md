@@ -1,11 +1,11 @@
-# sholam
+# Shalom
 
 A ChatGPT-style web app for exploring the Bible and the Christian faith. Two modes sit at the top of the page:
 
-- **Chat**: ask anything. A Claude agent answers gently, as a Christian would, and cites Bible verses it looked up in a database (Berean Standard Bible), never from memory. It checks the flashcard deck first and can draft a new card when none fits.
+- **Chat (Shalom Guide)**: ask anything. An OpenRouter-backed guide answers clearly for young people, cites Bible verses it looked up (Berean Standard Bible), never from memory, and links into the flashcard deck when a real card matches.
 - **Flashcards**: a public deck with two kinds of card. **Quick facts** are fun or surprising questions with answers and verses. **Discover** cards are open questions for young people (the FaithMap set) with Scripture starting points to explore in chat. Browse, filter by kind and topic, study one card at a time, or add your own.
 
-Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) and a deck of 179 cards (50 quick facts, 129 FaithMap discover questions) live in Supabase Postgres, and the app deploys to Vercel from `main`. Chat still streams a scripted demo until the agent loop lands in Phase 2. See [docs/PLAN.md](docs/PLAN.md).
+Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) and a deck of 179 cards (50 quick facts, 129 FaithMap discover questions) live in Supabase Postgres, and the app deploys to Vercel from `main`. Chat runs Shalom Guide live when `OPENROUTER_API_KEY` is set; otherwise it streams a scripted demo. See [docs/PLAN.md](docs/PLAN.md).
 
 ## Where things run
 
@@ -14,7 +14,7 @@ Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) a
 | Code | [github.com/FaithTechGlobalLabs/HK-Hack26-sholam](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam) (public) |
 | CI | GitHub Actions: lint, typecheck, tests, seed validation, build |
 | Hosting | [sholam.vercel.app](https://sholam.vercel.app) (Vercel project `owenisas-projects/sholam`); `main` → production, pull requests → previews. [`/api/health`](https://sholam.vercel.app/api/health) shows the model route, agent mode and database status without secrets |
-| Model | OpenRouter, `anthropic/claude-opus-5.5` by default (key set in Vercel env) |
+| Model | OpenRouter chat completions, `nvidia/nemotron-3-ultra-550b-a55b:free` by default (key set in Vercel env) |
 | Database and auth | Supabase project `sholam` (`cpeuhxozfhrldfbjbiwt`), Singapore, free plan |
 
 ## Run locally
@@ -22,24 +22,21 @@ Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) a
 Needs Node 22+.
 
 ```bash
-cd sholam
 npm install
 npm run dev        # http://localhost:5310
 ```
 
-It runs with no environment variables: flashcards come from `data/flashcards.seed.json` and chat streams a demo. To use the database, copy `.env.example` to `.env.local` and fill it in:
+It runs with no environment variables: flashcards come from `data/flashcards.seed.json` and chat streams a demo. Copy `.env.example` to `.env.local` for the database and the live guide (never commit `.env.local`):
 
 | Variable | Purpose |
 |---|---|
+| `OPENROUTER_API_KEY` | Server-only OpenRouter key (required for live Shalom Guide) |
+| `OPENROUTER_BASE_URL` | Optional; default `https://openrouter.ai/api/v1` |
+| `SHOLAM_MODEL` | Default `nvidia/nemotron-3-ultra-550b-a55b:free` (the free endpoint only). Free models are about 20 requests/minute and 50/day until the OpenRouter account has purchased credits. |
+| `SHOLAM_AGENT` | Unset = live when a key is present; `demo` forces the scripted stream; `live` forces live (errors if the key is missing) |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project (auth, browser access under RLS) |
 | `DATABASE_URL` | Postgres via the transaction pooler (port 6543), used by the app |
 | `DIRECT_URL` | Postgres via the session pooler (port 5432), used by migrations and scripts |
-| `OPENROUTER_API_KEY` | Model access through OpenRouter's Anthropic-compatible endpoint (the team's route) |
-| `SHOLAM_MODEL` | Optional; defaults to `anthropic/claude-opus-5.5` on OpenRouter, `claude-opus-5-5` direct |
-| `ANTHROPIC_API_KEY`, `ANTHROPIC_BASE_URL` | Alternative route: Anthropic directly or a local gateway (CLIProxyAPI `:18317`, LiteLLM `:4000`) |
-| `SHOLAM_EFFORT` | `low` … `max` (default `medium`), or `off` to send no effort parameter |
-| `SHOLAM_AGENT` | `live` for the real loop (Phase 2); otherwise the demo stream |
-| `SHOLAM_FALLBACKS` | `default` turns on server-side refusal fallbacks (direct Anthropic API only) |
 
 ## Database
 
@@ -49,10 +46,16 @@ npm run bible:import         # download BSB v5.19, verify checksum, upsert 31,08
 npm run seed:flashcards      # upsert both decks by slug (every passage must resolve in verses)
 npm run faithmap:convert     # regenerate data/faithmap.cards.json from data/sources/*.md
 npm run search:baseline      # keyword vs heading search on data/search-eval.json (see docs/SEARCH.md)
-npm run model:smoke          # one tiny request through the configured model route
+npm run model:smoke          # one tiny OpenRouter chat completion (see .env.example)
 ```
 
 `npm run bible:import -- --dry-run` parses and checks without touching the database. Schema changes: edit `src/db/schema.ts`, then `npm run db:generate` and `npm run db:migrate`.
+
+After changing env vars, restart `npm run dev`.
+
+For production (e.g. Vercel), set `OPENROUTER_API_KEY` as a **server** environment variable for Production and redeploy. Do not expose it as a public/`NEXT_PUBLIC_` variable.
+
+Without a key, Chat still runs against the scripted demo stream and flashcards use the seed JSON.
 
 ## Check
 

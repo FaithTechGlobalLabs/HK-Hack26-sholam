@@ -1,46 +1,54 @@
 /**
- * One small request through the configured model route (OpenRouter or
- * Anthropic) to prove the credentials, the model id and the request shape
- * sholam sends: system prompt with cache_control, the tool definitions and,
- * unless SHOLAM_EFFORT=off, output_config.effort. Costs a fraction of a cent.
+ * One small OpenRouter chat completion to prove the key, the model id and
+ * the request shape sholam sends. Costs a fraction of a cent on a paid model;
+ * a `:free` model spends one request of the daily allowance.
  *
  * Run: npm run model:smoke   (reads .env.local)
  */
 
 import "./_env";
-import { createModelClient, modelRoute } from "../src/lib/agent/client";
-import { agentConfig, buildRequest } from "../src/lib/agent/harness";
+import { openRouterConfig } from "../src/lib/agent/openrouter-config";
 
 async function main() {
-  const route = modelRoute();
-  if (route === "none")
+  const config = openRouterConfig();
+  if (!config.apiKey) {
     throw new Error(
       "No model credentials: set OPENROUTER_API_KEY in .env.local",
     );
-  const config = { ...agentConfig(), maxTokens: 64 };
-  const client = createModelClient();
+  }
   const started = Date.now();
-  const message = await client.messages
-    .stream(
-      buildRequest(
-        [{ role: "user", content: "Reply with the single word: peace" }],
-        config,
-      ),
-    )
-    .finalMessage();
-  const text = message.content
-    .filter((b) => b.type === "text")
-    .map((b) => b.text)
-    .join("")
-    .trim();
-  console.log(`route: ${route}`);
-  console.log(`model: ${config.model} (served as ${message.model})`);
-  console.log(`effort sent: ${config.effort ?? "none"}`);
+  const res = await fetch(`${config.baseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: config.model,
+      max_tokens: 32,
+      temperature: 0.4,
+      messages: [
+        { role: "user", content: "Reply with the single word: peace" },
+      ],
+    }),
+  });
+  const body = (await res.json()) as {
+    model?: string;
+    choices?: { message?: { content?: string } }[];
+    usage?: { prompt_tokens?: number; completion_tokens?: number };
+    error?: { message?: string };
+  };
+  if (!res.ok) {
+    throw new Error(
+      `OpenRouter ${res.status}: ${body.error?.message ?? "request failed"}`,
+    );
+  }
+  const text = body.choices?.[0]?.message?.content ?? "";
+  console.log("route: openrouter");
+  console.log(`model: ${config.model} (served as ${body.model ?? "unknown"})`);
+  console.log(`reply: ${JSON.stringify(text.slice(0, 80))}`);
   console.log(
-    `stop: ${message.stop_reason}; reply: ${JSON.stringify(text.slice(0, 80))}`,
-  );
-  console.log(
-    `usage: in ${message.usage.input_tokens}, out ${message.usage.output_tokens}, cache write ${message.usage.cache_creation_input_tokens ?? 0}, cache read ${message.usage.cache_read_input_tokens ?? 0}; ${Date.now() - started} ms`,
+    `usage: in ${body.usage?.prompt_tokens ?? 0}, out ${body.usage?.completion_tokens ?? 0}; ${Date.now() - started} ms`,
   );
 }
 
