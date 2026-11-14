@@ -5,9 +5,18 @@ A ChatGPT-style web app for exploring the Bible and the Christian faith. Two mod
 - **Chat**: ask anything. A Claude agent answers gently, as a Christian would, and cites Bible verses it looked up in a database (Berean Standard Bible), never from memory. It checks the flashcard deck first and can draft a new card when none fits.
 - **Flashcards**: a public deck of fun and surprising Bible questions, each tied to verses. Browse, filter, study one card at a time, or add your own.
 
-Status: **Phase 0, skeleton**. The app runs and the UI is wired end to end against a scripted demo stream and a 10-card seed deck. The agent loop, Bible import, database and sign-in are specified and stubbed. See [docs/PLAN.md](docs/PLAN.md).
+Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) and a 50-card deck live in Supabase Postgres, and the app deploys to Vercel from `main`. Chat still streams a scripted demo until the agent loop lands in Phase 2. See [docs/PLAN.md](docs/PLAN.md).
 
-## Run
+## Where things run
+
+| What | Where |
+|---|---|
+| Code | [github.com/FaithTechGlobalLabs/HK-Hack26-sholam](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam) (public) |
+| CI | GitHub Actions: lint, typecheck, tests, seed validation, build |
+| Hosting | Vercel project `owenisas-projects/sholam`; `main` → production, pull requests → previews |
+| Database and auth | Supabase project `sholam` (`cpeuhxozfhrldfbjbiwt`), Singapore, free plan |
+
+## Run locally
 
 Needs Node 22+.
 
@@ -17,23 +26,34 @@ npm install
 npm run dev        # http://localhost:5310
 ```
 
-No environment variables are needed for the skeleton. To configure the later phases, copy `.env.example` to `.env.local`:
+It runs with no environment variables: flashcards come from `data/flashcards.seed.json` and chat streams a demo. To use the database, copy `.env.example` to `.env.local` and fill it in:
 
 | Variable | Purpose |
 |---|---|
-| `ANTHROPIC_API_KEY` | Claude API key (or a local gateway's key with `ANTHROPIC_BASE_URL`) |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project (auth, browser access under RLS) |
+| `DATABASE_URL` | Postgres via the transaction pooler (port 6543), used by the app |
+| `DIRECT_URL` | Postgres via the session pooler (port 5432), used by migrations and scripts |
+| `ANTHROPIC_API_KEY` | Claude API key (or a local gateway's key with `ANTHROPIC_BASE_URL`); Phase 2 |
 | `ANTHROPIC_BASE_URL` | Optional: CLIProxyAPI `http://127.0.0.1:18317` or LiteLLM `http://127.0.0.1:4000` |
 | `SHOLAM_MODEL` | Default `claude-opus-5-5` |
 | `SHOLAM_EFFORT` | `low` … `max`, default `medium` |
 | `SHOLAM_AGENT` | `live` for the real loop (Phase 2); otherwise the demo stream |
 | `SHOLAM_FALLBACKS` | `default` turns on server-side refusal fallbacks (direct Anthropic API only) |
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project (auth) |
-| `DATABASE_URL` | Supabase Postgres, transaction pooler (port 6543) |
+
+## Database
+
+```bash
+npm run db:migrate           # apply drizzle/ migrations (uses DIRECT_URL)
+npm run bible:import         # download BSB v5.19, verify checksum, upsert 31,086 verses
+npm run seed:flashcards      # upsert the seed deck by slug (refs must exist in verses)
+```
+
+`npm run bible:import -- --dry-run` parses and checks without touching the database. Schema changes: edit `src/db/schema.ts`, then `npm run db:generate` and `npm run db:migrate`.
 
 ## Check
 
 ```bash
-npm run typecheck && npm run lint && npm test
+npm run typecheck && npm run lint && npm test && npm run build
 ```
 
 ## Docs

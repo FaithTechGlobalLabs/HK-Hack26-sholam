@@ -20,7 +20,14 @@ export const flashcardDraftSchema = z.strictObject({
   answer: z.string().min(1).max(400),
   explanation: z.string().max(1200).optional(),
   refs: z
-    .array(z.string().refine(isVerseId, "Expected a verse id like JHN.3.16"))
+    .array(
+      z
+        .string()
+        .refine(
+          (id): boolean => isVerseId(id),
+          "Expected a verse id like JHN.3.16",
+        ),
+    )
     .min(1)
     .max(8)
     .describe("Supporting verses as BOOK.chapter.verse ids, e.g. JHN.11.35"),

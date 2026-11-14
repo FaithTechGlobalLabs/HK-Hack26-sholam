@@ -84,3 +84,13 @@ Supabase magic link. `src/proxy.ts` refreshes the session on page requests (`aut
 ## Bible references (`src/lib/bible/`)
 
 `books.ts` holds the 66-book canon with USFM codes, names, chapter counts and aliases (`findBook` handles "1 Cor", "I John", "First John", "Ps"). Verse ids are `BOOK.chapter.verse`. `refs.ts` validates ids and labels them; `parseReference` (human references like "John 3:16-18") is a Phase 2 stub with todo tests.
+
+## Data pipeline and environments
+
+- **Connections:** the app uses `DATABASE_URL` (Supabase transaction pooler, port 6543, `prepare: false`); migrations and scripts use `DIRECT_URL` (session pooler, port 5432). Both are owner connections that bypass RLS.
+- **Bible import** (`scripts/import-bible.ts`): download the pinned BSB USJ release into `tmp/` (gitignored) → check sha256 → `extractVerses` (`src/lib/bible/usj.ts`) per book → check chapter counts and spot verses → upsert 1,000 rows per batch in one transaction, keyed on (`translation`, `id`), so a rerun after a parser fix rewrites text in place.
+- **Seed deck** (`scripts/seed-flashcards.ts`): zod-validate `data/flashcards.seed.json`, check every ref exists in `verses`, upsert by `slug`.
+- **Flashcard reads** (`listFlashcards`): published cards; `q` matches `websearch_to_tsquery('english', q)` on the generated `search` column, or the question by `ILIKE` for partial words; ranked by `ts_rank_cd`.
+- **Migrations:** `drizzle/0000_init.sql` (tables, enums, RLS policies), `drizzle/0001_profiles_on_signup.sql` (`on_auth_user_created` trigger inserting a `profiles` row; `SECURITY DEFINER`, empty `search_path`).
+- **Environments:** local (`.env.local`), Vercel Production (`main`) and Preview (pull requests) with the three Supabase variables, and CI with none. All share one Supabase project for now; a separate preview database is a Phase 5 question.
+- **CI** (`.github/workflows/ci.yml`): `npm ci`, lint, typecheck, Vitest, seed `--check`, `next build` without secrets. Vercel builds and deploys independently through its Git integration.
