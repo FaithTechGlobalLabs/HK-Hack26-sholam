@@ -1,15 +1,16 @@
 "use client";
 
-import { Layers, LogIn, MessagesSquare, SquarePen } from "lucide-react";
+import { Layers, LogIn, MessagesSquare } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Dock, { type DockItemData } from "@/components/ui/dock";
+import { BibleChatIcon } from "./BrandIcon";
 import { ChatHistoryPanel } from "./ChatHistoryPanel";
 import { sectionTransition } from "./nav";
 
 /**
- * The bottom dock (Ricky's navigation), on phones only; desktop has the
- * sidebar and the top toggle (AppShell). Reading the pathname suspends on
+ * The bottom dock (Ricky's navigation in Jeff's sky design), on phones
+ * only; desktop has the sidebar and the top toggle (AppShell). Reading the pathname suspends on
  * routes with unknown params (/c/[chatId]) under Cache Components, so the
  * prerendered shell shows the dock with nothing highlighted until the
  * client knows the route. Without the Suspense boundary `next build` fails.
@@ -27,12 +28,13 @@ function ActiveDock() {
 }
 
 /**
- * The current page's tile in the deep sky blue, instead of a small dot. The
- * view-transition name makes the blue tile glide to the new item when the
+ * The current page's item gets Jeff's lit glass tile and glowing underline
+ * (`[data-active]` and `.dock-underline` in app/sky.css). The
+ * view-transition name makes that highlight glide to the new item when the
  * page switches (same "nav-glide" timing as the sidebar, app/sky.css).
  */
 const ACTIVE =
-  "[--dock-tile:var(--sky-accent)] [--dock-ink:#fff] [view-transition-name:dock-current] [view-transition-class:nav-glide]";
+  "[view-transition-name:dock-current] [view-transition-class:nav-glide]";
 
 function NavDock({ pathname }: { pathname: string | null }) {
   const router = useRouter();
@@ -49,8 +51,8 @@ function NavDock({ pathname }: { pathname: string | null }) {
   const items = useMemo<DockItemData[]>(
     () => [
       {
-        icon: <SquarePen />,
-        label: "New chat",
+        icon: <BibleChatIcon />,
+        label: "Chat",
         active: onChat,
         className: onChat ? ACTIVE : undefined,
         onClick: () =>
@@ -71,7 +73,8 @@ function NavDock({ pathname }: { pathname: string | null }) {
       {
         icon: <MessagesSquare />,
         label: "Chats",
-        active: chatsOpen,
+        // Open, not a page: the lit tile without the underline (sky.css).
+        className: chatsOpen ? "dock-open" : undefined,
         onClick: () => setChatsOpen((open) => !open),
       },
       { separator: true },
@@ -88,7 +91,7 @@ function NavDock({ pathname }: { pathname: string | null }) {
       {chatsOpen && (
         <ChatHistoryPanel pathname={pathname} onClose={closeChats} />
       )}
-      <Dock theme="light" items={items} showIndicators={false} />
+      <Dock theme="sky" items={items} bounce={false} />
     </>
   );
 }

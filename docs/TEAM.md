@@ -58,6 +58,15 @@ MustyDusty pushed four commits to `main` while PR #2 was being merged (live Open
 - Switching between Chat and Flashcards animates: pages wrap in `SectionTransition`, links carry `transitionTypes` from `nav.ts`, and the CSS lives at the end of `app/sky.css`. Any new link between the two sections should pass `sectionTransition(from, to)`.
 - `SHOLAM_MODEL` now only accepts `:free` ids (`openrouter-config.ts`).
 
+### Jeff's flashcard carousel and sky dock (from `jeffs-uis` 30df585), 2026-11-14
+
+Taken file by file (the branch was not merged; its `AppShell.tsx` is older than `main`'s):
+
+- **Carousel:** `SwipeDeck.tsx` is Jeff's design (centred sharp card, blurred neighbours, sky art over a tree line, the bubble bridge, ticks and `01 / 179` counter) with the earlier review fixes put back: gesture state resets when Next hides the page (`asked` never reset, so the deck froze after Back), primary button and one pointer only, `pointercancel` snaps back instead of acting as a release, reduced motion drops the slides, the gradient shows when WebGL can't draw, an `aria-live` line, visible **Ask in chat** and **Next** buttons, both card kinds (`discover` shows "Start reading" and passages, never an answer; labels use `passageLabel`). The hold hands off with `queueChatQuestion` + `transitionTypes: ["to-chat"]`, not his `?q=…&send=1`. Card width and art height are CSS (`cqw`, `cqh`), so the server render has the right size and short phones get a shorter sky instead of overflowing. Arrow keys stay global as in his version, but ignore inputs, dialogs and modifier keys.
+- **Phone dock:** the `sky` theme, `data-active`, `.dock-face` and the bottom underline in `dock.tsx`, `BibleChatIcon` (`BrandIcon.tsx`) for Chat, `bounce={false}`, and the bubble-bridge and dock rules at the end of `app/sky.css`. The active item still carries the `dock-current` view-transition name, so the lit tile glides. The open **Chats** item gets the lit tile without the underline (it is a panel, not a page). **Sign in** stays in the dock after a separator, since his `AccountButton` is not taken.
+- **Left out:** the Letters page, its dock item and data; `SplashScreen.tsx` and its CSS; `AccountButton.tsx` (Phase 2); `usage-stats.ts` (`countSwipe`, `recordVisitDay`; the deck does not need it); his `AppShell.tsx`; his deck-reset bookkeeping (the view remounts the deck by `key`); his global Enter/Space flip (the centred card is a button instead).
+- **Not taken:** his `FlashcardsView.tsx` change (`pb-8` → `pb-28`). This view also has the kind switch and the Next / Ask row, so the extra padding pushed the deck into the filters on a 667px-tall phone; the deck sizes itself to the space instead.
+
 Please push to a branch and open a PR rather than pushing to `main` directly: it gives CI and a preview a chance to catch problems first, and avoids two people merging over each other.
 
 ## Contract for flashcard UI work
