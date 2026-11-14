@@ -69,7 +69,7 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 ```
 src/app/(shell)/        Chat (/ and /c/[chatId]) and Flashcards (/flashcards) inside the app shell
 src/app/api/            chat (SSE), flashcards (GET list, POST create)
-src/components/shell/   AppShell, ChatView, Composer, MessageList, VerseChip, SourcesPanel
+src/components/shell/   AppShell, ChatView, Composer, MessageList (answer + passages section), VerseChip (reference pill + passage card)
 src/components/shell/DesktopSidebar.tsx, ModeToggle.tsx  desktop (md+): ChatGPT-style sidebar and the Chat | Flashcards toggle
 src/components/ui/dock.tsx  React Bits dock, phones only, wired in shell/ShellDock.tsx
 src/components/shell/nav.ts, SectionTransition.tsx  view-transition types and the page slide between Chat and Flashcards (CSS in app/sky.css)

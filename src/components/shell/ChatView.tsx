@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { VerseRecord } from "@/lib/agent/events";
 import { takeChatQuestion } from "@/lib/chat/handoff";
 import type { StoredChatMessage } from "@/lib/chat/stored-content";
 import { Composer } from "./Composer";
 import { MessageList } from "./MessageList";
-import { SourcesPanel } from "./SourcesPanel";
 import { useChatStream } from "./useChatStream";
 
 export function ChatView({
@@ -20,7 +18,6 @@ export function ChatView({
   initialMessages?: StoredChatMessage[];
 }) {
   const { messages, busy, send, stop } = useChatStream(chatId, initialMessages);
-  const [sources, setSources] = useState<VerseRecord[] | null>(null);
   const [draft, setDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -91,7 +88,7 @@ export function ChatView({
           <>
             <div className="min-h-0 flex-1 overflow-y-auto">
               <div className="mx-auto max-w-3xl px-4 py-6">
-                <MessageList messages={messages} onShowSources={setSources} />
+                <MessageList messages={messages} />
                 <div ref={bottomRef} />
               </div>
             </div>
@@ -111,9 +108,6 @@ export function ChatView({
           </>
         )}
       </div>
-      {sources && (
-        <SourcesPanel verses={sources} onClose={() => setSources(null)} />
-      )}
     </div>
   );
 }
