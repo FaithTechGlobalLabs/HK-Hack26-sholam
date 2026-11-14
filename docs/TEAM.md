@@ -67,6 +67,12 @@ Taken file by file (the branch was not merged; its `AppShell.tsx` is older than 
 - **Left out:** the Letters page, its dock item and data; `SplashScreen.tsx` and its CSS; `AccountButton.tsx` (Phase 2); `usage-stats.ts` (`countSwipe`, `recordVisitDay`; the deck does not need it); his `AppShell.tsx`; his deck-reset bookkeeping (the view remounts the deck by `key`); his global Enter/Space flip (the centred card is a button instead).
 - **Not taken:** his `FlashcardsView.tsx` change (`pb-8` → `pb-28`). This view also has the kind switch and the Next / Ask row, so the extra padding pushed the deck into the filters on a 667px-tall phone; the deck sizes itself to the space instead.
 
+### Flashcard redesign and launch screen, 2026-11-14
+
+- **Deck (`SwipeDeck.tsx`, Ricky/Jeff):** the owner found the card unclear (the art block had no purpose; nobody knew to tap) and asked for glass and 3D. Each card is now a glass card in a 3D carousel. The front is clear glass with the question and a **Show answer** / **Where to start** button; it turns over (a two-stage turn, so the blur holds) to a milky-glass back with the answer, **Next card** and **Ask Shalom**. The centred card tilts toward the mouse with a light that follows it. Removed: the sky-art block, the bubble bridge, the hold-to-ask gesture and the ticks (now `‹ 12 of 179 ›`). `GradientASCII.tsx` is no longer used; it is kept for now. The placeholder from the load-time work (`SwipeDeckPlaceholder`) is the same glass card.
+- **Launch screen (Jeff's, from `30df585`):** `SplashScreen.tsx` + `splash.css` + `splashSession.ts`, using our cross-cloud mark (`LogoMarkParts` in `Logo.tsx`, same geometry as `LogoMark`) and the `BRAND_NAME` wordmark instead of the speech-bubble icon and "sholam". Classes use a `launch-` prefix so they do not collide with `.splash-*` if `jeffs-uis` lands later.
+- **Glass fix for everyone:** hand-written `-webkit-backdrop-filter` lines were removed from `sky.css`. The CSS pipeline kept only the prefixed property when both were written, so Chrome showed no blur on `.glass` or the glass buttons. Write `backdrop-filter` alone.
+
 Please push to a branch and open a PR rather than pushing to `main` directly: it gives CI and a preview a chance to catch problems first, and avoids two people merging over each other.
 
 ## Contract for flashcard UI work

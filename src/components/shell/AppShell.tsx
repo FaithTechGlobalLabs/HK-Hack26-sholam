@@ -6,6 +6,7 @@ import { CloudSky } from "./CloudSky";
 import { DesktopSidebar } from "./DesktopSidebar";
 import { ModeToggle } from "./ModeToggle";
 import { ShellDock } from "./ShellDock";
+import { SplashScreen } from "./SplashScreen";
 
 /**
  * App frame. Desktop keeps ChatGPT's layout: a sidebar on the left and the
@@ -18,6 +19,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="sky-theme relative isolate flex h-dvh overflow-hidden text-foreground">
       <CloudSky />
+      <SplashScreen />
       <DesktopSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-12 shrink-0 items-center px-2 md:justify-center">
