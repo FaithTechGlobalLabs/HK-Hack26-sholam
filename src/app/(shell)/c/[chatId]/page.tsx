@@ -7,10 +7,10 @@ import { loadChat } from "@/lib/chat/store";
 import { currentUserId } from "@/lib/supabase/server";
 
 /**
- * An existing chat. A chat saved to an account opens only for its owner;
- * anyone else (signed out included) gets the not-found page. An id with no
- * saved chat is a signed-out tab's chat, which ChatView reads from the
- * tab's own history.
+ * An existing chat. A chat saved to an account opens, with its messages,
+ * only for its owner; anyone else (signed out included) gets the
+ * not-found page. An id with no saved chat is a signed-out tab's chat,
+ * which ChatView reads from the tab's own history.
  */
 export default function ChatPage({ params }: PageProps<"/c/[chatId]">) {
   return (
@@ -31,6 +31,14 @@ async function ExistingChat({
       () => null,
     );
     if (found?.status === "not-yours") notFound();
+    if (found?.status === "owned")
+      return (
+        <ChatView
+          chatId={chatId}
+          suggestions={[]}
+          initialMessages={found.messages}
+        />
+      );
   }
   return <ChatView chatId={chatId} suggestions={[]} />;
 }

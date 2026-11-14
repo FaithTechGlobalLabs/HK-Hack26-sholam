@@ -119,6 +119,6 @@ Secrets never go into the repo, issues or chat. Production and preview env vars 
 
 - Sign-in is one flow for new and returning people: an email with a code and a link (ARCHITECTURE.md, Auth). The code works on any device; the link opens `/auth/confirm`, which signs in only after a button press.
 - The account shows at the bottom of the desktop sidebar and top-right on phones (`AccountButton.tsx`, after Jeff's design). **Jeff:** the dock's "Sign in" item (`ShellDock.tsx`) is now redundant on phones and still shows when signed in; remove it or swap it for something else when convenient.
-- Chats for signed-in people are stored per account (`src/lib/chat/store.ts`); the sidebar and the phone Chats panel use `useChatList()`. **Chat harness:** after `chat-harness-fixes` lands, the accounts branch adds the save call in `route.ts` (`appendTurn`, content shape in ARCHITECTURE.md) and the load of a saved chat into `useChatStream`.
+- Chats for signed-in people are stored per account (`src/lib/chat/store.ts`); the sidebar and the phone Chats panel use `useChatList()`. Saving is wired through the harness: `runAgentTurn` takes an optional `onFinish`, which `finishTurn` calls before `done`; `/api/chat` uses it to save signed-in turns. `useChatStream(chatId, initial)` opens saved chats and no longer writes signed-in chats to the tab.
 - The phone Chats panel is now a near-opaque deep-blue surface: inside the footer its glass could not blur the page, so the suggestion chips showed through the titles.
 

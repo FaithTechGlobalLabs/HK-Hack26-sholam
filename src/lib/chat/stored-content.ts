@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { IssueReason } from "@/lib/agent/citations";
 import type { VerseRecord } from "@/lib/agent/events";
 import type { FlashcardDraft, FlashcardSummary } from "@/lib/flashcards/types";
 
@@ -20,6 +21,8 @@ import type { FlashcardDraft, FlashcardSummary } from "@/lib/flashcards/types";
  * - `verses` are the verse records tools returned this turn: the only
  *   verses this answer may cite (AGENTS.md rule 1). Reloading a chat
  *   renders citations against these, never against new lookups.
+ * - `citations` is the server's final check (the `citations` event), so a
+ *   reloaded answer shows the same unverified marks it had live.
  * - `source: "tab-import"` marks answers copied from a signed-out tab's
  *   history on first sign-in. They carry text only (`turn` empty, no
  *   verses), so their citations show as unverified.
@@ -46,6 +49,18 @@ export const storedAssistantContentSchema = z.object({
   turn: z.array(z.unknown()),
   text: z.string(),
   verses: z.array(verseRecordSchema),
+  citations: z
+    .object({
+      unverified: z.array(
+        z.object({
+          verseId: z.string(),
+          label: z.string(),
+          reason: z.enum(["not_fetched", "quote_mismatch"]),
+        }),
+      ),
+      quoteWarnings: z.array(z.string()),
+    })
+    .optional(),
   cards: z.array(z.unknown()).optional(),
   proposal: z.unknown().optional(),
   stopReason: z.string().optional(),
@@ -75,6 +90,32 @@ export function importedAssistantContent(text: string): StoredAssistantContent {
   };
 }
 
+/** The assistant row for an answered OpenRouter turn (see the harness's `onFinish`). */
+export function assistantContentFromTurn(
+  turn: {
+    text: string;
+    model: string;
+    stopReason: string;
+    messages: unknown[];
+    verses: VerseRecord[];
+    citations: StoredAssistantContent["citations"];
+  },
+  shown: { cards?: FlashcardSummary[]; proposal?: FlashcardDraft } = {},
+): StoredAssistantContent {
+  return {
+    v: STORED_CONTENT_VERSION,
+    source: "openrouter",
+    model: turn.model,
+    turn: turn.messages,
+    text: turn.text,
+    verses: turn.verses,
+    citations: turn.citations,
+    ...(shown.cards?.length ? { cards: shown.cards } : {}),
+    ...(shown.proposal ? { proposal: shown.proposal } : {}),
+    stopReason: turn.stopReason,
+  };
+}
+
 /** A stored message ready for the chat view. */
 export interface StoredChatMessage {
   id: string;
@@ -82,6 +123,10 @@ export interface StoredChatMessage {
   text: string;
   /** Verses fetched in that turn, by id (drives verse chips). */
   verses: Record<string, VerseRecord>;
+  /** Citations the final check did not verify, by verse id. */
+  unverified: Record<string, IssueReason>;
+  /** Plain references whose quoted words were not checked. */
+  quoteWarnings: string[];
   cards: FlashcardSummary[];
   proposal?: FlashcardDraft;
   error?: string;
@@ -112,6 +157,8 @@ export function toChatMessages(
           role: "user",
           text: parsed.data.text,
           verses: {},
+          unverified: {},
+          quoteWarnings: [],
           cards: [],
         });
       continue;
@@ -124,6 +171,10 @@ export function toChatMessages(
       role: "assistant",
       text: c.text,
       verses: Object.fromEntries(c.verses.map((v) => [v.id, v])),
+      unverified: Object.fromEntries(
+        (c.citations?.unverified ?? []).map((u) => [u.verseId, u.reason]),
+      ),
+      quoteWarnings: c.citations?.quoteWarnings ?? [],
       cards: (c.cards ?? []) as FlashcardSummary[],
       proposal: c.proposal as FlashcardDraft | undefined,
       error: c.error,

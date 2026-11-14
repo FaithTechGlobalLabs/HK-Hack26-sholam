@@ -139,13 +139,14 @@ Status (2026-11-14):
 | Email templates with code and `/auth/confirm` link | Proposed above; needs the owner's approval to apply |
 | Built-in Supabase mailer | **2 emails per hour for the whole project, and only to addresses in the project's team** (`email_address_not_authorized` otherwise). Custom SMTP needed before anyone outside the team can sign in |
 | Signed-in state in the UI (sidebar account menu, phone header chip, sign-out) | Built (checked at 1280 and 375 px with stubbed account data) |
-| Chats saved per user, history list, owner-only `/c/[chatId]` | Store, APIs, lists and owner check built; saving each turn and loading a saved chat into the chat view wait for `chat-harness-fixes` (it owns `route.ts` and `useChatStream.ts`) |
+| Chats saved per user, history list, owner-only `/c/[chatId]` | Built: answered turns are saved through the harness's `onFinish`, saved chats open with their messages and citation marks. Checked by unit tests and the store against local Postgres; not yet with a real signed-in session |
 | Google sign-in | Not configured (needs a Google OAuth client) |
 
 ## Chat storage (`src/lib/chat/store.ts`, `stored-content.ts`)
 
 Signed-in chats live in `chats` / `messages`. The server connects as the owner, so every store function takes the signed-in user's id and every query filters on `chats.user_id` (tests check the SQL, and run the store against a real Postgres when `TEST_DATABASE_URL` is set). Ids are browser-made UUIDs; a write to an id owned by another account throws `ChatOwnershipError`.
 
+- Saving: `/api/chat` passes `onFinish` to `runAgentTurn`; `finishTurn` in `harness.ts` (the one place an answered turn ends) calls it before `done` with the answer, the turn's verbatim messages, the verses fetched and the citation check, and the route writes the user row and the assistant row with `appendTurn`. Error and demo turns are not saved. A failed save is logged; the answer still streams. In the browser, `useChatStream` stops writing a signed-in chat to the tab, opens a saved chat from the rows `/c/[chatId]` loaded, and saves a tab chat's earlier messages (`/api/chats/import`) before continuing it signed in.
 - `appendTurn(db, userId, chatId, rows)`: creates the chat on its first turn (title from the first user message), locks it, and appends rows after the highest `seq`. Nothing updates or deletes a message.
 - `listChats` (newest first, with message counts) backs `GET /api/chats`; `loadChat` backs `GET /api/chats/[chatId]` and `/c/[chatId]`: `owned` (messages), `not-yours` (404 page), `missing` (a signed-out tab's chat, read from the tab).
 - `importTabChats` backs `POST /api/chats/import`: on sign-in, the sidebar and phone panel offer to keep the tab's chats; chats already saved get only the messages after the ones they have.
@@ -156,7 +157,7 @@ Signed-in chats live in `chats` / `messages`. The server connects as the owner, 
 | Role | Shape |
 |---|---|
 | `user` | `{ v: 1, text }`: what the person typed. The personalization note the server appends is rebuilt each turn, not stored |
-| `assistant` | `{ v: 1, source: "openrouter" \| "demo" \| "tab-import", model?, turn, text, verses, cards?, proposal?, stopReason?, error? }`. `turn` holds the OpenAI-format messages the model produced that turn, verbatim and in order (assistant with `tool_calls`, `tool` results, final assistant); any `reasoning` / `reasoning_details` the provider returns stay on those messages. `text` is the answer shown. `verses` are the records tools returned that turn, the only verses the answer may cite: reloading renders citations against them, never against new lookups. Imported tab answers carry text only (`turn` empty, no verses), so their citations show as unverified |
+| `assistant` | `{ v: 1, source: "openrouter" \| "demo" \| "tab-import", model?, turn, text, verses, citations?, cards?, proposal?, stopReason?, error? }`. `turn` holds the OpenAI-format messages the model produced that turn, verbatim and in order (assistant with `tool_calls`, `tool` results, final assistant); any `reasoning` / `reasoning_details` the provider returns stay on those messages. `text` is the answer shown. `verses` are the records tools returned that turn, the only verses the answer may cite: reloading renders citations against them, never against new lookups. `citations` is the final check (`unverified`, `quoteWarnings`), so a reloaded answer keeps its marks. `cards` / `proposal` are what the answer showed. Imported tab answers carry text only (`turn` empty, no verses), so their citations show as unverified |
 
 ## Bible references (`src/lib/bible/`)
 

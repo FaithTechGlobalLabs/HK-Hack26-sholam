@@ -1,8 +1,13 @@
 import { z } from "zod";
+import { getDb, isDatabaseConfigured } from "@/db";
 import { clip } from "@/lib/agent/context";
 import { demoTurn } from "@/lib/agent/demo";
 import { type AgentEvent, eventStream } from "@/lib/agent/events";
-import { runAgentTurn, shouldUseLiveAgent } from "@/lib/agent/harness";
+import {
+  type FinishedTurn,
+  runAgentTurn,
+  shouldUseLiveAgent,
+} from "@/lib/agent/harness";
 import { LIMITS } from "@/lib/agent/limits";
 import {
   admitTurn,
@@ -11,12 +16,18 @@ import {
   visitorKey,
 } from "@/lib/agent/usage-limit";
 import { usageStore } from "@/lib/agent/usage-store";
+import { appendTurn, isChatId } from "@/lib/chat/store";
+import {
+  assistantContentFromTurn,
+  userContent,
+} from "@/lib/chat/stored-content";
 import {
   formatCardForPrompt,
   rankFlashcards,
   toSummary,
 } from "@/lib/flashcards/rank";
 import { listFlashcards } from "@/lib/flashcards/repo";
+import type { FlashcardDraft, FlashcardSummary } from "@/lib/flashcards/types";
 import { currentUserId } from "@/lib/supabase/server";
 
 const historyTurnSchema = z.strictObject({
@@ -45,7 +56,9 @@ const SSE_HEADERS = {
  * Live OpenRouter guide when a key is present (unless SHOLAM_AGENT=demo).
  * Live turns are counted per visitor and against a global daily ceiling
  * (lib/agent/usage-limit.ts); over a limit the answer is a 429 with a
- * friendly `{ error }`.
+ * friendly `{ error }`. A signed-in person's answered turns are saved to
+ * their account (lib/chat/store.ts) before `done`; demo and error turns
+ * are not.
  */
 export async function POST(request: Request) {
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
@@ -117,12 +130,34 @@ export async function POST(request: Request) {
     matchedSummaries = [];
   }
 
+  // What the answer showed besides its text, for the saved turn.
+  const shown: { cards?: FlashcardSummary[]; proposal?: FlashcardDraft } = {};
+  const saveTurn =
+    userId && chatId && isChatId(chatId) && isDatabaseConfigured()
+      ? async (turn: FinishedTurn) => {
+          try {
+            await appendTurn(getDb(), userId, chatId, [
+              { role: "user", content: userContent(message) },
+              {
+                role: "assistant",
+                content: assistantContentFromTurn(turn, shown),
+              },
+            ]);
+          } catch (err) {
+            // Another account's chat id, or the database is down: the
+            // answer still reaches the browser, it just isn't saved.
+            console.warn("[chat] turn not saved:", err);
+          }
+        }
+      : undefined;
+
   const events = (async function* (): AsyncGenerator<AgentEvent> {
     try {
       if (matchedSummaries.length) {
+        shown.cards = matchedSummaries;
         yield { type: "flashcards", cards: matchedSummaries };
       }
-      yield* runAgentTurn({
+      for await (const event of runAgentTurn({
         chatId: chatId ?? crypto.randomUUID(),
         userId,
         userMessage: message,
@@ -130,7 +165,13 @@ export async function POST(request: Request) {
         matchedCardLines,
         signal: abort.signal,
         reserveModelCall: () => reserveModelCall(store),
-      });
+        onFinish: saveTurn,
+      })) {
+        if (event.type === "flashcards") shown.cards = event.cards;
+        else if (event.type === "flashcard_proposal")
+          shown.proposal = event.draft;
+        yield event;
+      }
     } finally {
       request.signal.removeEventListener("abort", onClientGone);
     }

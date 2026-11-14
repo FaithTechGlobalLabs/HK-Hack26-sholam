@@ -77,7 +77,7 @@ Project structure, docs, `AGENTS.md` + `CLAUDE.md` symlink, app shell with Chat 
 ### Phase 2: chat
 The OpenRouter streaming loop is in `harness.ts` (Postgres verse text, keyword card ranking, browser history). Still open:
 
-- Accounts (branch `accounts`): code + link sign-in, account menu, sign-out, per-account chat store and lists, owner-only `/c/[chatId]`. Left: save each turn in `route.ts` and load saved chats into `useChatStream` once `chat-harness-fixes` lands; owner decisions on the email templates and SMTP (ARCHITECTURE.md, Auth).
+- Accounts (branch `accounts`): code + link sign-in, account menu, sign-out, per-account chat store and lists, owner-only `/c/[chatId]`. Answered turns are saved and saved chats reopen. Left: owner decisions on the email templates and SMTP (ARCHITECTURE.md, Auth), then a real signed-in test.
 - Search per SEARCH.md §8: `verses.pos`, a `sections` table from the importer, `search_bible` (verses + headings + any-term fallback), `read_passage`, `lookup_verses` on `parseReference`, the search policy in the prompt, and the eval on the real loop.
 - `search_flashcards` and `propose_flashcard` on the database; discover cards open in chat with their starting points.
 - The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, history and search. The desktop sidebar and the phone Chats panel read `useChatList()` (account chats when signed in).

@@ -16,6 +16,7 @@ import {
   ownedMessagesQuery,
 } from "@/lib/chat/store";
 import {
+  assistantContentFromTurn,
   type StoredAssistantContent,
   toChatMessages,
   toHistoryTurns,
@@ -88,6 +89,32 @@ describe("stored content", () => {
       { role: "user", content: "Who is Jesus?" },
       { role: "assistant", content: "He is…" },
     ]);
+  });
+});
+
+describe("saved answers keep what was shown live", () => {
+  it("round-trips a finished turn, citation marks included", () => {
+    const content = assistantContentFromTurn(
+      {
+        text: "See [John 3:16](verse:JHN.3.16) and [Acts 1:1](verse:ACT.1.1).",
+        model: "m:free",
+        stopReason: "stop",
+        messages: [{ role: "assistant", content: "…" }],
+        verses: answer("").verses,
+        citations: {
+          unverified: [
+            { verseId: "ACT.1.1", label: "Acts 1:1", reason: "not_fetched" },
+          ],
+          quoteWarnings: ["Psalm 23:1"],
+        },
+      },
+      { proposal: undefined, cards: [] },
+    );
+    expect(content).not.toHaveProperty("cards");
+    const [m] = toChatMessages(CHAT, [{ seq: 1, role: "assistant", content }]);
+    expect(m.unverified).toEqual({ "ACT.1.1": "not_fetched" });
+    expect(m.quoteWarnings).toEqual(["Psalm 23:1"]);
+    expect(Object.keys(m.verses)).toEqual(["JHN.3.16"]);
   });
 });
 
