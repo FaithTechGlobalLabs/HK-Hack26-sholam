@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LIMITS } from "@/lib/agent/limits";
 import { searchBibleText } from "@/lib/bible/bsb";
 import { defineTool } from "./types";
 
@@ -13,7 +14,7 @@ export const searchBible = defineTool({
       .string()
       .optional()
       .describe("Limit to one book, by name or code, e.g. 'Psalms' or 'PSA'"),
-    limit: z.number().int().min(1).max(20).default(8),
+    limit: z.number().int().min(1).max(LIMITS.tools.searchHits).default(8),
   }),
   async run(input, ctx) {
     const hits = await searchBibleText({
@@ -21,26 +22,18 @@ export const searchBible = defineTool({
       testament: input.testament,
       book: input.book,
       limit: input.limit,
+      signal: ctx.signal,
     });
     if (!hits.length) return `No verses matched "${input.query}".`;
 
-    for (const v of hits) {
-      ctx.versesSeen.set(v.id, {
-        id: v.id,
-        label: v.label,
-        text: v.text,
-        translation: v.translation,
-      });
-    }
-    ctx.emit({
-      type: "verses",
-      verses: hits.map((v) => ({
-        id: v.id,
-        label: v.label,
-        text: v.text,
-        translation: v.translation,
-      })),
-    });
+    const records = hits.map((v) => ({
+      id: v.id,
+      label: v.label,
+      text: v.text,
+      translation: v.translation,
+    }));
+    for (const r of records) ctx.versesSeen.set(r.id, r);
+    ctx.emit({ type: "verses", verses: records });
 
     return hits.map((v) => `${v.id} | ${v.text}`).join("\n");
   },

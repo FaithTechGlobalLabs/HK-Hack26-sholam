@@ -80,7 +80,7 @@ src/lib/chat/store.ts  per-account chats in Postgres (every query filters by use
 src/components/shell/ChatHistoryPanel.tsx  recent chats on phones, opened from the dock's Chats item (desktop lists them in the sidebar)
 src/lib/brand.ts  BRAND_NAME, the product name shown in the UI
 src/components/flashcards/  FlashcardsView, SwipeDeck (+ GradientASCII), FlashcardCard, StudyMode, NewCardDialog, FlashcardProposal
-src/lib/agent/          harness (loop), events (SSE protocol), citations, system-prompt, tools/, demo
+src/lib/agent/          harness (loop), events (SSE protocol), citations (verified = fetched before the answer), limits (every cap), context (trimming), usage-limit/usage-store (per-visitor + daily limits), tool-call-text, system-prompt, tools/, demo
 src/lib/bible/          books (canon table), refs (verse ids, reference parser)
 src/lib/flashcards/     types (zod schema), repo (DB or seed), deck (cached public deck + revalidateDeck), shuffle (tested Fisher–Yates + deckView)
 src/db/                 Drizzle schema + RLS policies, client

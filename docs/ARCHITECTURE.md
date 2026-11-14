@@ -8,7 +8,7 @@ Last updated: 2026-11-14
 Browser (React client components)
   ChatView ── POST /api/chat ──────────────► route handler ──► harness.runAgentTurn
      ▲            (SSE: AgentEvent frames)                     │  OpenRouter chat completions (stream)
-     └── SseDecoder ◄──────────────────────────────────────────┤  tools ──► BSB (helloao) + seed deck
+     └── SseDecoder ◄──────────────────────────────────────────┤  tools ──► BSB (`verses` table; helloao without a DB) + deck
   FlashcardsView ◄── cached deck in the static /flashcards page (deck.ts ──► repo)
   FlashcardsView ── POST /api/flashcards ──► repo ─────────────┘
   LoginForm ── signInWithOtp ──► one email: 8-digit code + link
@@ -24,30 +24,50 @@ Without env vars the app still runs: `/api/chat` streams `lib/agent/demo.ts`, an
 
 **Why a manual loop:** we need our own event stream to the browser (verse records, card hits, proposals) alongside text, so we drive OpenRouter streaming ourselves.
 
-**Provider** (`openrouter.ts`): OpenAI-compatible `POST {OPENROUTER_BASE_URL}/chat/completions` with `Authorization: Bearer` from `OPENROUTER_API_KEY` (server only). Model from `SHOLAM_MODEL`, free `:free` ids only (default `nvidia/nemotron-3-ultra-550b-a55b:free`; any other id falls back to it). Reasoning is `effort: low` and excluded from the reply; any leaked `<think>` text is stripped. Providers are sorted by latency under a price cap, so a cheap slow host is not preferred. The answer streams in one completion; verse text for citations is loaded after, without a second model call. Timeouts ~45s; `temperature` 0.4; `max_tokens` 900. Free models are spaced under OpenRouter's ~20/minute cap and share its daily free cap.
+**Provider** (`openrouter.ts`): OpenAI-compatible `POST {OPENROUTER_BASE_URL}/chat/completions` with `Authorization: Bearer` from `OPENROUTER_API_KEY` (server only). Model from `SHOLAM_MODEL`, free `:free` ids only (default `nvidia/nemotron-3-ultra-550b-a55b:free`; any other id falls back to it). Reasoning is `effort: low` and excluded from the reply; any leaked `<think>` text is stripped (`reasoning-filter.ts`). Nemotron sometimes writes a tool call into the streamed text (`<tool_call><function=…><parameter=…>…`, or the Hermes JSON form) instead of a `tool_calls` delta; `tool-call-text.ts` holds back anything that could be the start of such a block, so no partial tag reaches the user, and turns complete blocks into real tool calls. Every request sends the same tool list (byte-stable prompt); when tools are not offered it sends `tool_choice: "none"`. Providers are sorted by latency under a price cap. Timeouts ~45s; `temperature` 0.4; `max_tokens` from `LIMITS.model`. Free models are spaced under OpenRouter's 20/minute cap. The caller's `AbortSignal` cancels the request, the stream and any retry wait (`TurnAborted`, never reported as an error).
 
-**Request** (`buildMessages` in `harness.ts`): stable `SYSTEM_PROMPT`, prior user/assistant text turns from the browser, then the new user message plus a trailing personalization note (earlier questions + strong flashcard matches). Tools stay a fixed ordered list from zod schemas.
+**Request** (`context.ts`): `buildPromptParts` keeps the newest history turns within `LIMITS.model` (count, per-turn and total characters), the last few user questions and at most three matched-card lines for the trailing session note. `assemblePrompt` builds `[SYSTEM_PROMPT, ...history, question + note, ...this turn's tool calls and results]` and, if it is over `promptChars`, drops the oldest history first, then clips the longest tool results. The system prompt and tool list are never edited per request (prompt caching).
 
-**Loop**, per user turn:
+**Loop**, per user turn (`harness.ts`), at most `LIMITS.turn.maxModelCalls` (4) requests:
 
-1. Build messages; stream one completion.
-2. Forward text deltas as `text_delta`.
-3. On `tool_calls`: validate each input with its zod schema; run tools; emit `tool_start` / `tool_result` (and `verses` / `flashcards` / `flashcard_proposal` from tools); append tool results; loop.
-4. On a plain text finish: citation check against `versesSeen`, emit `done`.
-5. Stop after `maxSteps` with an `error` event. Provider failures become friendly `error` events (no credentials in the message).
+1. Before each request, `reserveModelCall()` counts it against the global daily ceiling; when the ceiling is reached the turn ends with a friendly `error`.
+2. Stream a completion; forward text as `text_delta`. Tools are offered (`tool_choice: auto`) for up to `maxToolRounds` (2) rounds while a request is left to answer with.
+3. On tool calls: if the model wrote a preamble first, send `reset` (the browser clears it). Validate each input with its zod schema, run the tools (each gets the abort signal), emit `tool_start` / `tool_result` (and `verses` / `flashcards` / `flashcard_proposal`), append clipped results, loop. An answer that ends with only `propose_flashcard` keeps its text and finishes without another request.
+4. On a text answer: `checkAnswer` (below). If the answer quotes Scripture that no tool returned before it, or changes the words, and a request is left: the server fetches those verses (a `lookup_verses` shown in the UI), sends `reset`, and asks for **one** rewrite with the BSB text and no tools. If the rewrite fails, the draft is restored (`reset` with `text`) with its flags.
+5. Send `citations` (verse links that stay unverified, plain references whose quotes were not checked), then `done`. Nothing fetched after the final answer is ever sent as a verified verse.
+6. Provider failures become friendly `error` events (no credentials in the message). An abort ends the turn silently.
 
 **Tools** (`tools/`, one file each; zod schema → JSON Schema, order fixed):
 
 | Tool | Does | Emits |
 |---|---|---|
 | `search_flashcards(query, kind?, category?, limit)` | Keyword rank over published fact and discover cards (thresholded). With `DATABASE_URL`, the list itself is Postgres FTS | `flashcards` |
-| `lookup_verses(references[])` | `parseReference`, then fetch exact BSB text (helloao cache today; `verses` in Phase 2) | `verses` |
-| `search_bible(query, testament?, book?, limit)` | Keyword search over the cached BSB. Phase 2 moves this to verse full-text + section headings (SEARCH.md §5) | `verses` |
+| `lookup_verses(references[])` | `parseReference`, then exact BSB text from `verses` (one query per call). At most 40 verses and 6 chapter spans per call, so "Genesis 1-50" returns the first 40 verses and says it was cut | `verses` |
+| `search_bible(query, testament?, book?, limit)` | Full-text on `verses.search`: all terms first (`websearch_to_tsquery`), then any-term matches to fill the limit (max 10). Section headings come later (SEARCH.md §5) | `verses` |
 | `propose_flashcard(draft)` | Check refs were fetched this turn; **saves nothing** | `flashcard_proposal` |
 
 `read_passage` (a verse with context, a range, a section, or a chapter) is specified for Phase 2 and is not registered yet. Search strategy, indexes and the agent's search policy: [SEARCH.md](SEARCH.md). Tool lifecycle, `search_result` citations and the UI catalog: [HARNESS-UI.md](HARNESS-UI.md).
 
-Each tool gets a `ToolContext` with the user id, translation, `emit()` and `versesSeen` (verse id → record) for the citation check.
+Each tool gets a `ToolContext` with the user id, translation, `emit()`, `versesSeen` (verse id → record) for the citation check, and the turn's abort `signal`.
+
+**Verse source** (`src/lib/bible/bsb.ts`): with `DATABASE_URL` set, `lookupRanges` and `searchBibleText` query the `verses` table (31,086 BSB verses; the range join uses `verses_order_idx`). Without it (CI, a fresh clone) they fall back to `bible.helloao.org` with an 8 s timeout per chapter and 20 s for the search index; only successful loads are cached, and a failed index load is retried after a minute instead of failing until restart.
+
+## Limits (`src/lib/agent/limits.ts`)
+
+Every size and count lives in `LIMITS`, which client code and tests import too. Characters, not tokens (about 4 per English token).
+
+| Group | What it caps |
+|---|---|
+| `client` | The browser sends the newest 12 turns, at most 16,000 characters (`trimHistory`) |
+| `request` | `/api/chat` answers 400 only above 200 history items, 20,000 characters per item or 8,000 in the message; anything smaller is trimmed, never rejected |
+| `model` | 8 history turns, 1,200 characters each, 6,000 in total; 4 earlier questions; 3 card lines of 280 characters; 32,000 characters per request; `max_tokens` 900 |
+| `tools` | 40 verses and 6 chapter spans per lookup, 10 search hits, 5 card hits, 6,000 characters per tool result; helloao timeouts |
+| `turn` | 4 model requests, 2 tool rounds, 8 verses for the corrective rewrite |
+| `usage` | 20 turns per visitor per hour, 60 per UTC day; 800 model requests per UTC day for everyone (`SHOLAM_DAILY_MODEL_CALLS` overrides) |
+
+## Usage limits (`usage-limit.ts`, `usage-store.ts`)
+
+`/api/chat` counts each live turn in Postgres (`usage_counters`, shared by every Vercel instance) before it calls the model. The visitor is the signed-in user id, or an HMAC of the client IP (`x-vercel-forwarded-for`, then `x-real-ip`, then the first `x-forwarded-for` hop) keyed by `SHOLAM_RATE_LIMIT_SALT` or, if unset, another server secret. Raw IPs are never stored. Over a visitor limit, or once the global ceiling is reached, the route answers **429** with `{ error }` (a friendly sentence) and `Retry-After`; the browser shows the sentence. Each model request also increments the global counter, so a long tool loop counts in full. OpenRouter allows 1000 free requests a day to accounts that bought at least 10 credits (this one bought 15), so the default ceiling of 800 leaves room for local runs on the same key. Without `DATABASE_URL` the counters are per-process memory. If Postgres fails or the table is not migrated yet, the store switches to per-instance memory counters for 10 minutes (one warning), then tries Postgres again; if even that fails, the turn is let through (OpenRouter's own limit still applies). The harness ends every answered turn in one place, `finishTurn` in `harness.ts`, where the final text, its citation check, the verses fetched and the user id are all at hand. `rate-limit.ts` still paces retries after an OpenRouter 429 within one instance.
 
 ## Model route (`src/lib/agent/openrouter.ts`)
 
@@ -55,7 +75,7 @@ Chat calls OpenRouter's OpenAI-compatible chat completions. `OPENROUTER_API_KEY`
 
 ## SSE protocol (`events.ts`)
 
-One frame per event: `event: <type>\ndata: <json>\n\n`. The browser uses fetch + `ReadableStream` (EventSource cannot POST) and `SseDecoder`, which tolerates arbitrary chunk splits and drops unknown or malformed frames.
+One frame per event: `event: <type>\ndata: <json>\n\n`. The browser uses fetch + `ReadableStream` (EventSource cannot POST) and `SseDecoder`, which tolerates arbitrary chunk splits and drops unknown or malformed frames. `eventStream` pulls one event at a time; when the client goes away (Stop aborts the browser's fetch; closing the tab or leaving the chat does too) its `cancel()` aborts the turn's signal, which cancels the model request, tool fetches and retry waits.
 
 | Event | Payload |
 |---|---|
@@ -65,12 +85,14 @@ One frame per event: `event: <type>\ndata: <json>\n\n`. The browser uses fetch +
 | `verses` | `verses: { id, label, text, translation }[]` |
 | `flashcards` | `cards: FlashcardSummary[]` |
 | `flashcard_proposal` | `draft: FlashcardDraft` |
+| `reset` | `reason` (`tool_call` \| `verse_check` \| `restore`), `text?`: replace the answer streamed so far with `text` (default empty) |
+| `citations` | `unverified: { verseId, label, reason }[]`, `quoteWarnings: string[]`; sent once, before `done` |
 | `done` | `stopReason`, `messageId?` |
 | `error` | `message` |
 
 ## Citations (`citations.ts`)
 
-The model cites as markdown links: `[John 3:16](verse:JHN.3.16)`. A citation is **verified** when its verse id is in `versesSeen` for the turn. `MessageList` lets `verse:` URLs through react-markdown's URL filter and renders them with `VerseChip`: verified cites become chips with the verse text on hover and feed the Sources panel; others show the label with an "unverified" mark.
+The model cites as markdown links: `[John 3:16](verse:JHN.3.16)`. A citation is **verified** only when a tool returned that verse during the turn *before the answer was written*, and any words quoted for it match the returned BSB text. `checkAnswer` finds quotations (“…”, "…", `>` blocks; Latin script only, code ignored) and the reference right next to them (a `verse:` link or a plain "Romans 8:28"), then compares words, ignoring case, punctuation and apostrophe style, with `…` allowed between parts. Not fetched → `not_fetched`; fetched but different words → `quote_mismatch`. Quotes with no reference beside them, and non-English quotations, are not judged. The server sends the result as `citations`; `MessageList` renders `verse:` links with `VerseChip`: a chip with the verse text on hover when verified, otherwise the label marked "unverified" with the reason on hover, and a note under the answer for plain references whose quotes were not checked.
 
 ## Data model (`src/db/schema.ts`, migrations in `drizzle/`)
 
@@ -82,6 +104,7 @@ The model cites as markdown links: `[John 3:16](verse:JHN.3.16)`. A citation is 
 | `flashcards` | `kind` (`fact` \| `discover`), `slug` (seed key), `question`, `answer`, `explanation`, `category`, `tone`, `difficulty`, `refs` text[] (passage refs), `tags`, `minutes`, `section`, `source`, `author_id`, `status`, `search` tsvector (generated, GIN). Check `flashcards_fact_fields`: fact cards need answer, tone and difficulty | anyone reads `published`; authors insert/update own |
 | `flashcard_reports` | `flashcard_id`, `user_id`, `reason` (one per user per card) | insert own |
 | `verses` | PK (`translation`, `id`), `book`, `book_order`, `testament`, `chapter`, `verse`, `text`, `search` tsvector (generated, GIN) | public read |
+| `usage_counters` | PK (`subject`, `period`), `count`, `updated_at`. `subject` is `global`, `u:<user id>` or `ip:<HMAC>`; `period` is `d:YYYY-MM-DD` or `h:YYYY-MM-DDTHH` (UTC). Rows older than 3 days are pruned | RLS on, no policies (server only) |
 
 Until `DATABASE_URL` is set, flashcards come from `data/flashcards.seed.json` and BSB text is fetched/cached from helloao (see SOURCES.md). Signed-out chat threads are kept in the browser `sessionStorage`; signed-in chats are stored per account (see "Chat storage"). Either way the browser still resends text history with each turn.
 
@@ -137,7 +160,7 @@ Signed-in chats live in `chats` / `messages`. The server connects as the owner, 
 
 ## Bible references (`src/lib/bible/`)
 
-`books.ts` holds the 66-book canon with USFM codes, names, chapter counts and aliases (`findBook` handles "1 Cor", "I John", "First John", "Ps"). Verse ids are `BOOK.chapter.verse`. `refs.ts` handles verse ids and passage refs (`MAT.18.21-MAT.18.35`, `DAN.4`, `GEN.1-GEN.2`), labels them ("Matthew 18:21–35"), and `parseReference` turns human references ("John 3:16-18", "1 Cor 13:4, 7", "Daniel 4", "John 12:1–8; Mark 14:3–9") into passage refs. `passageToVerseRanges` expands those into per-chapter spans for the helloao fetcher in `bsb.ts`. Verse bounds for stored cards are checked against `verses`, not in code.
+`books.ts` holds the 66-book canon with USFM codes, names, chapter counts and aliases (`findBook` handles "1 Cor", "I John", "First John", "Ps"). Verse ids are `BOOK.chapter.verse`. `refs.ts` handles verse ids and passage refs (`MAT.18.21-MAT.18.35`, `DAN.4`, `GEN.1-GEN.2`), labels them ("Matthew 18:21–35"), and `parseReference` turns human references ("John 3:16-18", "1 Cor 13:4, 7", "Daniel 4", "John 12:1–8; Mark 14:3–9") into passage refs. `passageToVerseRanges` expands those into per-chapter spans for `lookupRanges` in `bsb.ts`. Verse bounds for stored cards are checked against `verses`, not in code.
 
 ## Data pipeline and environments
 
@@ -149,6 +172,6 @@ Signed-in chats live in `chats` / `messages`. The server connects as the owner, 
 - **Flashcards page** (`/flashcards`, `src/lib/flashcards/deck.ts`): `getPublicDeck()` is `"use cache"` + `cacheLife("hours")` + `cacheTag("flashcards")` over `listFlashcards({ limit: 200 })`. It takes no arguments and reads no cookies, so one copy serves everyone and the page builds as static (○, revalidate 1 h, expire 1 d): Vercel's CDN serves the HTML with the cards in it, with no function or database call on the request. Hourly background revalidation picks up cards seeded by script; anything in the app that creates, hides or edits a card calls `revalidateDeck()` (`revalidateTag(tag, { expire: 0 })`). Nothing per-user may enter this cache. In the browser, `FlashcardsView` renders the deck under `use(browser())`: it shuffles once per mount with Fisher–Yates (`shuffled` in `shuffle.ts`), and `deckView` applies the kind filter and moves a chat-linked `?card=<id>` to the front without reshuffling. Until hydration `SwipeDeckPlaceholder` (the carousel's centred card, built from its own constants) holds the space, so nothing shifts (CLS 0). `?card` is read in its own Suspense boundary, because `useSearchParams` would otherwise pull the page out of the static shell.
 - **Function region:** `vercel.json` pins functions to `sin1` (Singapore), the database's region. Vercel's default is `iad1` (Washington), which put two trans-Pacific legs on every query. Routing middleware (`src/proxy.ts`) runs in every region regardless.
 - **Flashcards load, measured 2026-11-14** (before: deck streamed per request from `iad1`; after: static page). Postgres runs the list query in 0.6 ms; the rest was network. Production, curl: shell TTFB median 0.93 s, deck 0.8–2.6 s after it; headless Chrome: first card 2.4–12.6 s (median 5.1 s). Local `next start`: deck 1.0 s warm, 13 s on a cold connection, first card in Chrome 1.4 s. After, local: whole page in 4–8 ms, first card 178 ms (it waits only for hydration), HTML 148 → 132 KB (gzip 25.9 → 24.3 KB). After, production (`894d870`, `/flashcards` served as `x-vercel-cache: PRERENDER`, functions `pdx1::sin1`): curl TTFB median 931 → 306 ms, deck in the stream 2,026 → 620 ms (now just the download after the first byte); headless Chrome first card median 5.1 → 2.1 s (range 2.4–12.6 s → 0.99–4.5 s). Those runs were from a US West network where even `/icon.svg` took 0.5–1.4 s, so most of what remains is network plus loading the JS that hydrates the deck. JS is unchanged at ~255 KB gzip; `zod` reaches the client through `types.ts`. Steady client cost at phone size: the canvas sky (`CloudSky`) about 60 ms/s of main thread (213 ms/s at 4× CPU throttle); the WebGL card background about 28 ms/s more at 4×.
-- **Migrations:** `drizzle/0000_init.sql` (tables, enums, RLS policies), `drizzle/0001_profiles_on_signup.sql` (`on_auth_user_created` trigger inserting a `profiles` row; `SECURITY DEFINER`, empty `search_path`), `drizzle/0002_discover_cards.sql` (card kinds and discover fields; hand-reordered because drizzle-kit re-added the generated `search` column before `section` existed and dropped its GIN index without recreating it; check generated SQL for this whenever a generated column changes).
+- **Migrations:** `drizzle/0000_init.sql` (tables, enums, RLS policies), `drizzle/0001_profiles_on_signup.sql` (`on_auth_user_created` trigger inserting a `profiles` row; `SECURITY DEFINER`, empty `search_path`), `drizzle/0002_discover_cards.sql` (card kinds and discover fields; hand-reordered because drizzle-kit re-added the generated `search` column before `section` existed and dropped its GIN index without recreating it; check generated SQL for this whenever a generated column changes), `drizzle/0003_usage_counters.sql` (the chat usage counters; generated as is).
 - **Environments:** local (`.env.local`), Vercel Production (`main`) and Preview (pull requests) with the Supabase variables plus `OPENROUTER_API_KEY` for live chat, and CI with none. All share one Supabase project for now; a separate preview database is a Phase 5 question.
 - **CI** (`.github/workflows/ci.yml`): `npm ci`, lint, typecheck, Vitest, seed `--check`, `next build` without secrets. Vercel builds and deploys independently through its Git integration.

@@ -2,6 +2,8 @@
  * OpenRouter env helpers — safe to import from tests (no server-only).
  */
 
+import { LIMITS } from "./limits";
+
 /** Free endpoint only. The paid id `nvidia/nemotron-3-ultra-550b-a55b` is never used. */
 export const DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free";
 
@@ -31,8 +33,8 @@ export function openRouterConfig(
     apiKey: env.OPENROUTER_API_KEY?.trim() || undefined,
     baseUrl: (env.OPENROUTER_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, ""),
     model: freeModelOrDefault(env.SHOLAM_MODEL),
-    maxTokens: 900,
-    maxSteps: 3,
+    maxTokens: LIMITS.model.maxTokens,
+    maxSteps: LIMITS.turn.maxModelCalls,
   };
 }
 
@@ -54,6 +56,23 @@ export function shouldUseLiveAgent(
   }
   if (key) return { live: true };
   return { live: false };
+}
+
+/** The client went away (Stop, closed tab). Not an error to report. */
+export class TurnAborted extends Error {
+  constructor() {
+    super("The request was stopped.");
+    this.name = "TurnAborted";
+  }
+}
+
+export function isAbort(err: unknown, signal?: AbortSignal): boolean {
+  return (
+    err instanceof TurnAborted ||
+    (signal?.aborted === true &&
+      err instanceof Error &&
+      (err.name === "AbortError" || err.name === "TimeoutError"))
+  );
 }
 
 export class OpenRouterError extends Error {
