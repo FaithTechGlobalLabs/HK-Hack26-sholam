@@ -1,12 +1,20 @@
 import { listFlashcards } from "@/lib/flashcards/repo";
-import { CATEGORIES, flashcardDraftSchema } from "@/lib/flashcards/types";
+import {
+  CATEGORIES,
+  flashcardDraftSchema,
+  KINDS,
+} from "@/lib/flashcards/types";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const category = searchParams.get("category");
+  const kind = searchParams.get("kind");
+  const limit = Number(searchParams.get("limit") ?? 50);
   const cards = await listFlashcards({
     q: searchParams.get("q") ?? undefined,
+    kind: KINDS.find((k) => k === kind),
     category: CATEGORIES.find((c) => c === category),
+    limit: Number.isInteger(limit) ? Math.min(Math.max(limit, 1), 200) : 50,
   });
   return Response.json({ cards });
 }

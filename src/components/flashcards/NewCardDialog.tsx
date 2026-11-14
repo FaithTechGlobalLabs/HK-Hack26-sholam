@@ -4,8 +4,8 @@ import { X } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  CATEGORIES,
   CATEGORY_LABELS,
+  FACT_CATEGORIES,
   flashcardDraftSchema,
   TONES,
 } from "@/lib/flashcards/types";
@@ -93,7 +93,7 @@ export function NewCardDialog({ onClose }: { onClose: () => void }) {
             className={`${field} flex-1`}
             defaultValue="fun-facts"
           >
-            {CATEGORIES.map((c) => (
+            {FACT_CATEGORIES.map((c) => (
               <option key={c} value={c}>
                 {CATEGORY_LABELS[c]}
               </option>

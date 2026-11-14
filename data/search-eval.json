@@ -1,0 +1,106 @@
+{
+  "about": "Natural-language questions with gold BSB verse ids (any hit counts). Used by scripts/experiments/search-baseline.ts; see docs/SEARCH.md.",
+  "updated": "2026-11-14",
+  "items": [
+    {
+      "query": "Jesus feeds five thousand people",
+      "gold": ["MAT.14.21", "MRK.6.44", "LUK.9.14", "JHN.6.10"]
+    },
+    {
+      "query": "love your enemies",
+      "gold": ["MAT.5.44", "LUK.6.27", "LUK.6.35"]
+    },
+    {
+      "query": "do not worry about tomorrow",
+      "gold": ["MAT.6.34"]
+    },
+    {
+      "query": "the Lord is my shepherd",
+      "gold": ["PSA.23.1"]
+    },
+    {
+      "query": "God so loved the world",
+      "gold": ["JHN.3.16"]
+    },
+    {
+      "query": "love is patient and kind",
+      "gold": ["1CO.13.4"]
+    },
+    {
+      "query": "the prodigal son comes home to his father",
+      "gold": ["LUK.15.11", "LUK.15.18", "LUK.15.20", "LUK.15.24"]
+    },
+    {
+      "query": "David kills Goliath with a stone",
+      "gold": ["1SA.17.49", "1SA.17.50"]
+    },
+    {
+      "query": "faith without works is dead",
+      "gold": ["JAS.2.17", "JAS.2.26"]
+    },
+    {
+      "query": "Jesus calms the storm",
+      "gold": ["MAT.8.26", "MRK.4.39", "LUK.8.24"]
+    },
+    {
+      "query": "put on the armor of God",
+      "gold": ["EPH.6.11", "EPH.6.13"]
+    },
+    {
+      "query": "peace that surpasses understanding",
+      "gold": ["PHP.4.7"]
+    },
+    {
+      "query": "the devil tempts Jesus in the wilderness",
+      "gold": ["MAT.4.1", "LUK.4.2", "MRK.1.13"]
+    },
+    {
+      "query": "Moses parts the Red Sea",
+      "gold": ["EXO.14.21", "EXO.14.16"]
+    },
+    {
+      "query": "what does the Bible say about anxiety",
+      "gold": ["PHP.4.6", "1PE.5.7", "MAT.6.25", "MAT.6.34"]
+    },
+    {
+      "query": "the Good Samaritan",
+      "gold": ["LUK.10.33", "LUK.10.30"]
+    },
+    {
+      "query": "fruit of the Spirit",
+      "gold": ["GAL.5.22"]
+    },
+    {
+      "query": "Jesus washes the disciples feet",
+      "gold": ["JHN.13.5"]
+    },
+    {
+      "query": "Nicodemus comes to Jesus at night",
+      "gold": ["JHN.3.2", "JHN.3.1"]
+    },
+    {
+      "query": "how many times should I forgive my brother",
+      "gold": ["MAT.18.21", "MAT.18.22", "LUK.17.4"]
+    },
+    {
+      "query": "Jesus raises Lazarus from the dead",
+      "gold": ["JHN.11.43", "JHN.11.44"]
+    },
+    {
+      "query": "God rested on the seventh day",
+      "gold": ["GEN.2.2", "GEN.2.3"]
+    },
+    {
+      "query": "teach us to pray, the Lord's Prayer",
+      "gold": ["MAT.6.9", "LUK.11.2"]
+    },
+    {
+      "query": "Saul's conversion on the road to Damascus",
+      "gold": ["ACT.9.3", "ACT.9.4"]
+    },
+    {
+      "query": "go and make disciples of all nations",
+      "gold": ["MAT.28.19"]
+    }
+  ]
+}

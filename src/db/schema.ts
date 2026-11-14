@@ -7,6 +7,7 @@
 
 import { sql } from "drizzle-orm";
 import {
+  check,
   customType,
   index,
   integer,
@@ -39,6 +40,7 @@ export const flashcardStatus = pgEnum("flashcard_status", [
   "hidden",
 ]);
 export const flashcardTone = pgEnum("flashcard_tone", ["fun", "fact", "deep"]);
+export const flashcardKind = pgEnum("flashcard_kind", ["fact", "discover"]);
 export const testament = pgEnum("testament", ["OT", "NT"]);
 
 export const profiles = pgTable(
@@ -120,24 +122,39 @@ export const flashcards = pgTable(
     id: uuid().primaryKey().defaultRandom(),
     /** Stable key for seed cards (e.g. `seed-shortest-verse`); null for user cards. */
     slug: text().unique(),
+    /** fact: question + answer. discover: open question + Scripture starting points. */
+    kind: flashcardKind().notNull().default("fact"),
     question: text().notNull(),
-    answer: text().notNull(),
+    /** Required for fact cards (see the check below); null for discover cards. */
+    answer: text(),
     explanation: text(),
     category: text().notNull(),
-    tone: flashcardTone().notNull(),
-    difficulty: smallint().notNull().default(1),
-    /** Verse ids, e.g. {JHN.11.35} */
+    tone: flashcardTone(),
+    /** 1 easy … 3 deep; required for fact cards. */
+    difficulty: smallint(),
+    /** Passage refs: verse ids (JHN.11.35), ranges (MAT.18.21-MAT.18.35), chapters (DAN.4). */
     refs: text().array().notNull(),
+    tags: text().array().notNull().default(sql`'{}'::text[]`),
+    minutes: smallint(),
+    /** Source section heading, e.g. "Life in Jesus' Time". */
+    section: text(),
+    /** Where a seeded card came from, e.g. "faithmap-132". */
+    source: text(),
     authorId: uuid().references(() => authUsers.id, { onDelete: "set null" }),
     status: flashcardStatus().notNull().default("published"),
     search: tsvector().generatedAlwaysAs(
-      sql`to_tsvector('english'::regconfig, question || ' ' || answer || ' ' || coalesce(explanation, ''))`,
+      sql`to_tsvector('english'::regconfig, question || ' ' || coalesce(answer, '') || ' ' || coalesce(explanation, '') || ' ' || coalesce(section, ''))`,
     ),
     createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [
     index("flashcards_search_idx").using("gin", t.search),
     index("flashcards_category_idx").on(t.category),
+    index("flashcards_kind_idx").on(t.kind),
+    check(
+      "flashcards_fact_fields",
+      sql`${t.kind} = 'discover' or (${t.answer} is not null and ${t.tone} is not null and ${t.difficulty} is not null)`,
+    ),
     pgPolicy("flashcards: public read", {
       for: "select",
       to: [anonRole, authenticatedRole],

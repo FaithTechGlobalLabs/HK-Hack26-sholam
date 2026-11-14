@@ -3,9 +3,9 @@
 A ChatGPT-style web app for exploring the Bible and the Christian faith. Two modes sit at the top of the page:
 
 - **Chat**: ask anything. A Claude agent answers gently, as a Christian would, and cites Bible verses it looked up in a database (Berean Standard Bible), never from memory. It checks the flashcard deck first and can draft a new card when none fits.
-- **Flashcards**: a public deck of fun and surprising Bible questions, each tied to verses. Browse, filter, study one card at a time, or add your own.
+- **Flashcards**: a public deck with two kinds of card. **Quick facts** are fun or surprising questions with answers and verses. **Discover** cards are open questions for young people (the FaithMap set) with Scripture starting points to explore in chat. Browse, filter by kind and topic, study one card at a time, or add your own.
 
-Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) and a 50-card deck live in Supabase Postgres, and the app deploys to Vercel from `main`. Chat still streams a scripted demo until the agent loop lands in Phase 2. See [docs/PLAN.md](docs/PLAN.md).
+Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) and a deck of 179 cards (50 quick facts, 129 FaithMap discover questions) live in Supabase Postgres, and the app deploys to Vercel from `main`. Chat still streams a scripted demo until the agent loop lands in Phase 2. See [docs/PLAN.md](docs/PLAN.md).
 
 ## Where things run
 
@@ -45,7 +45,9 @@ It runs with no environment variables: flashcards come from `data/flashcards.see
 ```bash
 npm run db:migrate           # apply drizzle/ migrations (uses DIRECT_URL)
 npm run bible:import         # download BSB v5.19, verify checksum, upsert 31,086 verses
-npm run seed:flashcards      # upsert the seed deck by slug (refs must exist in verses)
+npm run seed:flashcards      # upsert both decks by slug (every passage must resolve in verses)
+npm run faithmap:convert     # regenerate data/faithmap.cards.json from data/sources/*.md
+npm run search:baseline      # keyword vs heading search on data/search-eval.json (see docs/SEARCH.md)
 ```
 
 `npm run bible:import -- --dry-run` parses and checks without touching the database. Schema changes: edit `src/db/schema.ts`, then `npm run db:generate` and `npm run db:migrate`.
@@ -61,4 +63,6 @@ npm run typecheck && npm run lint && npm test && npm run build
 - [AGENTS.md](AGENTS.md): rules for coding agents (`CLAUDE.md` links here)
 - [docs/PLAN.md](docs/PLAN.md): roadmap, decisions, open questions
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): agent harness, SSE protocol, data model, citations
+- [docs/SEARCH.md](docs/SEARCH.md): how the agent searches the Bible (agentic search, indexes, tools, evaluation)
+- [docs/HARNESS-UI.md](docs/HARNESS-UI.md): harness research, citation formats and agent-driven UI
 - [docs/SOURCES.md](docs/SOURCES.md): Bible text and reference data licences

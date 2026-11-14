@@ -28,6 +28,8 @@ Run from `sholam/`. npm only (the parent repo ignores other lockfiles).
 | Apply migrations | `npm run db:migrate` (uses `DIRECT_URL`) |
 | Import the Bible | `npm run bible:import` (`-- --dry-run` to parse only) |
 | Seed cards | `npm run seed:flashcards` (`-- --check` to validate only) |
+| Rebuild FaithMap cards | `npm run faithmap:convert` (then reseed) |
+| Search baseline | `npm run search:baseline` |
 
 Before you call work done: typecheck, lint and tests pass, and UI changes are checked in the browser (the `sholam` entry in the workspace `.claude/launch.json`).
 
@@ -47,6 +49,8 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 1. **Scripture comes from data, never model memory.** The agent quotes only verse text a tool returned this turn. Citations are `[Label](verse:BOOK.c.v)` links; the server and UI treat any cite not fetched this turn as unverified. Do not weaken this to make answers look better.
 2. **Verse ids** are `BOOK.chapter.verse` with USFM book codes (`JHN.3.16`, `1CO.13.4`). `src/lib/bible/books.ts` is the canon table.
 3. **The agent never saves a flashcard.** `propose_flashcard` only emits a draft; the user saves it via `POST /api/flashcards`.
+3a. **Two card kinds.** `fact` cards have an answer backed by verse ids; `discover` cards are open questions with passage refs as *starting points* and no answer. Never add answers to discover cards. `data/faithmap.cards.json` is generated from `data/sources/`; edit the source and rerun `npm run faithmap:convert`.
+3b. **Search is agentic** (docs/SEARCH.md): the model's memory may suggest where to look, but only tool results are quoted or cited.
 4. **Flashcards are public; chats are private.** Cards carry `author_id` and a `status` so they can be flagged and hidden.
 5. **Tone:** gentle, peaceful, non-denominational historic Christianity; differences between traditions are described fairly. The prompt is `src/lib/agent/system-prompt.ts`. Changing its doctrinal stance is a product decision: record it in `docs/PLAN.md`.
 6. **Prompt caching:** tools and system prompt stay byte-stable (no dates, ids or user data in them; fixed tool order).
@@ -65,8 +69,8 @@ src/lib/agent/          harness (loop), events (SSE protocol), citations, system
 src/lib/bible/          books (canon table), refs (verse ids, reference parser)
 src/lib/flashcards/     types (zod schema), repo (DB or seed)
 src/db/                 Drizzle schema + RLS policies, client
-scripts/                import-bible (BSB), seed-flashcards
-data/                   flashcards.seed.json
+scripts/                import-bible (BSB), seed-flashcards, convert-faithmap, experiments/
+data/                   flashcards.seed.json, faithmap.cards.json (generated), sources/, search-eval.json
 drizzle/                generated migrations (do not hand-edit)
 ```
 
@@ -76,4 +80,4 @@ Before designing or restyling any screen, load the `deslop-law` and `hallmark` s
 
 ## Docs
 
-One canonical doc per topic, updated in place with `Last updated: YYYY-MM-DD`: plan and decisions in `docs/PLAN.md`, system design in `docs/ARCHITECTURE.md`, data provenance in `docs/SOURCES.md`, setup in `README.md`. Do not add status logs here.
+One canonical doc per topic, updated in place with `Last updated: YYYY-MM-DD`: plan and decisions in `docs/PLAN.md`, system design in `docs/ARCHITECTURE.md`, search in `docs/SEARCH.md`, harness and agent UI in `docs/HARNESS-UI.md`, data provenance in `docs/SOURCES.md`, setup in `README.md`. Do not add status logs here.

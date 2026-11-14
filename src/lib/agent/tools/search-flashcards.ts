@@ -1,16 +1,20 @@
 import { z } from "zod";
-import { CATEGORIES } from "@/lib/flashcards/types";
+import { CATEGORIES, KINDS } from "@/lib/flashcards/types";
 import { defineTool, NotImplementedError } from "./types";
 
 export const searchFlashcards = defineTool({
   name: "search_flashcards",
   description:
-    "Search sholam's public Bible flashcard deck by keywords. Use it before answering trivia or fact questions, and before proposing a new card, to avoid duplicates. Returns matching cards with their ids, questions, answers and verse refs.",
+    "Search sholam's public Bible card deck by keywords. The deck has two kinds: fact cards (a question with an answer and verse ids) and discover cards (an open question with Scripture starting points and no fixed answer). Use it before answering trivia or fact questions, when a question sounds like a discover card, and before proposing a new card, to avoid duplicates. Returns matching cards with ids, kind, question, answer (fact cards) and passage refs.",
   inputSchema: z.strictObject({
     query: z
       .string()
       .min(2)
       .describe("Keywords, e.g. 'shortest verse' or 'Zacchaeus tree'"),
+    kind: z
+      .enum(KINDS)
+      .optional()
+      .describe("Only fact cards or only discover cards"),
     category: z
       .enum(CATEGORIES)
       .optional()

@@ -1,0 +1,2140 @@
+[
+  {
+    "id": "faithmap-why-do-we-care-so-much-about-what-other-people-think-of-us",
+    "kind": "discover",
+    "question": "Why do we care so much about what other people think of us?",
+    "refs": [
+      "GAL.1.10",
+      "JHN.12.42-JHN.12.43"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-is-it-possible-to-be-confident-without-becoming-arrogant",
+    "kind": "discover",
+    "question": "Is it possible to be confident without becoming arrogant?",
+    "refs": [
+      "PHP.2.3-PHP.2.4",
+      "LUK.18.9-LUK.18.14"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-does-social-media-make-everyone-elses-life-look-better-t",
+    "kind": "discover",
+    "question": "Why does social media make everyone else's life look better than ours?",
+    "refs": [
+      "GAL.6.4-GAL.6.5",
+      "PHP.4.11-PHP.4.13"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-if-a-joke-humiliates-someone-is-it-still-just-a-joke",
+    "kind": "discover",
+    "question": "If a joke humiliates someone, is it still just a joke?",
+    "refs": [
+      "EPH.4.29",
+      "MAT.12.36"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Challenging"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-can-you-forgive-someone-and-still-not-trust-them",
+    "kind": "discover",
+    "question": "Can you forgive someone and still not trust them?",
+    "refs": [
+      "MAT.18.21-MAT.18.35",
+      "LUK.17.3-LUK.17.4"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Deep"
+    ],
+    "minutes": 3,
+    "difficulty": 3,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-is-it-wrong-to-enjoy-attention-or-want-to-be-famous",
+    "kind": "discover",
+    "question": "Is it wrong to enjoy attention or want to be famous?",
+    "refs": [
+      "MAT.6.1-MAT.6.6",
+      "MRK.10.42-MRK.10.45"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-when-does-ambition-turn-into-obsession",
+    "kind": "discover",
+    "question": "When does ambition turn into obsession?",
+    "refs": [
+      "MRK.8.36",
+      "PHP.3.12-PHP.3.14"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Challenging"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-would-jesus-cancel-someone-for-something-they-said-years-ago",
+    "kind": "discover",
+    "question": "Would Jesus cancel someone for something they said years ago?",
+    "refs": [
+      "JHN.8.1-JHN.8.11",
+      "LUK.19.1-LUK.19.10"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "What If",
+      "Real Life"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-does-being-kind-mean-you-have-to-be-nice-to-everyone",
+    "kind": "discover",
+    "question": "Does being kind mean you have to be nice to everyone?",
+    "refs": [
+      "MAT.23.1-MAT.23.36",
+      "ROM.12.9-ROM.12.21"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Challenging"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-can-you-be-friends-with-someone-whose-values-are-completely",
+    "kind": "discover",
+    "question": "Can you be friends with someone whose values are completely different from yours?",
+    "refs": [
+      "JHN.4.7-JHN.4.26",
+      "1CO.5.9-1CO.5.13"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-is-apologizing-so-difficult-even-when-you-know-youre-wro",
+    "kind": "discover",
+    "question": "Why is apologizing so difficult, even when you know you're wrong?",
+    "refs": [
+      "MAT.5.23-MAT.5.24",
+      "LUK.15.11-LUK.15.32"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-is-it-hypocritical-to-struggle-with-something-you-believe-is",
+    "kind": "discover",
+    "question": "Is it hypocritical to struggle with something you believe is wrong?",
+    "refs": [
+      "ROM.7.15-ROM.7.25",
+      "1JN.1.8-1JN.1.9"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Deep"
+    ],
+    "minutes": 3,
+    "difficulty": 3,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-would-jesus-use-social-media-if-he-were-alive-today",
+    "kind": "discover",
+    "question": "Would Jesus use social media if He were alive today?",
+    "refs": [
+      "MRK.1.35-MRK.1.39",
+      "MAT.5.13-MAT.5.16"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "What If",
+      "Real Life"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-is-it-ever-right-to-stay-silent-when-someone-is-being-treate",
+    "kind": "discover",
+    "question": "Is it ever right to stay silent when someone is being treated unfairly?",
+    "refs": [
+      "EST.4.12-EST.4.16",
+      "PRO.31.8-PRO.31.9"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Real Life",
+      "Challenging"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-can-someone-do-the-right-thing-for-the-wrong-reason",
+    "kind": "discover",
+    "question": "Can someone do the right thing for the wrong reason?",
+    "refs": [
+      "MAT.6.1-MAT.6.4",
+      "1CO.13.1-1CO.13.3"
+    ],
+    "category": "life-identity",
+    "section": "Everyday Life, Social Media & Identity",
+    "tags": [
+      "Curious",
+      "Deep"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-wash-his-disciples-feet",
+    "kind": "discover",
+    "question": "Why did Jesus wash His disciples' feet?",
+    "refs": [
+      "JHN.13.1-JHN.13.17"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Surprising",
+      "Jesus"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-spend-so-much-time-with-people-everyone-else-a",
+    "kind": "discover",
+    "question": "Why did Jesus spend so much time with people everyone else avoided?",
+    "refs": [
+      "LUK.5.27-LUK.5.32",
+      "LUK.19.1-LUK.19.10"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Jesus",
+      "Curious"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-tell-people-not-to-talk-about-some-of-his-mira",
+    "kind": "discover",
+    "question": "Why did Jesus tell people not to talk about some of His miracles?",
+    "refs": [
+      "MRK.1.40-MRK.1.45",
+      "MRK.7.31-MRK.7.36"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Curious",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-flip-tables-in-the-temple",
+    "kind": "discover",
+    "question": "Why did Jesus flip tables in the temple?",
+    "refs": [
+      "MRK.11.15-MRK.11.18",
+      "JHN.2.13-JHN.2.22"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Surprising",
+      "Jesus"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-ask-questions-when-he-already-knew-the-answers",
+    "kind": "discover",
+    "question": "Why did Jesus ask questions when He already knew the answers?",
+    "refs": [
+      "MRK.10.51",
+      "JHN.5.6"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Curious",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-did-jesus-have-brothers-and-sisters",
+    "kind": "discover",
+    "question": "Did Jesus have brothers and sisters?",
+    "refs": [
+      "MRK.6.3",
+      "MAT.13.55-MAT.13.56"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Curious",
+      "Jesus"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-happened-to-jesus-between-the-ages-of-12-and-30",
+    "kind": "discover",
+    "question": "What happened to Jesus between the ages of 12 and 30?",
+    "refs": [
+      "LUK.2.41-LUK.2.52",
+      "LUK.3.23"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Mystery",
+      "Jesus"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-choose-fishermen-and-a-tax-collector-as-discip",
+    "kind": "discover",
+    "question": "Why did Jesus choose fishermen and a tax collector as disciples?",
+    "refs": [
+      "MAT.4.18-MAT.4.22",
+      "MAT.9.9"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Surprising",
+      "Jesus"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-sometimes-heal-people-with-a-touch-and-other-t",
+    "kind": "discover",
+    "question": "Why did Jesus sometimes heal people with a touch and other times just speak?",
+    "refs": [
+      "MRK.1.40-MRK.1.42",
+      "JHN.4.46-JHN.4.54"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Curious",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-did-jesus-mean-when-he-said-the-last-would-be-first",
+    "kind": "discover",
+    "question": "What did Jesus mean when He said the last would be first?",
+    "refs": [
+      "MRK.10.31",
+      "MAT.20.1-MAT.20.16"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Curious",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-cry-if-he-knew-he-was-going-to-raise-lazarus",
+    "kind": "discover",
+    "question": "Why did Jesus cry if He knew He was going to raise Lazarus?",
+    "refs": [
+      "JHN.11.1-JHN.11.44"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Curious",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-did-jesus-ever-get-frustrated-with-his-disciples",
+    "kind": "discover",
+    "question": "Did Jesus ever get frustrated with His disciples?",
+    "refs": [
+      "MRK.8.14-MRK.8.21",
+      "MRK.9.14-MRK.9.29"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Curious",
+      "Jesus"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-spend-40-days-in-the-wilderness",
+    "kind": "discover",
+    "question": "Why did Jesus spend 40 days in the wilderness?",
+    "refs": [
+      "MAT.4.1-MAT.4.11"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Surprising",
+      "Jesus"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-made-people-so-angry-when-jesus-forgave-sins",
+    "kind": "discover",
+    "question": "What made people so angry when Jesus forgave sins?",
+    "refs": [
+      "MRK.2.1-MRK.2.12",
+      "LUK.7.36-LUK.7.50"
+    ],
+    "category": "jesus-details",
+    "section": "Jesus: The Unexpected Details",
+    "tags": [
+      "Curious",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-a-donkey-start-talking-in-the-bible",
+    "kind": "discover",
+    "question": "Why did a donkey start talking in the Bible?",
+    "refs": [
+      "NUM.22.21-NUM.22.35"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Surprising",
+      "Bible Story"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-happened-when-a-man-fell-asleep-during-pauls-very-long",
+    "kind": "discover",
+    "question": "What happened when a man fell asleep during Paul's very long sermon?",
+    "refs": [
+      "ACT.20.7-ACT.20.12"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Funny",
+      "Bible Story"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-could-jonah-really-have-survived-inside-a-giant-fish",
+    "kind": "discover",
+    "question": "Could Jonah really have survived inside a giant fish?",
+    "refs": [
+      "JON.1-JON.2",
+      "MAT.12.38-MAT.12.41"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Curious",
+      "Bible Story"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-god-tell-hosea-to-marry-someone-who-would-be-unfaith",
+    "kind": "discover",
+    "question": "Why did God tell Hosea to marry someone who would be unfaithful?",
+    "refs": [
+      "HOS.1-HOS.3"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Surprising",
+      "Bible Story"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jacob-wrestle-with-a-mysterious-stranger-all-night",
+    "kind": "discover",
+    "question": "Why did Jacob wrestle with a mysterious stranger all night?",
+    "refs": [
+      "GEN.32.22-GEN.32.32"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Mystery",
+      "Bible Story"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-a-shepherd-boy-defeat-a-trained-giant-warrior",
+    "kind": "discover",
+    "question": "How did a shepherd boy defeat a trained giant warrior?",
+    "refs": [
+      "1SA.17"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Surprising",
+      "Bible Story"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-god-speak-to-moses-through-a-burning-bush-that-didnt",
+    "kind": "discover",
+    "question": "Why did God speak to Moses through a burning bush that didn't burn up?",
+    "refs": [
+      "EXO.3.1-EXO.3.15"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Surprising",
+      "Bible Story"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-the-walls-of-jericho-fall-after-people-marched-aroun",
+    "kind": "discover",
+    "question": "Why did the walls of Jericho fall after people marched around them?",
+    "refs": [
+      "JOS.6"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Surprising",
+      "Bible Story"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-a-woman-pour-expensive-perfume-on-jesus-feet",
+    "kind": "discover",
+    "question": "Why did a woman pour expensive perfume on Jesus' feet?",
+    "refs": [
+      "JHN.12.1-JHN.12.8",
+      "MRK.14.3-MRK.14.9"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Curious",
+      "Bible Story"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-peter-start-sinking-when-he-walked-on-water",
+    "kind": "discover",
+    "question": "Why did Peter start sinking when he walked on water?",
+    "refs": [
+      "MAT.14.22-MAT.14.33"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Curious",
+      "Bible Story"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-god-reduce-gideons-army-from-32-000-soldiers-to-just",
+    "kind": "discover",
+    "question": "Why did God reduce Gideon's army from 32,000 soldiers to just 300?",
+    "refs": [
+      "JDG.7"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Surprising",
+      "Bible Story"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-a-king-go-insane-and-live-like-an-animal",
+    "kind": "discover",
+    "question": "Why did a king go insane and live like an animal?",
+    "refs": [
+      "DAN.4"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Surprising",
+      "Bible Story"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-curse-a-fig-tree",
+    "kind": "discover",
+    "question": "Why did Jesus curse a fig tree?",
+    "refs": [
+      "MRK.11.12-MRK.11.25"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Curious",
+      "Bible Story"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-happened-when-the-red-sea-split-in-two",
+    "kind": "discover",
+    "question": "What happened when the Red Sea split in two?",
+    "refs": [
+      "EXO.14"
+    ],
+    "category": "surprising-stories",
+    "section": "Strange & Surprising Bible Stories",
+    "tags": [
+      "Surprising",
+      "Bible Story"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-did-people-actually-eat-in-jesus-time",
+    "kind": "discover",
+    "question": "What did people actually eat in Jesus' time?",
+    "refs": [
+      "MAT.14.13-MAT.14.21",
+      "LUK.24.36-LUK.24.43"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-was-a-normal-day-like-for-a-teenager-in-ancient-israel",
+    "kind": "discover",
+    "question": "What was a normal day like for a teenager in ancient Israel?",
+    "refs": [
+      "LUK.2.41-LUK.2.52",
+      "DEU.6.6-DEU.6.9"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-people-travel-without-cars-trains-or-planes",
+    "kind": "discover",
+    "question": "How did people travel without cars, trains or planes?",
+    "refs": [
+      "LUK.10.30-LUK.10.37",
+      "ACT.20.13-ACT.20.16"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-did-houses-look-like-in-the-time-of-jesus",
+    "kind": "discover",
+    "question": "What did houses look like in the time of Jesus?",
+    "refs": [
+      "MRK.2.1-MRK.2.12",
+      "LUK.5.17-LUK.5.26"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-were-tax-collectors-so-hated",
+    "kind": "discover",
+    "question": "Why were tax collectors so hated?",
+    "refs": [
+      "LUK.19.1-LUK.19.10",
+      "MAT.9.9-MAT.9.13"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Jesus"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-was-so-shocking-about-jesus-talking-to-the-samaritan-wo",
+    "kind": "discover",
+    "question": "What was so shocking about Jesus talking to the Samaritan woman?",
+    "refs": [
+      "JHN.4.1-JHN.4.42"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-weddings-work-in-jesus-time",
+    "kind": "discover",
+    "question": "How did weddings work in Jesus' time?",
+    "refs": [
+      "JHN.2.1-JHN.2.11",
+      "MAT.25.1-MAT.25.13"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-did-a-roman-crucifixion-actually-involve",
+    "kind": "discover",
+    "question": "What did a Roman crucifixion actually involve?",
+    "refs": [
+      "MRK.15",
+      "JHN.19"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Deep"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-were-shepherds-considered-outsiders-in-some-parts-of-soc",
+    "kind": "discover",
+    "question": "Why were shepherds considered outsiders in some parts of society?",
+    "refs": [
+      "LUK.2.8-LUK.2.20",
+      "JHN.10.1-JHN.10.18"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-jobs-did-ordinary-people-have-in-the-roman-empire",
+    "kind": "discover",
+    "question": "What jobs did ordinary people have in the Roman Empire?",
+    "refs": [
+      "MRK.6.3",
+      "ACT.18.1-ACT.18.3"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-people-learn-and-read-before-modern-schools",
+    "kind": "discover",
+    "question": "How did people learn and read before modern schools?",
+    "refs": [
+      "LUK.4.16-LUK.4.21",
+      "ACT.8.26-ACT.8.35"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-was-the-road-between-jerusalem-and-jericho-so-dangerous",
+    "kind": "discover",
+    "question": "Why was the road between Jerusalem and Jericho so dangerous?",
+    "refs": [
+      "LUK.10.25-LUK.10.37"
+    ],
+    "category": "jesus-times",
+    "section": "Life in Jesus' Time",
+    "tags": [
+      "History",
+      "Bible Story"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-if-god-knows-everything-do-we-actually-have-free-will",
+    "kind": "discover",
+    "question": "If God knows everything, do we actually have free will?",
+    "refs": [
+      "DEU.30.15-DEU.30.20",
+      "LUK.13.34"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Deep"
+    ],
+    "minutes": 3,
+    "difficulty": 3,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-doesnt-god-stop-every-terrible-thing-from-happening",
+    "kind": "discover",
+    "question": "Why doesn't God stop every terrible thing from happening?",
+    "refs": [
+      "JOB.1-JOB.2",
+      "JHN.11.32-JHN.11.36",
+      "ROM.8.18-ROM.8.25"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Deep"
+    ],
+    "minutes": 3,
+    "difficulty": 3,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-if-god-is-good-why-does-he-allow-suffering",
+    "kind": "discover",
+    "question": "If God is good, why does He allow suffering?",
+    "refs": [
+      "JOB.38-JOB.42",
+      "ROM.8.18-ROM.8.25"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Deep"
+    ],
+    "minutes": 3,
+    "difficulty": 3,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-can-science-and-belief-in-god-both-be-true",
+    "kind": "discover",
+    "question": "Can science and belief in God both be true?",
+    "refs": [
+      "PSA.19.1-PSA.19.4",
+      "GEN.1"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Science"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-if-god-created-everything-who-created-god",
+    "kind": "discover",
+    "question": "If God created everything, who created God?",
+    "refs": [
+      "PSA.90.2",
+      "JHN.1.1-JHN.1.3"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-do-christians-believe-jesus-had-to-die",
+    "kind": "discover",
+    "question": "Why do Christians believe Jesus had to die?",
+    "refs": [
+      "MRK.10.45",
+      "ROM.3.21-ROM.3.26"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-is-the-trinity-and-why-is-it-not-three-gods",
+    "kind": "discover",
+    "question": "What is the Trinity, and why is it not three gods?",
+    "refs": [
+      "MAT.28.19",
+      "2CO.13.14"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-do-christians-believe-jesus-rose-from-the-dead",
+    "kind": "discover",
+    "question": "Why do Christians believe Jesus rose from the dead?",
+    "refs": [
+      "1CO.15.3-1CO.15.8",
+      "LUK.24"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-can-you-believe-in-god-and-still-have-doubts",
+    "kind": "discover",
+    "question": "Can you believe in God and still have doubts?",
+    "refs": [
+      "MRK.9.14-MRK.9.29",
+      "JHN.20.24-JHN.20.29"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Real Life"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-do-christians-pray-if-god-already-knows-what-we-need",
+    "kind": "discover",
+    "question": "Why do Christians pray if God already knows what we need?",
+    "refs": [
+      "MAT.6.5-MAT.6.13",
+      "LUK.11.1-LUK.11.13"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-happens-after-we-die-according-to-christianity",
+    "kind": "discover",
+    "question": "What happens after we die, according to Christianity?",
+    "refs": [
+      "1CO.15",
+      "JHN.14.1-JHN.14.6"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-can-someone-be-a-good-person-without-believing-in-god",
+    "kind": "discover",
+    "question": "Can someone be a good person without believing in God?",
+    "refs": [
+      "ROM.2.12-ROM.2.16",
+      "LUK.10.25-LUK.10.37"
+    ],
+    "category": "big-questions",
+    "section": "Big Questions About God & Faith",
+    "tags": [
+      "Big Question",
+      "Challenging"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-would-jesus-think-about-ai-that-can-write-draw-and-thin",
+    "kind": "discover",
+    "question": "What would Jesus think about AI that can write, draw and think?",
+    "refs": [
+      "GEN.1.26-GEN.1.28",
+      "COL.3.17"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "What If",
+      "Technology"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-would-jesus-have-a-verified-social-media-account",
+    "kind": "discover",
+    "question": "Would Jesus have a verified social media account?",
+    "refs": [
+      "MAT.6.1-MAT.6.6",
+      "MRK.1.35-MRK.1.39"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "What If",
+      "Fun"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-do-wars-happen-between-people-who-follow-the-same-religi",
+    "kind": "discover",
+    "question": "Why do wars happen between people who follow the same religion?",
+    "refs": [
+      "JAS.4.1-JAS.4.3",
+      "MAT.5.9"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "World",
+      "Big Question"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-is-there-so-much-poverty-when-the-world-produces-so-much",
+    "kind": "discover",
+    "question": "Why is there so much poverty when the world produces so much food?",
+    "refs": [
+      "AMO.5.21-AMO.5.24",
+      "MAT.25.31-MAT.25.46"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "World",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-should-christians-do-when-a-viral-post-turns-out-to-be",
+    "kind": "discover",
+    "question": "What should Christians do when a viral post turns out to be fake?",
+    "refs": [
+      "PRO.18.13",
+      "PRO.18.17",
+      "EPH.4.25"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "Technology",
+      "Real Life"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-would-jesus-be-friends-with-someone-who-strongly-disagreed-w",
+    "kind": "discover",
+    "question": "Would Jesus be friends with someone who strongly disagreed with Him?",
+    "refs": [
+      "LUK.7.36-LUK.7.50",
+      "JHN.4.1-JHN.4.42"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "What If",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-are-there-so-many-different-christian-churches",
+    "kind": "discover",
+    "question": "Why are there so many different Christian churches?",
+    "refs": [
+      "1CO.1.10-1CO.1.13",
+      "JHN.17.20-JHN.17.23"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-can-a-christian-question-something-their-church-teaches",
+    "kind": "discover",
+    "question": "Can a Christian question something their church teaches?",
+    "refs": [
+      "ACT.17.10-ACT.17.12",
+      "1TH.5.19-1TH.5.22"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "Real Life",
+      "Big Question"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-does-christianity-say-about-climate-change-and-caring-f",
+    "kind": "discover",
+    "question": "What does Christianity say about climate change and caring for the planet?",
+    "refs": [
+      "GEN.2.15",
+      "PSA.24.1"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "World",
+      "Real Life"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-do-people-use-religion-to-justify-violence",
+    "kind": "discover",
+    "question": "Why do people use religion to justify violence?",
+    "refs": [
+      "MAT.5.9",
+      "MAT.5.43-MAT.5.48",
+      "JAS.3.13-JAS.3.18"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "World",
+      "Big Question"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-would-jesus-support-cancel-culture-or-challenge-it",
+    "kind": "discover",
+    "question": "Would Jesus support cancel culture—or challenge it?",
+    "refs": [
+      "JHN.8.1-JHN.8.11",
+      "MAT.7.1-MAT.7.5"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "What If",
+      "Real Life"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-do-people-around-the-world-believe-in-such-different-rel",
+    "kind": "discover",
+    "question": "Why do people around the world believe in such different religions?",
+    "refs": [
+      "ACT.17.16-ACT.17.34",
+      "JHN.14.6"
+    ],
+    "category": "modern-world",
+    "section": "Faith & the Modern World",
+    "tags": [
+      "World",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-did-dinosaurs-and-humans-live-at-the-same-time",
+    "kind": "discover",
+    "question": "Did dinosaurs and humans live at the same time?",
+    "refs": [
+      "GEN.1-GEN.2",
+      "JOB.40-JOB.41"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "Science",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-does-the-bible-say-the-earth-is-flat",
+    "kind": "discover",
+    "question": "Does the Bible say the Earth is flat?",
+    "refs": [
+      "ISA.40.22",
+      "JOB.26.7"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "Science",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-the-bible-come-together-and-who-chose-the-books",
+    "kind": "discover",
+    "question": "How did the Bible come together, and who chose the books?",
+    "refs": [
+      "LUK.1.1-LUK.1.4",
+      "2TI.3.14-2TI.3.17"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-are-angels-really-supposed-to-look-like-people-with-wings",
+    "kind": "discover",
+    "question": "Are angels really supposed to look like people with wings?",
+    "refs": [
+      "ISA.6.1-ISA.6.7",
+      "EZK.1",
+      "LUK.1.26-LUK.1.38"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "Surprising",
+      "Curious"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-are-there-four-different-gospels-instead-of-just-one",
+    "kind": "discover",
+    "question": "Why are there four different Gospels instead of just one?",
+    "refs": [
+      "LUK.1.1-LUK.1.4",
+      "JHN.20.30-JHN.20.31"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "History",
+      "Jesus"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-evidence-is-there-that-jesus-was-a-real-historical-pers",
+    "kind": "discover",
+    "question": "What evidence is there that Jesus was a real historical person?",
+    "refs": [
+      "LUK.3.1-LUK.3.2",
+      "1CO.15.3-1CO.15.8"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-do-some-bible-stories-appear-in-more-than-one-gospel-but",
+    "kind": "discover",
+    "question": "Why do some Bible stories appear in more than one Gospel but with different details?",
+    "refs": [
+      "MRK.5.21-MRK.5.43",
+      "MAT.9.18-MAT.9.26",
+      "LUK.8.40-LUK.8.56"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-did-the-earliest-christians-believe-about-jesus",
+    "kind": "discover",
+    "question": "What did the earliest Christians believe about Jesus?",
+    "refs": [
+      "1CO.15.3-1CO.15.8",
+      "PHP.2.5-PHP.2.11"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "History",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-were-the-dead-sea-scrolls-discovered-and-why-do-they-mat",
+    "kind": "discover",
+    "question": "How were the Dead Sea Scrolls discovered, and why do they matter?",
+    "refs": [
+      "ISA.40.6-ISA.40.8",
+      "LUK.4.16-LUK.4.21"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "History",
+      "Surprising"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-are-the-bibles-creation-story-and-modern-science-talking-abo",
+    "kind": "discover",
+    "question": "Are the Bible's creation story and modern science talking about the same thing?",
+    "refs": [
+      "GEN.1-GEN.2",
+      "PSA.19.1-PSA.19.4"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "Science",
+      "Big Question"
+    ],
+    "minutes": 3,
+    "difficulty": 3,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-christianity-spread-from-a-small-group-to-a-worldwid",
+    "kind": "discover",
+    "question": "How did Christianity spread from a small group to a worldwide religion?",
+    "refs": [
+      "ACT.1.8",
+      "ACT.2",
+      "ACT.17"
+    ],
+    "category": "science-history",
+    "section": "Science, History & the Bible",
+    "tags": [
+      "History",
+      "Curious"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-do-people-sometimes-feel-nothing-when-they-pray",
+    "kind": "discover",
+    "question": "Why do people sometimes feel nothing when they pray?",
+    "refs": [
+      "PSA.13",
+      "MAT.26.36-MAT.26.46"
+    ],
+    "category": "prayer-purpose",
+    "section": "Prayer, Purpose & the Christian Life",
+    "tags": [
+      "Real Life",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-can-prayer-change-what-happens-or-does-god-already-have-a-pl",
+    "kind": "discover",
+    "question": "Can prayer change what happens, or does God already have a plan?",
+    "refs": [
+      "EXO.32.9-EXO.32.14",
+      "MAT.6.9-MAT.6.13"
+    ],
+    "category": "prayer-purpose",
+    "section": "Prayer, Purpose & the Christian Life",
+    "tags": [
+      "Big Question",
+      "Deep"
+    ],
+    "minutes": 3,
+    "difficulty": 3,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-does-it-mean-to-hear-gods-voice-and-how-do-you-know-its",
+    "kind": "discover",
+    "question": "What does it mean to hear God's voice—and how do you know it's not just your own thoughts?",
+    "refs": [
+      "1KI.19.9-1KI.19.13",
+      "JHN.10.1-JHN.10.5",
+      "1JN.4.1"
+    ],
+    "category": "prayer-purpose",
+    "section": "Prayer, Purpose & the Christian Life",
+    "tags": [
+      "Curious",
+      "Deep"
+    ],
+    "minutes": 3,
+    "difficulty": 3,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-do-christians-talk-about-being-called-by-god",
+    "kind": "discover",
+    "question": "Why do Christians talk about being 'called' by God?",
+    "refs": [
+      "1SA.3.1-1SA.3.10",
+      "EPH.2.10"
+    ],
+    "category": "prayer-purpose",
+    "section": "Prayer, Purpose & the Christian Life",
+    "tags": [
+      "Curious",
+      "Real Life"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-do-you-have-to-go-to-church-to-be-a-christian",
+    "kind": "discover",
+    "question": "Do you have to go to church to be a Christian?",
+    "refs": [
+      "ACT.2.42-ACT.2.47",
+      "HEB.10.24-HEB.10.25"
+    ],
+    "category": "prayer-purpose",
+    "section": "Prayer, Purpose & the Christian Life",
+    "tags": [
+      "Challenging",
+      "Real Life"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-does-the-bible-actually-say-about-heaven",
+    "kind": "discover",
+    "question": "What does the Bible actually say about heaven?",
+    "refs": [
+      "REV.21.1-REV.21.4",
+      "JHN.14.1-JHN.14.6"
+    ],
+    "category": "prayer-purpose",
+    "section": "Prayer, Purpose & the Christian Life",
+    "tags": [
+      "Curious",
+      "Big Question"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-do-christians-get-baptized-and-what-does-it-mean",
+    "kind": "discover",
+    "question": "Why do Christians get baptized, and what does it mean?",
+    "refs": [
+      "MAT.3.13-MAT.3.17",
+      "ROM.6.1-ROM.6.4"
+    ],
+    "category": "prayer-purpose",
+    "section": "Prayer, Purpose & the Christian Life",
+    "tags": [
+      "Curious",
+      "History"
+    ],
+    "minutes": 2,
+    "difficulty": 1,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-is-the-point-of-communion-and-why-do-christians-do-it-d",
+    "kind": "discover",
+    "question": "What is the point of communion, and why do Christians do it differently?",
+    "refs": [
+      "LUK.22.14-LUK.22.20",
+      "1CO.11.23-1CO.11.26"
+    ],
+    "category": "prayer-purpose",
+    "section": "Prayer, Purpose & the Christian Life",
+    "tags": [
+      "Curious",
+      "History"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-can-you-follow-jesus-without-having-everything-figured-out",
+    "kind": "discover",
+    "question": "Can you follow Jesus without having everything figured out?",
+    "refs": [
+      "MRK.9.14-MRK.9.29",
+      "JHN.20.24-JHN.20.29"
+    ],
+    "category": "prayer-purpose",
+    "section": "Prayer, Purpose & the Christian Life",
+    "tags": [
+      "Real Life",
+      "Curious"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-what-does-it-actually-mean-to-love-your-enemies",
+    "kind": "discover",
+    "question": "What does it actually mean to love your enemies?",
+    "refs": [
+      "MAT.5.43-MAT.5.48",
+      "LUK.6.27-LUK.6.36"
+    ],
+    "category": "prayer-purpose",
+    "section": "Prayer, Purpose & the Christian Life",
+    "tags": [
+      "Challenging",
+      "Jesus"
+    ],
+    "minutes": 3,
+    "difficulty": 2,
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-a-donkey-start-talking-to-its-owner",
+    "kind": "discover",
+    "question": "Why did a donkey start talking to its owner?",
+    "refs": [
+      "NUM.22.21-NUM.22.35"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-did-someone-really-fall-asleep-during-a-sermon-and-fall-out",
+    "kind": "discover",
+    "question": "Did someone really fall asleep during a sermon and fall out of a third-floor window?",
+    "refs": [
+      "ACT.20.7-ACT.20.12"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-two-bears-attack-a-group-of-young-people-after-they",
+    "kind": "discover",
+    "question": "Why did two bears attack a group of young people after they mocked a prophet?",
+    "refs": [
+      "2KI.2.23-2KI.2.25"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-did-samson-really-carry-an-entire-citys-gates-up-a-hill",
+    "kind": "discover",
+    "question": "Did Samson really carry an entire city's gates up a hill?",
+    "refs": [
+      "JDG.16.1-JDG.16.3"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-a-king-end-up-living-like-an-animal-and-eating-grass",
+    "kind": "discover",
+    "question": "Why did a king end up living like an animal and eating grass?",
+    "refs": [
+      "DAN.4"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jacob-wrestle-a-mysterious-stranger-all-night",
+    "kind": "discover",
+    "question": "Why did Jacob wrestle a mysterious stranger all night?",
+    "refs": [
+      "GEN.32.22-GEN.32.32"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-did-the-bible-really-say-the-sun-stood-still-for-an-entire-d",
+    "kind": "discover",
+    "question": "Did the Bible really say the sun stood still for an entire day?",
+    "refs": [
+      "JOS.10.12-JOS.10.14"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-fire-suddenly-fall-from-the-sky-during-a-public-show",
+    "kind": "discover",
+    "question": "Why did fire suddenly fall from the sky during a public showdown?",
+    "refs": [
+      "1KI.18.20-1KI.18.39"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-three-men-survive-being-thrown-into-a-furnace-so-hot",
+    "kind": "discover",
+    "question": "How did three men survive being thrown into a furnace so hot it killed the guards?",
+    "refs": [
+      "DAN.3"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-peter-escape-a-prison-while-chained-up-and-guarded-b",
+    "kind": "discover",
+    "question": "How did Peter escape a prison while chained up and guarded by soldiers?",
+    "refs": [
+      "ACT.12.1-ACT.12.11"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-did-the-ground-really-open-up-and-swallow-an-entire-group-of",
+    "kind": "discover",
+    "question": "Did the ground really open up and swallow an entire group of people?",
+    "refs": [
+      "NUM.16.1-NUM.16.35"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-an-army-defeat-its-enemies-using-trumpets-torches-an",
+    "kind": "discover",
+    "question": "Why did an army defeat its enemies using trumpets, torches, and clay jars?",
+    "refs": [
+      "JDG.7"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange and unbelievable events",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-god-tell-a-prophet-to-marry-someone-who-would-repeat",
+    "kind": "discover",
+    "question": "Why did God tell a prophet to marry someone who would repeatedly betray him?",
+    "refs": [
+      "HOS.1-HOS.3"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange instructions and shocking decisions",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-god-tell-a-prophet-to-lie-on-his-side-for-over-a-yea",
+    "kind": "discover",
+    "question": "Why did God tell a prophet to lie on his side for over a year?",
+    "refs": [
+      "EZK.4.1-EZK.4.8"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange instructions and shocking decisions",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-abraham-prepare-a-huge-meal-for-three-mysterious-vis",
+    "kind": "discover",
+    "question": "Why did Abraham prepare a huge meal for three mysterious visitors?",
+    "refs": [
+      "GEN.18"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange instructions and shocking decisions",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-lots-wife-turn-into-a-pillar-of-salt",
+    "kind": "discover",
+    "question": "Why did Lot's wife turn into a pillar of salt?",
+    "refs": [
+      "GEN.19.15-GEN.19.26"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange instructions and shocking decisions",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-a-king-secretly-try-to-contact-a-dead-prophet",
+    "kind": "discover",
+    "question": "Why did a king secretly try to contact a dead prophet?",
+    "refs": [
+      "1SA.28.3-1SA.28.25"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange instructions and shocking decisions",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-samson-tie-300-foxes-together-and-set-their-tails-on",
+    "kind": "discover",
+    "question": "Why did Samson tie 300 foxes together and set their tails on fire?",
+    "refs": [
+      "JDG.15.1-JDG.15.5"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange instructions and shocking decisions",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-a-man-die-after-touching-the-ark-of-the-covenant",
+    "kind": "discover",
+    "question": "Why did a man die after touching the Ark of the Covenant?",
+    "refs": [
+      "2SA.6.1-2SA.6.8"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange instructions and shocking decisions",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-a-left-handed-man-assassinate-a-king-in-a-locked-roo",
+    "kind": "discover",
+    "question": "How did a left-handed man assassinate a king in a locked room?",
+    "refs": [
+      "JDG.3.12-JDG.3.30"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange instructions and shocking decisions",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-two-people-die-after-lying-about-how-much-money-they",
+    "kind": "discover",
+    "question": "Why did two people die after lying about how much money they donated?",
+    "refs": [
+      "ACT.5.1-ACT.5.11"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange instructions and shocking decisions",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-a-woman-kill-an-enemy-general-with-a-tent-peg",
+    "kind": "discover",
+    "question": "Why did a woman kill an enemy general with a tent peg?",
+    "refs": [
+      "JDG.4.17-JDG.4.22"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Strange instructions and shocking decisions",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-a-dead-man-come-back-to-life-just-by-touching-someon",
+    "kind": "discover",
+    "question": "How did a dead man come back to life just by touching someone's bones?",
+    "refs": [
+      "2KI.13.20-2KI.13.21"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Unexpected miracles and mysteries",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-a-mysterious-hand-suddenly-write-on-a-palace-wall-du",
+    "kind": "discover",
+    "question": "Why did a mysterious hand suddenly write on a palace wall during a king's party?",
+    "refs": [
+      "DAN.5"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Unexpected miracles and mysteries",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-paul-survive-being-bitten-by-a-poisonous-snake",
+    "kind": "discover",
+    "question": "Why did Paul survive being bitten by a poisonous snake?",
+    "refs": [
+      "ACT.28.1-ACT.28.6"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Unexpected miracles and mysteries",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-tell-peter-to-find-a-coin-inside-a-fishs-mouth",
+    "kind": "discover",
+    "question": "Why did Jesus tell Peter to find a coin inside a fish's mouth?",
+    "refs": [
+      "MAT.17.24-MAT.17.27"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Unexpected miracles and mysteries",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-how-did-an-iron-axe-head-float-on-water",
+    "kind": "discover",
+    "question": "How did an iron axe head float on water?",
+    "refs": [
+      "2KI.6.1-2KI.6.7"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Unexpected miracles and mysteries",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-jesus-tell-fishermen-to-try-again-after-they-had-cau",
+    "kind": "discover",
+    "question": "Why did Jesus tell fishermen to try again after they had caught nothing all night?",
+    "refs": [
+      "LUK.5.1-LUK.5.11"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Unexpected miracles and mysteries",
+    "tags": [],
+    "source": "faithmap-132"
+  },
+  {
+    "id": "faithmap-why-did-moses-throw-a-stick-on-the-floor-and-watch-it-turn-i",
+    "kind": "discover",
+    "question": "Why did Moses throw a stick on the floor and watch it turn into a snake?",
+    "refs": [
+      "EXO.7.8-EXO.7.13"
+    ],
+    "category": "wait-really",
+    "section": "Wait, That's in the Bible?: Unexpected miracles and mysteries",
+    "tags": [],
+    "source": "faithmap-132"
+  }
+]
