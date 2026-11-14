@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { VerseRecord } from "@/lib/agent/events";
 import { takeChatQuestion } from "@/lib/chat/handoff";
+import type { StoredChatMessage } from "@/lib/chat/stored-content";
 import { Composer } from "./Composer";
 import { MessageList } from "./MessageList";
 import { SourcesPanel } from "./SourcesPanel";
@@ -11,11 +12,14 @@ import { useChatStream } from "./useChatStream";
 export function ChatView({
   chatId,
   suggestions,
+  initialMessages,
 }: {
   chatId?: string;
   suggestions: string[];
+  /** A saved chat's messages (signed-in owner), loaded by /c/[chatId]. */
+  initialMessages?: StoredChatMessage[];
 }) {
-  const { messages, busy, send, stop } = useChatStream(chatId);
+  const { messages, busy, send, stop } = useChatStream(chatId, initialMessages);
   const [sources, setSources] = useState<VerseRecord[] | null>(null);
   const [draft, setDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);

@@ -3,13 +3,15 @@
 import { X } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
-import { useLocalChats } from "@/lib/chat/use-local-chats";
+import { useChatList } from "@/lib/chat/use-chat-list";
 import { cn } from "@/lib/utils";
+import { KeepTabChats } from "./KeepTabChats";
 
 /**
- * Recent chats (MustyDusty's sessionStorage history) in a panel opened from
- * the dock's Chats item on phones; desktop lists them in the sidebar.
- * Postgres-backed history replaces the source in Phase 2.
+ * Recent chats in a panel opened from the dock's Chats item on phones;
+ * desktop lists them in the sidebar. Signed in: the account's saved chats
+ * (plus this tab's unsaved ones); signed out: this tab's history
+ * (MustyDusty's sessionStorage list). Both come from useChatList.
  */
 export function ChatHistoryPanel({
   pathname,
@@ -18,7 +20,7 @@ export function ChatHistoryPanel({
   pathname: string | null;
   onClose: () => void;
 }) {
-  const chats = useLocalChats();
+  const { account, chats, unsaved, keepTabChats } = useChatList();
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -28,6 +30,9 @@ export function ChatHistoryPanel({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  // Near-opaque, like the account menu: inside the footer the panel can't
+  // blur the page behind it, so a see-through glass let the suggestion
+  // chips show through the chat titles.
   return (
     <>
       <button
@@ -38,7 +43,7 @@ export function ChatHistoryPanel({
       />
       <section
         aria-label="Chats"
-        className="glass fixed bottom-28 left-1/2 z-50 flex max-h-[60dvh] w-[min(22rem,calc(100vw-2rem))] -translate-x-1/2 flex-col rounded-3xl p-2"
+        className="fixed bottom-28 left-1/2 z-50 flex max-h-[60dvh] w-[min(22rem,calc(100vw-2rem))] -translate-x-1/2 flex-col rounded-3xl border border-white/20 bg-[rgb(24_58_128/0.92)] p-2 text-white shadow-[0_6px_16px_rgb(18_48_110/0.28)] backdrop-blur-xl"
       >
         <div className="flex items-center justify-between px-3 py-2">
           <h2 className="font-medium text-sm">Chats</h2>
@@ -51,9 +56,16 @@ export function ChatHistoryPanel({
             <X className="size-4" />
           </button>
         </div>
+        {unsaved.length > 0 && (
+          <div className="px-1">
+            <KeepTabChats count={unsaved.length} onKeep={keepTabChats} />
+          </div>
+        )}
         {chats.length === 0 ? (
           <p className="px-3 pb-3 text-sm text-white/90">
-            Conversations in this tab show up here.
+            {account.status === "signed-in"
+              ? "Your chats show up here."
+              : "Chats in this tab show up here. Sign in to keep them."}
           </p>
         ) : (
           <ul className="flex min-h-0 flex-col gap-0.5 overflow-y-auto pb-1">

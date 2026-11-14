@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAccount } from "@/lib/account/use-account";
 import type { IssueReason } from "@/lib/agent/citations";
 import { trimHistory } from "@/lib/agent/context";
 import {
@@ -11,10 +12,12 @@ import {
 import { LIMITS } from "@/lib/agent/limits";
 import {
   getLocalChat,
+  type LocalChat,
   type LocalChatMessage,
   titleFromMessage,
   upsertLocalChat,
 } from "@/lib/chat/local-history";
+import type { StoredChatMessage } from "@/lib/chat/stored-content";
 import type { FlashcardDraft, FlashcardSummary } from "@/lib/flashcards/types";
 
 export interface ToolStatus {
@@ -110,20 +113,37 @@ function toLocal(messages: ChatMessage[]): LocalChatMessage[] {
     .map((m) => ({ id: m.id, role: m.role, text: m.text }));
 }
 
-export function useChatStream(chatId?: string) {
+/**
+ * One chat's messages and the send/stop actions. Signed in (with a
+ * database), the server saves each answered turn to the account, so the
+ * chat is not also written to the tab's history; a saved chat opens from
+ * `initial` (loaded by /c/[chatId]). Signed out, the tab's sessionStorage
+ * history keeps it.
+ */
+export function useChatStream(chatId?: string, initial?: StoredChatMessage[]) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
   // Empty until mount/first send — crypto.randomUUID() is not prerender-safe.
   const [activeChatId, setActiveChatId] = useState(chatId ?? "");
   const abortRef = useRef<AbortController | null>(null);
   const hydrated = useRef(false);
+  const account = useAccount();
+  const storing = account.status === "signed-in" && account.canSave;
+  /** A tab chat continued after signing in: saved to the account before its next turn. */
+  const tabChat = useRef<LocalChat | null>(null);
 
   useEffect(() => {
     if (hydrated.current) return;
     hydrated.current = true;
+    if (chatId && initial?.length) {
+      setActiveChatId(chatId);
+      setMessages(initial.map((m) => ({ ...m, tools: [], streaming: false })));
+      return;
+    }
     if (chatId) {
       const existing = getLocalChat(chatId);
       if (existing) {
+        tabChat.current = existing;
         setActiveChatId(existing.id);
         setMessages(
           existing.messages.map((m) => ({
@@ -137,18 +157,24 @@ export function useChatStream(chatId?: string) {
       return;
     }
     setActiveChatId(crypto.randomUUID());
-  }, [chatId]);
+  }, [chatId, initial]);
 
-  const persist = useCallback((next: ChatMessage[], id: string) => {
-    const firstUser = next.find((m) => m.role === "user");
-    upsertLocalChat({
-      id,
-      title: firstUser ? titleFromMessage(firstUser.text) : "New chat",
-      updatedAt: new Date().toISOString(),
-      messages: toLocal(next),
-    });
-    window.dispatchEvent(new Event("shalom:chats"));
-  }, []);
+  const persist = useCallback(
+    (next: ChatMessage[], id: string) => {
+      if (!storing) {
+        const firstUser = next.find((m) => m.role === "user");
+        upsertLocalChat({
+          id,
+          title: firstUser ? titleFromMessage(firstUser.text) : "New chat",
+          updatedAt: new Date().toISOString(),
+          messages: toLocal(next),
+        });
+      }
+      // Lists refresh either way (signed in, from the account).
+      window.dispatchEvent(new Event("shalom:chats"));
+    },
+    [storing],
+  );
 
   const send = useCallback(
     async (text: string) => {
@@ -186,6 +212,29 @@ export function useChatStream(chatId?: string) {
       const controller = new AbortController();
       abortRef.current = controller;
       try {
+        // The earlier messages of a tab chat go first, so the account
+        // keeps the whole conversation in order.
+        const earlier = tabChat.current;
+        if (storing && earlier) {
+          tabChat.current = null;
+          await fetch("/api/chats/import", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chats: [
+                {
+                  id: earlier.id,
+                  title: earlier.title,
+                  updatedAt: earlier.updatedAt,
+                  messages: earlier.messages.map((m) => ({
+                    role: m.role,
+                    text: m.text,
+                  })),
+                },
+              ],
+            }),
+          }).catch(() => null);
+        }
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -244,7 +293,7 @@ export function useChatStream(chatId?: string) {
         });
       }
     },
-    [activeChatId, chatId, persist],
+    [activeChatId, chatId, persist, storing],
   );
 
   const stop = useCallback(() => abortRef.current?.abort(), []);

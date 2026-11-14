@@ -114,3 +114,11 @@ DiscoverCard  { kind: "discover"; id; question; refs: string[] /* passages: MAT.
 | Model | OpenRouter chat completions, free models only (`nvidia/nemotron-3-ultra-550b-a55b:free` by default); key in Vercel env only | team |
 
 Secrets never go into the repo, issues or chat. Production and preview env vars are managed in Vercel; local values in `.env.local` (gitignored, see `.env.example`).
+
+### Accounts (branch `accounts`), 2026-11-14
+
+- Sign-in is one flow for new and returning people: an email with a code and a link (ARCHITECTURE.md, Auth). The code works on any device; the link opens `/auth/confirm`, which signs in only after a button press.
+- The account shows at the bottom of the desktop sidebar and top-right on phones (`AccountButton.tsx`, after Jeff's design). **Jeff:** the dock's "Sign in" item (`ShellDock.tsx`) is now redundant on phones and still shows when signed in; remove it or swap it for something else when convenient.
+- Chats for signed-in people are stored per account (`src/lib/chat/store.ts`); the sidebar and the phone Chats panel use `useChatList()`. Saving is wired through the harness: `runAgentTurn` takes an optional `onFinish`, which `finishTurn` calls before `done`; `/api/chat` uses it to save signed-in turns. `useChatStream(chatId, initial)` opens saved chats and no longer writes signed-in chats to the tab.
+- The phone Chats panel is now a near-opaque deep-blue surface: inside the footer its glass could not blur the page, so the suggestion chips showed through the titles.
+

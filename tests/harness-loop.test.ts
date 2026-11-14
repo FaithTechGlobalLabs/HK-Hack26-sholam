@@ -171,6 +171,57 @@ describe("runAgentTurn", () => {
     expect(toolMsg?.content).toContain("ROM.8.28 | And we know that God works");
   });
 
+  it("hands the answered turn to onFinish before done (for saving)", async () => {
+    h.script.push(
+      call("lookup_verses", { references: ["Romans 8:28"] }),
+      say(BSB_ROMANS),
+    );
+    const finished: unknown[] = [];
+    let doneSeenBeforeSave = false;
+    const events = await collect(
+      {
+        onFinish: async (turn) => {
+          finished.push(turn);
+        },
+      },
+      (e) => {
+        if (e.type === "done" && finished.length === 0)
+          doneSeenBeforeSave = true;
+      },
+    );
+    expect(doneSeenBeforeSave).toBe(false);
+    expect(events.at(-1)?.type).toBe("done");
+    expect(finished).toHaveLength(1);
+    const turn = finished[0] as {
+      text: string;
+      messages: { role: string; tool_calls?: unknown }[];
+      verses: { id: string }[];
+      citations: { unverified: unknown[] };
+    };
+    expect(turn.text).toBe(BSB_ROMANS);
+    expect(turn.messages.map((m) => m.role)).toEqual([
+      "assistant",
+      "tool",
+      "assistant",
+    ]);
+    expect(turn.messages[0].tool_calls).toBeDefined();
+    expect(turn.verses.map((v) => v.id)).toContain("ROM.8.28");
+    expect(turn.citations.unverified).toEqual([]);
+  });
+
+  it("keeps answering when onFinish fails", async () => {
+    h.script.push(say("Hello."));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const events = await collect({
+      onFinish: async () => {
+        throw new Error("db down");
+      },
+    });
+    expect(types(events).slice(-2)).toEqual(["citations", "done"]);
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
   it("rewrites once when the answer quotes Scripture from memory", async () => {
     h.script.push(say(NKJV_ROMANS), say(BSB_ROMANS));
     const events = await collect();

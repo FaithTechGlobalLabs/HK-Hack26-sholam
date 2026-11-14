@@ -1,27 +1,65 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { LogoMark } from "@/components/brand/Logo";
+import { Suspense } from "react";
+import { AuthFrame, authStyles as s } from "@/components/auth/AuthFrame";
 import { LoginForm } from "@/components/shell/LoginForm";
-import { BRAND_NAME } from "@/lib/brand";
+import { getAccount } from "@/lib/account/server";
+import { accountLabel } from "@/lib/account/types";
+import { safeNextPath } from "@/lib/auth/next-path";
+import { isAuthProblem } from "@/lib/auth/problems";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
-export default function LoginPage() {
+export const metadata: Metadata = { title: "Sign in · Shalom" };
+
+/**
+ * Sign in or sign up. `?next=` is where to go afterwards (same-site paths
+ * only), `?error=` a problem from a failed link, and `?step=name` the
+ * display-name step that a link sign-in for a new account lands on.
+ */
+export default function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
-    <main className="mx-auto flex h-full max-w-sm flex-col justify-center gap-6 p-6">
-      <div>
-        <LogoMark className="mb-4 size-10 text-[#2f68c2]" />
-        <h1 className="font-semibold text-xl">Sign in to {BRAND_NAME}</h1>
-        <p className="mt-1 text-muted-foreground text-sm">
-          Signing in keeps your chats. Flashcards are public and need no account
-          to read.
+    <AuthFrame>
+      <Suspense fallback={<p className={s.lead}>Loading…</p>}>
+        <LoginContent searchParams={searchParams} />
+      </Suspense>
+    </AuthFrame>
+  );
+}
+
+async function LoginContent({
+  searchParams,
+}: Pick<PageProps<"/login">, "searchParams">) {
+  const params = await searchParams;
+  const next = safeNextPath(params.next);
+  const error = params.error;
+  const wantsName = params.step === "name";
+  const account = await getAccount();
+
+  if (account && !wantsName) {
+    return (
+      <>
+        <h1 className={s.title}>You're signed in</h1>
+        <p className={s.lead}>
+          as <span className="font-semibold">{accountLabel(account)}</span>.
         </p>
-      </div>
-      <LoginForm enabled={isSupabaseConfigured()} />
-      <Link
-        href="/"
-        className="text-muted-foreground text-sm underline underline-offset-4"
-      >
-        Back to chat
-      </Link>
-    </main>
+        <Link href={next} className={s.primary}>
+          Continue
+        </Link>
+        <form method="post" action="/auth/signout" className="mt-4 text-center">
+          <button type="submit" className={s.textButton}>
+            Sign out
+          </button>
+        </form>
+      </>
+    );
+  }
+
+  return (
+    <LoginForm
+      enabled={isSupabaseConfigured()}
+      next={next}
+      initialStep={account && wantsName ? "name" : "email"}
+      initialProblem={isAuthProblem(error) ? error : null}
+    />
   );
 }

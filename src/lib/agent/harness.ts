@@ -20,7 +20,7 @@ import {
   passageToVerseRanges,
   type VerseRange,
 } from "@/lib/bible/refs";
-import { type AnswerCheck, checkAnswer } from "./citations";
+import { type AnswerCheck, type CitationIssue, checkAnswer } from "./citations";
 import {
   assemblePrompt,
   buildPromptParts,
@@ -72,6 +72,26 @@ export interface TurnInput {
   signal?: AbortSignal;
   /** Asked before every model request; false means today's ceiling is reached. */
   reserveModelCall?: () => Promise<boolean>;
+  /**
+   * Called once when the turn ends with an answer, before `done` (the route
+   * saves signed-in turns here). Errors are logged, never shown.
+   */
+  onFinish?: (turn: FinishedTurn) => Promise<void>;
+}
+
+/** An answered turn, as `onFinish` receives it. */
+export interface FinishedTurn {
+  /** The answer shown. */
+  text: string;
+  model: string;
+  stopReason: string;
+  /** What the model produced this turn, verbatim and in order: assistant
+   * `tool_calls`, `tool` results, any rewrite exchange, the final answer. */
+  messages: ChatMessage[];
+  /** Verse records tools returned this turn. */
+  verses: VerseRecord[];
+  /** The final citation check (same as the `citations` event). */
+  citations: { unverified: CitationIssue[]; quoteWarnings: string[] };
 }
 
 /** Messages for the first model call of a turn (scripts and tests use it). */
@@ -137,14 +157,32 @@ export async function* runAgentTurn(
    * `input.userId` / `input.chatId` are all known: a step that saves the
    * turn belongs here. Error endings (`error` event) do not come here.
    */
-  function* finishTurn(
+  async function* finishTurn(
     text: string,
     check: AnswerCheck,
     stopReason: string,
     restored = false,
-  ): Generator<AgentEvent> {
+  ): AsyncGenerator<AgentEvent> {
     if (restored) yield { type: "reset", reason: "restore", text };
-    yield citationsEvent(check);
+    const citations = citationsEvent(check);
+    yield citations;
+    if (input.onFinish) {
+      try {
+        await input.onFinish({
+          text,
+          model: config.model,
+          stopReason,
+          messages: [...parts.tail, { role: "assistant", content: text }],
+          verses: [...versesSeen.values()],
+          citations: {
+            unverified: citations.unverified,
+            quoteWarnings: citations.quoteWarnings,
+          },
+        });
+      } catch (err) {
+        console.warn("[harness] onFinish failed:", err);
+      }
+    }
     yield {
       type: "done",
       stopReason,
@@ -153,7 +191,7 @@ export async function* runAgentTurn(
   }
 
   /** Ends the turn with the draft and its flags when the rewrite fails. */
-  function* restoreDraft(): Generator<AgentEvent> {
+  async function* restoreDraft(): AsyncGenerator<AgentEvent> {
     if (!correction) return;
     yield* finishTurn(correction.draft, correction.check, "end_turn", true);
   }
@@ -296,7 +334,9 @@ export async function* runAgentTurn(
   }
 }
 
-function citationsEvent(check: AnswerCheck): AgentEvent {
+function citationsEvent(
+  check: AnswerCheck,
+): Extract<AgentEvent, { type: "citations" }> {
   return {
     type: "citations",
     unverified: check.unverified,
