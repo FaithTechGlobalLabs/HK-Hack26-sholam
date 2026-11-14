@@ -7,7 +7,7 @@ import { defineTool } from "./types";
 export const searchFlashcards = defineTool({
   name: "search_flashcards",
   description:
-    "Search sholam's public Bible card deck by keywords. The deck has two kinds: fact cards (a question with an answer and verse ids) and discover cards (an open question with Scripture starting points and no fixed answer). Use it before answering trivia or fact questions, when a question sounds like a discover card, and before proposing a new card, to avoid duplicates. Returns matching cards with ids, kind, question, answer (fact cards) and passage refs. Returns nothing when no card is a strong match.",
+    "Search sholam's public Bible card deck by keywords. The deck has two kinds: fact cards (a question with an answer and verse ids) and discover cards (an open question with Scripture passages and, usually, the team's written answer and why those passages matter). Use it before answering trivia or fact questions, when a question sounds like a discover card, and before proposing a new card, to avoid duplicates. Returns matching cards with ids, kind, question, answer, why (discover cards) and passage refs. Returns nothing when no card is a strong match.",
   inputSchema: z.strictObject({
     query: z
       .string()
@@ -36,10 +36,14 @@ export const searchFlashcards = defineTool({
     const summaries = ranked.map((r) => toSummary(r.card));
     ctx.emit({ type: "flashcards", cards: summaries });
 
-    return summaries
-      .map((c) => {
-        const answer = c.answer ? ` | A: ${c.answer}` : "";
-        return `${c.id} | ${c.kind} | Q: ${c.question}${answer} | refs: ${c.refs.join(", ")} | /flashcards?card=${c.id}`;
+    return ranked
+      .map(({ card }) => {
+        const answer = card.answer ? ` | A: ${card.answer}` : "";
+        const why =
+          card.kind === "discover" && card.explanation
+            ? ` | Why: ${card.explanation}`
+            : "";
+        return `${card.id} | ${card.kind} | Q: ${card.question}${answer}${why} | refs: ${card.refs.join(", ")} | /flashcards?card=${card.id}`;
       })
       .join("\n");
   },

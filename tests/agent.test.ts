@@ -179,13 +179,15 @@ describe("seed flashcards", () => {
 });
 
 describe("discover cards (FaithMap)", () => {
-  it("has 129 unique open questions with passage refs and no answers", () => {
+  it("has 129 unique questions with passage refs and the team's answers", () => {
     expect(SEED_DISCOVER).toHaveLength(129);
     expect(new Set(SEED_DISCOVER.map((c) => c.id)).size).toBe(129);
     expect(new Set(SEED_DISCOVER.map((c) => c.question)).size).toBe(129);
     for (const card of SEED_DISCOVER) {
       expect(card.kind).toBe("discover");
-      expect(card).not.toHaveProperty("answer");
+      // Written by the team in the source file, never generated.
+      expect(card.answer, card.id).toBeTruthy();
+      expect(card.takeaway, card.id).toBeTruthy();
       expect(DISCOVER_CATEGORIES).toContain(card.category);
       expect(card.refs.length).toBeGreaterThan(0);
       for (const ref of card.refs)
@@ -201,7 +203,8 @@ describe("discover cards (FaithMap)", () => {
       difficulty: 3,
       tags: ["Real Life", "Deep"],
       minutes: 3,
-      refs: ["MAT.18.21-MAT.18.35", "LUK.17.3-LUK.17.4"],
+      // Primary Scripture first, then the supporting passages.
+      refs: ["LUK.17.3-LUK.17.4", "MAT.18.15-MAT.18.17", "ROM.12.18"],
       section: "Everyday Life, Social Media & Identity",
     });
   });

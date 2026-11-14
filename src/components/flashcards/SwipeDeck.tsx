@@ -33,6 +33,15 @@ const HOLD_MS = 2000;
  * this runs horizon-first: trees low down, then birds, then clear sky. */
 const SKY_GLYPHS = "♣⇞↟ʌvᵛ˙· ";
 const PANEL = "#f5f8fd";
+/** Soft blue edge at the top or bottom of a scrolling panel, shown only
+ *  while there is more to scroll that way (the panel-coloured covers move
+ *  with the content and hide it at each end). */
+const SCROLL_HINT = [
+  `linear-gradient(${PANEL} 30%, rgb(245 248 253 / 0)) top / 100% 24px no-repeat local`,
+  `linear-gradient(rgb(245 248 253 / 0), ${PANEL} 70%) bottom / 100% 24px no-repeat local`,
+  "linear-gradient(rgb(47 104 194 / 0.12), transparent) top / 100% 10px no-repeat scroll",
+  "linear-gradient(transparent, rgb(47 104 194 / 0.12)) bottom / 100% 10px no-repeat scroll",
+].join(", ");
 const GAP = 22;
 /** Text panel height the stage reserves under the art. */
 const PANEL_SPACE = 190;
@@ -478,9 +487,9 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
   const passagesText = current.refs.map(passageLabel).join(", ");
   const announcement = !revealed
     ? `Card ${index + 1} of ${cards.length}. ${current.question}`
-    : current.kind === "discover"
+    : current.kind === "discover" && !current.answer
       ? `Start reading: ${passagesText}.`
-      : `Answer: ${sentence(current.answer ?? "")} ${passagesText}.`;
+      : `Answer: ${sentence(current.answer ?? "")} ${current.kind === "discover" && current.takeaway ? `${sentence(current.takeaway)} ` : ""}${passagesText}.`;
 
   return (
     <div
@@ -529,7 +538,7 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
           const passages = card.refs.map(passageLabel);
           const label = !open
             ? CATEGORY_LABELS[card.category]
-            : card.kind === "discover"
+            : card.kind === "discover" && !card.answer
               ? "Start reading"
               : "Answer";
           return (
@@ -640,7 +649,31 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                           aria-pressed={revealed}
                           className="-mx-1 mt-1 block w-[calc(100%+0.5rem)] cursor-[inherit] rounded-md px-1 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#2f68c2]"
                         >
-                          {open && card.kind === "discover" ? (
+                          {open && card.kind === "discover" && card.answer ? (
+                            // The team's answers run to ~470 characters. Keep
+                            // the panel inside the space the stage reserves
+                            // (so the ticks and buttons stay clear) and
+                            // scroll the rest; the takeaway leads.
+                            <span
+                              className="block overflow-y-auto overscroll-contain"
+                              style={{
+                                maxHeight: PANEL_SPACE - 70,
+                                background: SCROLL_HINT,
+                              }}
+                            >
+                              {card.takeaway && (
+                                <span className="block font-semibold text-[15px] text-slate-900 leading-snug">
+                                  {card.takeaway}
+                                </span>
+                              )}
+                              <span className="mt-1.5 block text-slate-800 text-sm leading-snug">
+                                {card.answer}
+                              </span>
+                              <span className="mt-1.5 block text-slate-600 text-xs">
+                                {passages.join(" · ")}
+                              </span>
+                            </span>
+                          ) : open && card.kind === "discover" ? (
                             <span className="block font-semibold text-lg leading-snug">
                               {passages.map((ref) => (
                                 <span key={ref} className="block">
@@ -676,7 +709,7 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                           )}
                         </>
                       )}
-                      {open && card.kind === "discover" && (
+                      {open && card.kind === "discover" && !card.answer && (
                         <p className="mt-2 text-slate-600 text-sm">
                           An open question with no single answer. Explore it
                           with Ask in chat.

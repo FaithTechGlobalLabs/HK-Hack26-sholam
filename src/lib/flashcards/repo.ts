@@ -126,6 +126,9 @@ function toCard(row: CardRow): Flashcard {
       minutes: row.minutes ?? undefined,
       difficulty: row.difficulty ?? undefined,
       source: row.source ?? "",
+      answer: row.answer ?? undefined,
+      explanation: row.explanation ?? undefined,
+      takeaway: row.takeaway ?? undefined,
     };
   }
   return {
@@ -152,7 +155,7 @@ function listSeed(
       (!kind || card.kind === kind) &&
       (!category || card.category === category) &&
       (!q ||
-        `${card.question} ${card.kind === "fact" ? card.answer : card.section}`
+        `${card.question} ${card.kind === "fact" ? card.answer : `${card.section} ${card.answer ?? ""}`}`
           .toLowerCase()
           .includes(q)),
   ).slice(0, limit);

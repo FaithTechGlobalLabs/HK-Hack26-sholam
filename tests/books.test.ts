@@ -96,6 +96,11 @@ describe("verse ids", () => {
     ["Galatians 1:10, John 12:42–43", ["GAL.1.10", "JHN.12.42-JHN.12.43"]],
     ["John 12:1–8; Mark 14:3–9", ["JHN.12.1-JHN.12.8", "MRK.14.3-MRK.14.9"]],
     ["Romans 8:28; 12:1-2", ["ROM.8.28", "ROM.12.1-ROM.12.2"]],
+    ["Jude 11", ["JUD.1.11"]],
+    ["Philemon 8–16", ["PHM.1.8-PHM.1.16"]],
+    ["Jude 3, 20–21", ["JUD.1.3", "JUD.1.20-JUD.1.21"]],
+    ["Jude 1", ["JUD.1"]],
+    ["Jude 1:3", ["JUD.1.3"]],
   ])("parseReference(%s)", (input, expected) => {
     expect(parseReference(input)).toEqual(expected);
   });
@@ -103,7 +108,7 @@ describe("verse ids", () => {
   it("parseReference rejects unknown books and malformed parts", () => {
     expect(() => parseReference("Hezekiah 3:1")).toThrow(/Unknown book/);
     expect(() => parseReference("John 3:16-12")).toThrow(/Not a valid passage/);
-    expect(() => parseReference("Jude 2")).toThrow(/Not a valid passage/);
+    expect(() => parseReference("Jude 2:1")).toThrow(/Not a valid passage/);
   });
 
   it("labels passages", () => {
