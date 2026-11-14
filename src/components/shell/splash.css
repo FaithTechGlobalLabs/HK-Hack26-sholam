@@ -1,0 +1,226 @@
+/*
+ * Launch screen (SplashScreen.tsx). Classes use a `launch-` prefix so they
+ * cannot collide with the `.splash*` rules on Jeff's jeffs-uis branch.
+ *
+ * Timeline (s): upright bar draws 0.05-0.55, beam 0.2-0.65, billows rise
+ * left to right 0.45-1.2, wordmark rises 0.6-1.1 and light sweeps it
+ * 0.75-1.45, tagline 1.0-1.45, hold, fade 1.6-2.1.
+ * A tap or key skips: a 0.25 s fade from wherever the entrance has got to.
+ * Every element's resting style is its final, visible state; the entrance
+ * animations only supply the "from" side. The hold, fade and skip timings
+ * are mirrored in SPLASH_TIMING (splashSession.ts); keep them in step.
+ */
+
+/* A later load in the same browser session: hidden before first paint. */
+html[data-splash-seen] .launch {
+  display: none;
+}
+
+.launch {
+  --launch-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --launch-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --launch-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  position: fixed;
+  inset: 0;
+  /* Above everything in the shell, including the dock's menu (z 1000). */
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Lift the lockup a little above the true centre. */
+  padding-bottom: 6dvh;
+  color: #fff;
+  /* The same sky as CloudSky, so the fade reveals the app, not a new colour. */
+  background: linear-gradient(
+    180deg,
+    #5a8ed6 0%,
+    #6c9ada 40%,
+    #86a3cf 75%,
+    #9eacc6 100%
+  );
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  /* Pure CSS exit: it leaves even if JavaScript never runs. */
+  animation: launch-out 0.5s var(--launch-ease-in-out) 1.6s forwards;
+}
+
+/* Set by JavaScript at the same moment, in case animations are off. */
+.launch[data-leaving] {
+  pointer-events: none;
+}
+
+/* Tapped or a key pressed while it holds. A new animation name, so it starts
+ * now rather than inheriting launch-out's clock. It keeps catching pointers
+ * until it is hidden, so the dismissing tap never reaches the app. */
+.launch[data-skipped] {
+  animation: launch-skip 0.25s var(--launch-ease-out) forwards;
+}
+
+.launch-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: launch-recede 0.5s var(--launch-ease-in) 1.6s forwards;
+}
+
+.launch-mark {
+  width: 84px;
+  height: 84px;
+  /* The header logo's shadow (AppShell), so white holds up on the sky. */
+  filter: drop-shadow(0 1px 2px rgb(18 48 110 / 0.55));
+}
+
+/* The bars draw outward from their own centres; round ends stay round. */
+.launch-mark .logo-bar {
+  animation: launch-bar 0.5s var(--launch-ease-out) both;
+}
+.launch-mark .logo-bar-upright {
+  animation-delay: 0.05s;
+}
+.launch-mark .logo-bar-beam {
+  animation-duration: 0.45s;
+  animation-delay: 0.2s;
+}
+
+/* The billows swell in, staggered by their x position: a left-to-right
+ * wave that the light on the wordmark then follows. */
+.launch-mark .logo-puff {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: launch-puff 0.4s var(--launch-ease-out) both;
+  animation-delay: calc(0.45s + (var(--cx, 16) - 7) * 20ms);
+}
+
+.launch-word {
+  margin-top: 18px;
+  /* Room above and below the glyphs so the clipped light never shaves them. */
+  padding: 0.06em 0.04em;
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #fff;
+  /* White on the sky is about 2.8:1; the shadow gives the glyphs an edge.
+   * A filter, not text-shadow: text-shadow paints over clipped text. */
+  filter: drop-shadow(0 1px 2px rgb(18 48 110 / 0.55));
+  /* Resting position shows only the solid white end. */
+  background-image: linear-gradient(
+    100deg,
+    #fff 0%,
+    #fff 40%,
+    #fff8ea 47%,
+    rgb(255 255 255 / 0.55) 56%,
+    rgb(255 255 255 / 0.55) 100%
+  );
+  background-size: 260% 100%;
+  background-position: 0% 0;
+  animation:
+    launch-rise 0.5s var(--launch-ease-out) 0.6s both,
+    launch-sweep 0.7s var(--launch-ease-in-out) 0.75s both;
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .launch-word {
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}
+
+.launch-tag {
+  margin-top: 8px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgb(255 255 255 / 0.9);
+  /* The app's main text treatment (.sky-theme main in sky.css). */
+  text-shadow:
+    0 1px 2px rgb(18 48 110 / 0.85),
+    0 0 16px rgb(18 48 110 / 0.45);
+  animation: launch-fade-in 0.45s var(--launch-ease-out) 1s both;
+}
+
+/* pathLength is 1: the dash grows from 0 to 1 while its offset keeps it
+ * centred on the bar. */
+@keyframes launch-bar {
+  from {
+    stroke-dasharray: 0 2;
+    stroke-dashoffset: -0.5;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes launch-puff {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+
+@keyframes launch-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes launch-sweep {
+  from {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes launch-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes launch-out {
+  from {
+    opacity: 1;
+    pointer-events: none;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+@keyframes launch-skip {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes launch-recede {
+  to {
+    transform: scale(1.03);
+  }
+}
+
+/* No movement: everything is simply there, then a quick fade. */
+@media (prefers-reduced-motion: reduce) {
+  .launch {
+    animation-duration: 0.25s;
+    animation-delay: 1.2s;
+  }
+  .launch-lockup,
+  .launch-mark .logo-bar,
+  .launch-mark .logo-puff,
+  .launch-word,
+  .launch-tag {
+    animation: none;
+  }
+}

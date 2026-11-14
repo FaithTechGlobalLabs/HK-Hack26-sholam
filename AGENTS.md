@@ -47,6 +47,7 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 - Model route: `src/lib/agent/openrouter.ts` calls OpenRouter chat completions (`OPENROUTER_API_KEY`, default model `nvidia/nemotron-3-ultra-550b-a55b:free`). Free models only: a `SHOLAM_MODEL` without `:free` is ignored. Check a deployment with `/api/health` and a key with `npm run model:smoke`.
 - Never trigger a model call from URL parameters (`?q=` may only pre-fill). Use `src/lib/chat/handoff.ts`. The app must not be frameable (`frame-ancestors 'none'` in `next.config.ts`).
 - `src/components/ui/dock.tsx` and `src/components/flashcards/GradientASCII.tsx` are React Bits code under MIT + Commons Clause: keep their licence headers.
+- In hand-written CSS, write `backdrop-filter` alone, never with `-webkit-backdrop-filter`: the CSS pipeline then keeps only the prefixed one and Chrome shows no blur. Glass also dies under an ancestor with `filter` or `opacity` < 1; move cards with transforms and fade the glass element itself.
 - Several people work in parallel (docs/TEAM.md). Merge `origin/main` into your branch before a PR, don't push to someone else's branch, and run `npm run build` before pushing: Vercel previews build with `DATABASE_URL` set.
 
 ## Non-negotiable product rules
@@ -54,7 +55,7 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 1. **Scripture comes from data, never model memory.** The agent quotes only verse text a tool returned this turn. Citations are `[Label](verse:BOOK.c.v)` links; the server and UI treat any cite not fetched this turn as unverified. Do not weaken this to make answers look better.
 2. **Verse ids** are `BOOK.chapter.verse` with USFM book codes (`JHN.3.16`, `1CO.13.4`). `src/lib/bible/books.ts` is the canon table.
 3. **The agent never saves a flashcard.** `propose_flashcard` only emits a draft; the user saves it via `POST /api/flashcards`.
-3a. **Two card kinds.** `fact` cards have an answer backed by verse ids; `discover` cards are open questions with passage refs as *starting points* and no answer. Never add answers to discover cards. `data/faithmap.cards.json` is generated from `data/sources/`; edit the source and rerun `npm run faithmap:convert`.
+3a. **Two card kinds.** `fact` cards have an answer backed by verse ids; `discover` cards are open questions with passage refs; they may carry the team's written answer, explanation and takeaway, copied from the source file as written. Never generate or edit those by hand or by model: change the source. `data/faithmap.cards.json` is generated from `data/sources/`; edit the source and rerun `npm run faithmap:convert`.
 3b. **Search is agentic** (docs/SEARCH.md): the model's memory may suggest where to look, but only tool results are quoted or cited.
 4. **Flashcards are public; chats are private.** Cards carry `author_id` and a `status` so they can be flagged and hidden.
 5. **Tone:** gentle, peaceful, non-denominational historic Christianity; differences between traditions are described fairly. The prompt is `src/lib/agent/system-prompt.ts`. Changing its doctrinal stance is a product decision: record it in `docs/PLAN.md`.
@@ -79,7 +80,8 @@ src/lib/auth/, src/lib/account/  sign-in flow (email code + /auth/confirm link),
 src/lib/chat/store.ts  per-account chats in Postgres (every query filters by user id); stored-content.ts is the messages.content shape
 src/components/shell/ChatHistoryPanel.tsx  recent chats on phones, opened from the dock's Chats item (desktop lists them in the sidebar)
 src/lib/brand.ts  BRAND_NAME, the product name shown in the UI
-src/components/flashcards/  FlashcardsView, SwipeDeck (+ GradientASCII), FlashcardCard, StudyMode, NewCardDialog, FlashcardProposal
+src/components/flashcards/  FlashcardsView, SwipeDeck (glass 3D carousel + SwipeDeckPlaceholder; styles in app/sky.css), FlashcardCard, StudyMode, NewCardDialog, FlashcardProposal
+src/components/shell/SplashScreen.tsx  launch screen, once per browser session (splash.css, splashSession.ts)
 src/lib/agent/          harness (loop), events (SSE protocol), citations (verified = fetched before the answer), limits (every cap), context (trimming), usage-limit/usage-store (per-visitor + daily limits), tool-call-text, system-prompt, tools/, demo
 src/lib/bible/          books (canon table), refs (verse ids, reference parser)
 src/lib/flashcards/     types (zod schema), repo (DB or seed), deck (cached public deck + revalidateDeck), shuffle (tested Fisher–Yates + deckView)
