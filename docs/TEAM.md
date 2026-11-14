@@ -81,6 +81,13 @@ For MustyDusty (Marcus), whose loop this is. The project owner asked for these a
 - **Usage limits (`usage-limit.ts`, `usage-store.ts`, migration `0003_usage_counters`).** Per-visitor and global daily counters in Postgres, so the limit holds across Vercel instances. `rate-limit.ts` still paces 429 retries; its "50 a day" message was wrong for this account (it bought 15 credits, so the cap is 1000/day) and now names no number.
 - **Not changed:** model, reasoning and provider settings; the free-only rule; `rank.ts` and `repo.ts`.
 
+### Flashcard redesign and launch screen, 2026-11-14
+
+- **Deck (`SwipeDeck.tsx`, Ricky/Jeff):** the owner found the card unclear (the art block had no purpose; nobody knew to tap) and asked for glass and 3D. Each card is now a glass card in a 3D carousel. The front is clear glass with the question and a **Show answer** / **Where to start** button; it turns over (a two-stage turn, so the blur holds) to a milky-glass back with the answer, **Next card** and **Ask Shalom**. The centred card tilts toward the mouse with a light that follows it. Removed: the sky-art block, the bubble bridge, the hold-to-ask gesture and the ticks (now `‹ 12 of 179 ›`). `GradientASCII.tsx` is no longer used; it is kept for now. The placeholder from the load-time work (`SwipeDeckPlaceholder`) is the same glass card.
+- **Launch screen (Jeff's, from `30df585`):** `SplashScreen.tsx` + `splash.css` + `splashSession.ts`, using our cross-cloud mark (`LogoMarkParts` in `Logo.tsx`, same geometry as `LogoMark`) and the `BRAND_NAME` wordmark instead of the speech-bubble icon and "sholam". Classes use a `launch-` prefix so they do not collide with `.splash-*` if `jeffs-uis` lands later.
+- **MustyDusty's "card blur transition" (1c75278, pushed to `main` the same hour):** it softened Jeff's white answer panel during the tap-to-reveal. The redesign removes that panel and the tap reveal (the card now turns over to its back), so its `.deck-*` rules were dropped in the merge rather than left as dead CSS. The turn-over is the reveal animation now; adjust it in the `Flashcards (SwipeDeck)` section of `app/sky.css`.
+- **Glass fix for everyone:** hand-written `-webkit-backdrop-filter` lines were removed from `sky.css`. The CSS pipeline kept only the prefixed property when both were written, so Chrome showed no blur on `.glass` or the glass buttons. Write `backdrop-filter` alone.
+
 Please push to a branch and open a PR rather than pushing to `main` directly: it gives CI and a preview a chance to catch problems first, and avoids two people merging over each other.
 
 ## Contract for flashcard UI work

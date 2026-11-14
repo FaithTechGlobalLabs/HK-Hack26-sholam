@@ -24,6 +24,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      // The launch screen's pre-paint script may add data-splash-seen.
+      suppressHydrationWarning
     >
       <body className="h-full">{children}</body>
     </html>

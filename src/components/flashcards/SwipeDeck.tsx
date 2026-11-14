@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   type CSSProperties,
@@ -11,84 +12,42 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { Button } from "@/components/ui/button";
 import { passageLabel } from "@/lib/bible/refs";
 import { queueChatQuestion } from "@/lib/chat/handoff";
 import { CATEGORY_LABELS, type Flashcard } from "@/lib/flashcards/types";
-import GradientASCII from "./GradientASCII";
+import { cn } from "@/lib/utils";
 
 /**
- * Carousel deck (Jeff's design). The centred card is sharp, and its art and
- * text panels are joined by a gooey "bubble bridge"; neighbours sit blurred
- * at the sides with their two panels drifted apart. Swipe, arrow keys, a tap
- * on a side card, the ticks or Next move between cards. Tap the centred card
- * to reveal it: the white panel softens as the new face appears, then
- * sharpens. Hold it for two seconds (or press Ask in chat) to
- * ask about it in chat. The parent remounts this per deck (`key`), so there
- * is no deck-change bookkeeping here.
+ * The flashcard deck: glass cards in a 3D carousel over the sky. The centred
+ * card faces you; its neighbours turn toward it on either side. The front is
+ * clear blue glass with the question; "Show answer" ("Where to start" on
+ * discover cards) turns it over to a milky glass back with the answer, then
+ * "Next card" and "Ask Shalom". On desktop the centred card tilts toward the
+ * pointer. Swipe, the arrow keys, the ‹ › buttons or a tap on a side card
+ * move between cards. The parent remounts this per deck (`key`).
+ *
+ * Glass needs nothing between it and the sky that flattens the backdrop, so
+ * the carousel moves cards with transforms only (no `filter` or `opacity`
+ * on their wrappers); fading is done on the faces themselves.
  */
 
-const HOLD_MS = 2000;
-/** Glyphs are picked by brightness, and the sky is brightest high up, so
- * this runs horizon-first: trees low down, then birds, then clear sky. */
-const SKY_GLYPHS = "♣⇞↟ʌvᵛ˙· ";
-const PANEL = "#f5f8fd";
-/** Soft blue edge at the top or bottom of a scrolling panel, shown only
- *  while there is more to scroll that way (the panel-coloured covers move
- *  with the content and hide it at each end). */
-const SCROLL_HINT = [
-  `linear-gradient(${PANEL} 30%, rgb(245 248 253 / 0)) top / 100% 24px no-repeat local`,
-  `linear-gradient(rgb(245 248 253 / 0), ${PANEL} 70%) bottom / 100% 24px no-repeat local`,
-  "linear-gradient(rgb(47 104 194 / 0.12), transparent) top / 100% 10px no-repeat scroll",
-  "linear-gradient(transparent, rgb(47 104 194 / 0.12)) bottom / 100% 10px no-repeat scroll",
-].join(", ");
-const GAP = 22;
-/** Text panel height the stage reserves under the art. */
-const PANEL_SPACE = 190;
-/** Ticks row, the Next / Ask row and the two gaps under the stage. */
-const CONTROLS = 24 + 28 + 2 * 12;
-/** Tree line along the horizon: a far, faint row and a nearer one. */
-const TREES_FAR = "↟ ↟⇞↟ ♣↟ ↟↟⇞ ↟♣ ⇞↟↟ ↟♣↟ ⇞↟ ↟↟♣ ↟⇞↟ ♣↟";
-const TREES_NEAR = "♣↟ ⇞♣ ↟↟♣ ⇞ ♣↟⇞ ↟♣ ♣⇞↟ ↟♣ ⇞♣↟";
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-
-/** Soft skies, deep at the top and pale at the horizon. `drip` is the
- * colour the art fades to at its bottom edge, so the bubbles match it. */
-const SKIES = [
-  { colors: ["#6f9fe0", "#9cc3f2", "#d3e6fb", "#fff6e5"], drip: "#d6e7fb" },
-  { colors: ["#8796dc", "#c3aee6", "#f6cdb9", "#fff1df"], drip: "#f4d6c8" },
-  { colors: ["#4f8ad8", "#80b4ee", "#bfe0fb", "#f2fbff"], drip: "#cbe5fb" },
-  { colors: ["#6d7fcf", "#a690d6", "#f0aaa1", "#ffdcb8"], drip: "#f6c7b4" },
-  { colors: ["#5d9bc9", "#8ccbd6", "#c9eadf", "#f4fbef"], drip: "#d4eee4" },
-];
-
-/** Bubble positions (left %, size px, duration s, delay s). */
-const DRIPS = [
-  { x: 14, s: 16, d: 3.4, t: 0 },
-  { x: 36, s: 22, d: 4.1, t: 0.6 },
-  { x: 61, s: 14, d: 3.1, t: 1.2 },
-  { x: 82, s: 19, d: 3.8, t: 0.3 },
-];
-const RISES = [
-  { x: 24, s: 18, d: 3.6, t: 0.9 },
-  { x: 48, s: 26, d: 4.4, t: 0.2 },
-  { x: 72, s: 16, d: 3.3, t: 1.5 },
-];
-
-/** Card width and spacing follow the stage width (cqw), and the art takes
- * whatever height the deck has left after the text panel and controls (cqh),
- * so short phones get a shorter sky instead of overflowing. All in CSS, so
- * the server render already has the right sizes. `strideFor` mirrors the
- * stride for drag maths. */
-const CARD_W = "clamp(240px, 60cqw, 360px)";
-const STRIDE = `calc(${CARD_W} + clamp(20px, 5cqw, 56px))`;
-const ART_H = `clamp(96px, calc(100cqh - ${GAP + PANEL_SPACE + CONTROLS}px), 196px)`;
+/** The ‹ 12 of 179 › row (44px targets) and the gap above it. */
+const CONTROLS = 44 + 12;
+/** Card size follows the stage (cq units), all in CSS so the server render
+ * already has it. Neighbours sit a card away, turned toward the
+ * centre, so they stand just clear of it. `strideFor` mirrors STRIDE. */
+const CARD_W = "clamp(264px, 78cqw, 380px)";
+const STRIDE = `calc(${CARD_W} * 1.06)`;
+const CARD_H = `clamp(280px, calc(100cqh - ${CONTROLS}px), 440px)`;
+const TURN_DEG = 30;
+const DEPTH_PX = 160;
+const TILT_DEG = 7;
 const clampNum = (v: number, lo: number, hi: number) =>
   Math.max(lo, Math.min(hi, v));
-const strideFor = (w: number) =>
-  clampNum(w * 0.6, 240, 360) + clampNum(w * 0.05, 20, 56);
+const strideFor = (w: number) => clampNum(w * 0.78, 264, 380) * 1.06;
 
-/** What "ask in chat" sends. Discover cards are open questions, so the
+/** What "Ask Shalom" sends. Discover cards are open questions, so the
  *  request is to explore them from their starting points, not to answer. */
 function chatRequest(card: Flashcard) {
   const passages = card.refs.map(passageLabel).join(" and ");
@@ -112,87 +71,41 @@ function useReducedMotion() {
   );
 }
 
-const pad = (n: number) => String(n).padStart(2, "0");
 /** Ends with a full stop unless it already ends a sentence. */
 const sentence = (t: string) => (/[.!?]["'”’)]?$/.test(t.trim()) ? t : `${t}.`);
 
-function Bridge({ top, play }: { top: string; play: boolean }) {
-  return (
-    <div
-      aria-hidden
-      className="pointer-events-none relative"
-      style={{ height: GAP }}
-    >
-      {play && (
-        <div className="goo-connect absolute inset-x-4 -top-3 -bottom-3">
-          {/* Melting down from the art. */}
-          <div
-            className="absolute inset-0"
-            style={{ filter: "url(#sholam-goo)" }}
-          >
-            <span
-              className="absolute inset-x-0 top-0 h-4"
-              style={{ background: top }}
-            />
-            {DRIPS.map((b) => (
-              <span
-                key={b.x}
-                className="goo-drip absolute top-1 rounded-full"
-                style={
-                  {
-                    background: top,
-                    left: `${b.x}%`,
-                    width: b.s,
-                    height: b.s,
-                    "--dur": `${b.d}s`,
-                    "--delay": `${b.t}s`,
-                    "--travel": `${GAP - 2}px`,
-                  } as CSSProperties
-                }
-              />
-            ))}
-          </div>
-          {/* Bubbling up from the text panel. */}
-          <div
-            className="absolute inset-0"
-            style={{ filter: "url(#sholam-goo)" }}
-          >
-            <span
-              className="absolute inset-x-0 bottom-0 h-4"
-              style={{ background: PANEL }}
-            />
-            {RISES.map((b) => (
-              <span
-                key={b.x}
-                className="goo-drip absolute bottom-1 rounded-full"
-                style={
-                  {
-                    background: PANEL,
-                    left: `${b.x}%`,
-                    width: b.s,
-                    height: b.s,
-                    "--dur": `${b.d}s`,
-                    "--delay": `${b.t}s`,
-                    "--travel": `${-(GAP - 4)}px`,
-                  } as CSSProperties
-                }
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+/** Discover tags, minus any that only repeat the category ("Big Question"
+ * under "Big questions"). */
+const sameLabel = (a: string, b: string) =>
+  a.toLowerCase().replace(/s$/, "") === b.toLowerCase().replace(/s$/, "");
+const extraTags = (card: Flashcard) =>
+  card.kind === "discover"
+    ? card.tags.filter((t) => !sameLabel(t, CATEGORY_LABELS[card.category]))
+    : [];
+
+const kindLabel = (card: Flashcard) =>
+  card.kind === "discover" ? "Discover" : "Quick fact";
+
+/** Where card `p` (its offset from the centre, in cards) sits in the 3D row.
+ * On narrow stages a neighbour is only a sliver at the screen edge, so its
+ * words fade out completely; wider stages keep a faint read of them. */
+function placement(p: number, narrow: boolean) {
+  const a = Math.abs(p);
+  const side = clampNum(p, -1, 1);
+  return {
+    transform: `translate(-50%, -50%) translateX(calc(${p} * ${STRIDE})) translateZ(${-Math.min(a, 2) * DEPTH_PX}px) rotateY(${-side * TURN_DEG}deg)`,
+    zIndex: 20 - Math.round(a * 4),
+    fade: 1 - Math.min(a, 2) * 0.36,
+    words: 1 - Math.min(a, 1) * (narrow ? 1 : 0.8),
+  };
 }
 
 /**
- * The carousel with no card in it yet: the centred card's art and panel at
- * their real size, and room for the ticks and buttons. FlashcardsView shows
- * it until the browser renders the shuffled deck, so nothing moves when the
- * cards arrive. Built from the same constants as the deck below.
+ * The carousel with no card in it yet: a glass card at its real size and the
+ * room for the position row. FlashcardsView shows it until the browser
+ * renders the shuffled deck, so nothing moves when the cards arrive.
  */
 export function SwipeDeckPlaceholder() {
-  const sky = SKIES[0];
   return (
     <div
       aria-busy="true"
@@ -201,33 +114,18 @@ export function SwipeDeckPlaceholder() {
     >
       <span className="sr-only">Shuffling the deck…</span>
       <div
-        className="relative w-full"
-        style={{
-          height: `calc(${ART_H} + ${GAP + PANEL_SPACE}px)`,
-          containerType: "inline-size",
-        }}
+        className="flashcard-stage relative w-full"
+        style={{ height: CARD_H, containerType: "inline-size" }}
       >
         <div
           data-placeholder-card
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{ width: CARD_W }}
+          className="flashcard absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{ width: CARD_W, height: CARD_H }}
         >
-          <div
-            className="rounded-2xl shadow-[0_18px_40px_rgb(35_75_150/0.22)]"
-            style={{
-              height: ART_H,
-              background: `linear-gradient(180deg, ${sky.colors[0]} 0%, ${sky.colors[1]} 40%, ${sky.colors[2]} 78%, ${sky.colors[3]} 100%)`,
-            }}
-          />
-          <div style={{ height: GAP }} />
-          <div
-            className="min-h-40 rounded-2xl shadow-[0_18px_40px_rgb(35_75_150/0.18)]"
-            style={{ background: PANEL }}
-          />
+          <div className="flashcard-face flashcard-front" />
         </div>
       </div>
-      <div className="h-6" />
-      <div className="h-7" />
+      <div className="h-11" />
     </div>
   );
 }
@@ -237,45 +135,35 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
-  const [shift, setShift] = useState<{
-    phase: "idle" | "in";
-    dir: "forward" | "back";
-  }>({ phase: "idle", dir: "forward" });
   const [drag, setDrag] = useState(0);
   const [dragging, setDragging] = useState(false);
-  const [holding, setHolding] = useState(false);
-  const [hinted, setHinted] = useState(false);
   const stageRef = useRef<HTMLElement>(null);
-  const flipRef = useRef<HTMLButtonElement>(null);
-  const [stride, setStride] = useState(() => strideFor(800));
+  const tiltRef = useRef<HTMLDivElement>(null);
+  const showRef = useRef<HTMLButtonElement>(null);
+  const nextRef = useRef<HTMLButtonElement>(null);
+  const [stride, setStride] = useState(() => strideFor(400));
+  const [narrow, setNarrow] = useState(true);
   const dragRef = useRef(0);
   const gesture = useRef<{
     x: number;
     y: number;
     id: number;
     axis: "x" | "y" | null;
-    card: number;
   } | null>(null);
-  const holdTimer = useRef<number | null>(null);
-  const shiftGen = useRef(0);
-  const revealTarget = useRef(false);
   const asked = useRef(false);
   const suppressClick = useRef(false);
-  const refocus = useRef(false);
+  /** Where keyboard focus goes after the next render, if anywhere. */
+  const focusNext = useRef<"show" | "next" | null>(null);
 
   // Next 16 keeps visited pages alive (hidden) instead of unmounting them.
-  // When this deck is hidden mid-gesture (a hold that opened chat, a swipe
-  // then a dock tap), clear every in-flight flag so it works on return.
+  // When this deck is hidden mid-gesture (a swipe then a nav tap, or Ask
+  // Shalom), clear every in-flight flag so it works on return.
   useLayoutEffect(
     () => () => {
-      if (holdTimer.current !== null) window.clearTimeout(holdTimer.current);
-      holdTimer.current = null;
-      shiftGen.current += 1;
       gesture.current = null;
       asked.current = false;
       suppressClick.current = false;
       dragRef.current = 0;
-      setHolding(false);
       setDragging(false);
       setDrag(0);
     },
@@ -285,68 +173,60 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
   useLayoutEffect(() => {
     const el = stageRef.current;
     if (!el) return;
-    const measure = () => setStride(strideFor(el.clientWidth));
+    const measure = () => {
+      setStride(strideFor(el.clientWidth));
+      setNarrow(el.clientWidth < 640);
+    };
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     measure();
     return () => ro.disconnect();
   }, []);
 
-  // Keyboard users keep focus on the centred card as it changes (`go` sets
-  // the flag; the new card's button exists after this render).
+  // Keep keyboard focus on the card's main button as it changes.
   useEffect(() => {
-    if (!refocus.current) return;
-    refocus.current = false;
-    flipRef.current?.focus({ preventScroll: true });
+    const target = focusNext.current;
+    if (!target) return;
+    focusNext.current = null;
+    (target === "next" ? nextRef : showRef).current?.focus({
+      preventScroll: true,
+    });
   });
+
+  const focusInDeck = () =>
+    !!stageRef.current?.parentElement?.contains(document.activeElement) &&
+    document.activeElement !== document.body;
+
+  /** Settle the centred card's tilt (pointer left, or a new card). */
+  const untilt = () => {
+    const el = tiltRef.current;
+    if (!el) return;
+    el.removeAttribute("data-live");
+    el.style.setProperty("--tilt-x", "0deg");
+    el.style.setProperty("--tilt-y", "0deg");
+    el.style.removeProperty("--light-x");
+    el.style.removeProperty("--light-y");
+  };
 
   const go = (next: number) => {
     const n = clampNum(next, 0, cards.length - 1);
     if (n === index) return;
-    refocus.current =
-      !!stageRef.current?.contains(document.activeElement) &&
-      document.activeElement !== stageRef.current;
+    if (focusInDeck()) focusNext.current = "show";
+    untilt();
     setIndex(n);
     setRevealed(false);
-    revealTarget.current = false;
-    shiftGen.current += 1;
-    setShift((s) => (s.phase === "idle" ? s : { ...s, phase: "idle" }));
-    setHinted(true);
   };
 
-  /** The new face paints soft, then the white panel sharpens. No lead-in. */
-  const toggleReveal = () => {
-    setHinted(true);
-    const next = !revealTarget.current;
-    revealTarget.current = next;
-    if (reduce) {
-      setRevealed(next);
-      return;
-    }
-    const gen = ++shiftGen.current;
-    const dir = next ? "forward" : "back";
-    setRevealed(next);
-    setShift({ phase: "in", dir });
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (shiftGen.current !== gen) return;
-        setShift({ phase: "idle", dir });
-      });
-    });
-  };
-
-  const clearHold = () => {
-    if (holdTimer.current !== null) window.clearTimeout(holdTimer.current);
-    holdTimer.current = null;
-    setHolding(false);
+  const reveal = () => {
+    if (revealed) return;
+    if (focusInDeck()) focusNext.current = "next";
+    setRevealed(true);
   };
 
   const ask = () => {
     const card = cards[index];
     if (!card || asked.current) return;
     asked.current = true;
-    suppressClick.current = true;
-    clearHold();
     queueChatQuestion(chatRequest(card));
     router.push("/", { transitionTypes: ["to-chat"] });
   };
@@ -356,39 +236,52 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
     setDrag(px);
   };
 
+  /** Mouse only: the centred card leans toward the pointer, and a soft
+   * light follows it across the glass. Written straight to CSS variables,
+   * so it never re-renders the deck. */
+  const tiltToward = (e: ReactPointerEvent<HTMLElement>) => {
+    const el = tiltRef.current;
+    if (!el || reduce || e.pointerType !== "mouse" || gesture.current) return;
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    if (x < -0.15 || x > 1.15 || y < -0.15 || y > 1.15) return untilt();
+    el.setAttribute("data-live", "");
+    el.style.setProperty("--tilt-x", `${(x - 0.5) * 2 * TILT_DEG}deg`);
+    el.style.setProperty("--tilt-y", `${(0.5 - y) * 2 * TILT_DEG}deg`);
+    el.style.setProperty("--light-x", `${clampNum(x, 0, 1) * 100}%`);
+    el.style.setProperty("--light-y", `${clampNum(y, 0, 1) * 100}%`);
+  };
+
   const onPointerDown = (e: ReactPointerEvent<HTMLElement>) => {
     // Primary button only, and one pointer at a time.
     if (e.button !== 0 || gesture.current !== null || asked.current) return;
-    const el = (e.target as HTMLElement).closest<HTMLElement>("[data-card]");
-    const card = el ? Number(el.dataset.card) : -1;
     gesture.current = {
       x: e.clientX,
       y: e.clientY,
       id: e.pointerId,
       axis: null,
-      card,
     };
     suppressClick.current = false;
-    if (card === index) {
-      setHolding(true);
-      holdTimer.current = window.setTimeout(ask, HOLD_MS);
-    }
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLElement>) => {
     const g = gesture.current;
-    if (!g || g.id !== e.pointerId) return;
+    if (!g || g.id !== e.pointerId) {
+      tiltToward(e);
+      return;
+    }
     const dx = e.clientX - g.x;
     const dy = e.clientY - g.y;
     if (!g.axis) {
       if (Math.hypot(dx, dy) < 8) return;
-      clearHold();
       suppressClick.current = true;
       g.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
       if (g.axis === "y") return;
       // Capture only once it is a drag, so a plain tap still clicks the
-      // element under the finger (the side card or the centred one).
+      // button or card under the finger.
       e.currentTarget.setPointerCapture(e.pointerId);
+      untilt();
       setDragging(true);
     }
     if (g.axis !== "x") return;
@@ -406,11 +299,9 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
     const g = gesture.current;
     if (!g || g.id !== e.pointerId) return;
     gesture.current = null;
-    clearHold();
-    if (asked.current) return;
     if (g.axis === "x") {
       const d = dragRef.current;
-      if (Math.abs(d) > stride * 0.18) {
+      if (Math.abs(d) > stride * 0.2) {
         const steps = Math.max(1, Math.round(Math.abs(d) / stride));
         go(index - Math.sign(d) * steps);
       }
@@ -419,29 +310,32 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
   };
 
   /** A cancelled gesture (the page scrolled, the OS took over) never moves
-   * or flips a card; it just snaps back. */
+   * or opens a card; it just snaps back. */
   const onPointerCancel = (e: ReactPointerEvent<HTMLElement>) => {
     const g = gesture.current;
     if (!g || g.id !== e.pointerId) return;
     gesture.current = null;
     suppressClick.current = true;
-    clearHold();
     endDrag();
   };
 
-  /** Taps, Enter/Space on the centred card's button and screen-reader
-   * activation all arrive here as a click. Clicks that follow a drag or a
-   * hold are dropped; keyboard clicks (detail 0) never are. */
-  const onClick = (e: ReactMouseEvent<HTMLElement>) => {
-    if (asked.current) return;
-    if (suppressClick.current && e.detail !== 0) {
-      suppressClick.current = false;
-      return;
-    }
-    const el = (e.target as HTMLElement).closest<HTMLElement>("[data-card]");
+  /** True for a click that ends a drag. Keyboard clicks (detail 0) never are. */
+  const afterDrag = (e: ReactMouseEvent) => {
+    if (!suppressClick.current || e.detail === 0) return false;
+    suppressClick.current = false;
+    return true;
+  };
+
+  /** Taps on a card face (not its buttons): a side card comes to the centre;
+   * the centred card turns over to its answer. */
+  const onStageClick = (e: ReactMouseEvent<HTMLElement>) => {
+    if (asked.current || afterDrag(e)) return;
+    const target = e.target as HTMLElement;
+    if (target.closest("button, a")) return;
+    const el = target.closest<HTMLElement>("[data-card]");
     if (!el) return;
     const i = Number(el.dataset.card);
-    if (i === index) toggleReveal();
+    if (i === index) reveal();
     else go(i);
   };
 
@@ -477,39 +371,24 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
 
   const current = cards[index];
   const last = index === cards.length - 1;
-  const transition =
-    dragging || reduce
-      ? "none"
-      : `transform 700ms ${EASE}, filter 700ms ${EASE}, opacity 700ms ${EASE}`;
-  const ticks = Array.from({ length: cards.length }, (_, i) => i).filter(
-    (i) => Math.abs(i - index) <= 4,
-  );
+  const transition = dragging || reduce ? "none" : `transform 600ms ${EASE}`;
   const passagesText = current.refs.map(passageLabel).join(", ");
   const announcement = !revealed
     ? `Card ${index + 1} of ${cards.length}. ${current.question}`
     : current.kind === "discover" && !current.answer
       ? `Start reading: ${passagesText}.`
-      : `Answer: ${sentence(current.answer ?? "")} ${current.kind === "discover" && current.takeaway ? `${sentence(current.takeaway)} ` : ""}${passagesText}.`;
+      : `Answer: ${current.kind === "discover" && current.takeaway ? `${sentence(current.takeaway)} ` : ""}${sentence(current.answer ?? "")} ${passagesText}.`;
 
   return (
     <div
       className="flex h-full w-full flex-col items-center justify-center gap-3"
       style={{ containerType: "size" }}
     >
-      <svg aria-hidden="true" width="0" height="0" className="absolute">
-        <defs>
-          <filter id="sholam-goo">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
-            <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" />
-          </filter>
-        </defs>
-      </svg>
-
       <p className="sr-only" aria-live="polite">
         {announcement}
       </p>
 
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: delegated taps; keyboard users press the centred card's button (its click bubbles here) and the arrow keys are handled on window */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: taps on a card face are a shortcut; every action has its own button, and the arrow keys are handled on window */}
       <section
         ref={stageRef}
         aria-roledescription="carousel"
@@ -518,280 +397,234 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
-        onClick={onClick}
-        onContextMenu={(e) => e.preventDefault()}
-        style={{
-          height: `calc(${ART_H} + ${GAP + PANEL_SPACE}px)`,
-          containerType: "inline-size",
-        }}
-        className="relative w-full cursor-grab touch-pan-y overflow-x-clip outline-none select-none [-webkit-touch-callout:none] active:cursor-grabbing"
+        onPointerLeave={untilt}
+        onClick={onStageClick}
+        style={{ height: CARD_H, containerType: "inline-size" }}
+        className="flashcard-stage relative w-full touch-pan-y select-none [-webkit-touch-callout:none]"
       >
         {cards.map((card, i) => {
           const p = i - index + drag / stride;
-          const a = Math.abs(p);
-          if (a > 2.6) return null;
-          const near = Math.min(a, 1);
-          const split = near * 16;
-          const sky = SKIES[i % SKIES.length];
+          if (Math.abs(p) > 2.6) return null;
+          const { transform, zIndex, fade, words } = placement(p, narrow);
           const active = i === index;
           const open = active && revealed;
-          const passages = card.refs.map(passageLabel);
-          const label = !open
-            ? CATEGORY_LABELS[card.category]
-            : card.kind === "discover" && !card.answer
-              ? "Start reading"
-              : "Answer";
+          const discover = card.kind === "discover";
           return (
-            <div
+            <article
               key={card.id}
               data-card={i}
+              data-kind={card.kind}
               aria-hidden={active ? undefined : true}
-              className="absolute top-1/2 left-1/2"
+              aria-label={
+                active ? `Card ${i + 1} of ${cards.length}` : undefined
+              }
+              className={cn(
+                "flashcard absolute top-1/2 left-1/2",
+                active ? "cursor-default" : "cursor-pointer",
+              )}
               style={{
                 width: CARD_W,
-                transform: `translate(calc(-50% + ${p} * ${STRIDE}), -50%) scale(${(1 - near * 0.08) * (active && holding && !reduce ? 0.985 : 1)})`,
-                filter: a > 0.04 ? `blur(${Math.min(a, 1.4) * 5}px)` : "none",
-                opacity: 1 - Math.min(a, 2) * 0.22,
-                zIndex: 20 - Math.round(a * 4),
+                height: CARD_H,
+                transform,
+                zIndex,
                 transition,
               }}
             >
               <div
-                className="deck-face"
-                data-shift={
-                  active && shift.phase !== "idle" ? shift.phase : undefined
-                }
-                data-dir={
-                  active && shift.phase !== "idle" ? shift.dir : undefined
-                }
+                ref={active ? tiltRef : undefined}
+                className="flashcard-tilt"
+                data-open={open ? "" : undefined}
               >
+                {/* Front: the question on clear glass. */}
                 <div
-                  className="relative overflow-hidden rounded-2xl shadow-[0_18px_40px_rgb(35_75_150/0.22)]"
-                  style={{
-                    height: ART_H,
-                    transform: `translateY(${-split}px)`,
-                    transition,
-                  }}
+                  className="flashcard-face flashcard-front flex flex-col p-6"
+                  style={{ "--face-fade": fade } as CSSProperties}
+                  inert={open}
                 >
-                  {/* Also what shows when WebGL is unavailable and the ASCII
-                    field cannot draw. */}
+                  <span aria-hidden className="flashcard-light" />
                   <div
-                    className="absolute inset-0"
+                    className="relative flex min-h-0 flex-1 flex-col"
                     style={{
-                      background: `linear-gradient(180deg, ${sky.colors[0]} 0%, ${sky.colors[1]} 40%, ${sky.colors[2]} 78%, ${sky.colors[3]} 100%)`,
+                      opacity: words,
+                      transition: dragging ? "none" : `opacity 600ms ${EASE}`,
                     }}
-                  />
-                  {a < 1.6 ? (
-                    <GradientASCII
-                      colors={sky.colors}
-                      shape="horizon"
-                      characters={SKY_GLYPHS}
-                      cellSize={15}
-                      density={0.75}
-                      glyphOpacity={0.55}
-                      glow={0.18}
-                      softness={0.95}
-                      flicker={0.08}
-                      scale={1.4}
-                      speed={0.3}
-                      grain={0.03}
-                      gradientOpacity={1}
-                      clickEffect="none"
-                      mouseInteraction={false}
-                      intro={false}
-                    />
-                  ) : null}
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden whitespace-nowrap text-center leading-none"
-                    style={{ textShadow: "none" }}
                   >
-                    <div className="text-[13px] text-white/40 tracking-[0.12em]">
-                      {TREES_FAR}
-                    </div>
-                    <div className="-mt-0.5 pb-2 text-[19px] text-white/60 tracking-[0.08em]">
-                      {TREES_NEAR}
-                    </div>
-                  </div>
-                  <div
-                    className="pointer-events-none absolute inset-0"
-                    style={{
-                      background: `linear-gradient(180deg, rgb(255 255 255 / 0.12) 0%, transparent 70%, ${sky.drip} 100%)`,
-                    }}
-                  />
-                </div>
-
-                <Bridge
-                  key={active ? `on-${index}` : "off"}
-                  top={sky.drip}
-                  play={active && !dragging}
-                />
-
-                <div
-                  style={{
-                    transform: `translateY(${split}px)`,
-                    transition:
-                      dragging || reduce ? "none" : `transform 700ms ${EASE}`,
-                  }}
-                >
-                  <div
-                    className="deck-panel relative min-h-40 rounded-2xl p-5 text-slate-800 shadow-[0_18px_40px_rgb(35_75_150/0.18)]"
-                    style={{ background: PANEL, textShadow: "none" }}
-                  >
-                    <div className="deck-copy">
-                      <p className="font-mono text-[11px] text-slate-600 uppercase tracking-[0.2em]">
-                        No. {pad(i + 1)} · {label}
+                    <div className="min-h-0 flex-1 overflow-y-auto">
+                      <p className="text-[13px] leading-[1.35]">
+                        <span className="font-semibold">{kindLabel(card)}</span>{" "}
+                        · {CATEGORY_LABELS[card.category]}
                       </p>
-                      {active ? (
-                        <button
-                          ref={flipRef}
-                          type="button"
-                          aria-pressed={revealed}
-                          className="-mx-1 mt-1 block w-[calc(100%+0.5rem)] cursor-[inherit] rounded-md px-1 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#2f68c2]"
-                        >
-                          {open && card.kind === "discover" && card.answer ? (
-                            // The team's answers run to ~470 characters. Keep
-                            // the panel inside the space the stage reserves
-                            // (so the ticks and buttons stay clear) and
-                            // scroll the rest; the takeaway leads.
-                            <span
-                              className="block overflow-y-auto overscroll-contain"
-                              style={{
-                                maxHeight: PANEL_SPACE - 70,
-                                background: SCROLL_HINT,
-                              }}
-                            >
-                              {card.takeaway && (
-                                <span className="block font-semibold text-[15px] text-slate-900 leading-snug">
-                                  {card.takeaway}
-                                </span>
-                              )}
-                              <span className="mt-1.5 block text-slate-800 text-sm leading-snug">
-                                {card.answer}
-                              </span>
-                              <span className="mt-1.5 block text-slate-600 text-xs">
-                                {passages.join(" · ")}
-                              </span>
-                            </span>
-                          ) : open && card.kind === "discover" ? (
-                            <span className="block font-semibold text-lg leading-snug">
-                              {passages.map((ref) => (
-                                <span key={ref} className="block">
-                                  {ref}
-                                </span>
-                              ))}
-                            </span>
-                          ) : (
-                            <span className="line-clamp-4 block text-balance font-semibold text-lg leading-snug">
-                              {open && card.kind === "fact"
-                                ? card.answer
-                                : card.question}
-                            </span>
-                          )}
-                          {!open && (
-                            <span className="sr-only">. Press to reveal.</span>
-                          )}
-                        </button>
-                      ) : (
-                        <p className="mt-2 line-clamp-4 text-balance font-semibold text-lg leading-snug">
-                          {card.question}
+                      <h2
+                        className={cn(
+                          "mt-4 text-balance font-semibold",
+                          card.question.length > 70
+                            ? "text-[22px] leading-[1.25]"
+                            : "text-[26px] leading-[1.2]",
+                        )}
+                      >
+                        {card.question}
+                      </h2>
+                      {discover && (
+                        <p className="mt-3 text-[14px]">
+                          {[
+                            ...extraTags(card),
+                            card.minutes ? `${card.minutes} min` : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
                         </p>
                       )}
-                      {open && card.kind === "fact" && (
+                    </div>
+                    {active && (
+                      <button
+                        ref={showRef}
+                        type="button"
+                        onClick={(e) => {
+                          if (!afterDrag(e)) reveal();
+                        }}
+                        className="flashcard-show mt-4 h-12 w-full shrink-0 rounded-2xl font-semibold text-[15px]"
+                      >
+                        {discover && !card.answer
+                          ? "Where to start"
+                          : "Show answer"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Back: the answer on milky glass. Only the centred card has one. */}
+                {active && (
+                  <div
+                    className="flashcard-face flashcard-back flex flex-col p-6"
+                    inert={!open}
+                  >
+                    <span aria-hidden className="flashcard-light" />
+                    <p className="relative text-[13px] leading-[1.35]">
+                      <span className="font-semibold text-[color:var(--card-accent)]">
+                        {kindLabel(card)}
+                      </span>
+                      <span className="text-[color:var(--card-muted)]">
+                        {" "}
+                        · {CATEGORY_LABELS[card.category]}
+                      </span>
+                    </p>
+                    <p className="relative mt-2 line-clamp-2 text-balance font-medium text-[15px] text-[color:var(--card-muted)] leading-snug">
+                      {card.question}
+                    </p>
+                    <div className="flashcard-scroll relative mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto border-[color:var(--card-rule)] border-t pt-3">
+                      {discover && card.answer ? (
+                        // The team's answer (FaithMap): the takeaway leads,
+                        // then the answer, then the passages.
                         <>
-                          <p className="mt-2 text-slate-600 text-sm">
-                            {passages.join(" · ")}
+                          {card.takeaway && (
+                            <p className="text-balance font-semibold text-[19px] leading-snug">
+                              {card.takeaway}
+                            </p>
+                          )}
+                          <p className="mt-2 text-pretty text-[15px] leading-relaxed">
+                            {card.answer}
+                          </p>
+                          <p className="mt-2 font-medium text-[14px] text-[color:var(--card-accent)]">
+                            {card.refs.map(passageLabel).join(" · ")}
+                          </p>
+                        </>
+                      ) : discover ? (
+                        <>
+                          <p className="font-semibold text-[13px] text-[color:var(--card-accent)]">
+                            Start reading
+                          </p>
+                          <ul className="mt-1.5 flex flex-col gap-1">
+                            {card.refs.map((ref) => (
+                              <li
+                                key={ref}
+                                className="font-semibold text-[20px] leading-snug"
+                              >
+                                {passageLabel(ref)}
+                              </li>
+                            ))}
+                          </ul>
+                          <p className="mt-2 text-pretty text-[15px] text-[color:var(--card-muted)] leading-relaxed">
+                            An open question, so there is no single answer.
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p
+                            className={cn(
+                              "text-balance font-semibold leading-snug",
+                              (card.answer?.length ?? 0) > 60
+                                ? "text-[19px]"
+                                : "text-[23px]",
+                            )}
+                          >
+                            {card.answer}
+                          </p>
+                          <p className="mt-2 font-medium text-[14px] text-[color:var(--card-accent)]">
+                            {card.refs.map(passageLabel).join(" · ")}
                           </p>
                           {card.explanation && (
-                            <p className="mt-1 line-clamp-3 text-slate-700 text-sm">
+                            <p className="mt-2 text-pretty text-[14px] text-[color:var(--card-muted)] leading-relaxed">
                               {card.explanation}
                             </p>
                           )}
                         </>
                       )}
-                      {open && card.kind === "discover" && !card.answer && (
-                        <p className="mt-2 text-slate-600 text-sm">
-                          An open question with no single answer. Explore it
-                          with Ask in chat.
-                        </p>
-                      )}
-                      {!open &&
-                        card.kind === "discover" &&
-                        card.tags.length > 0 && (
-                          <p className="mt-2 text-slate-600 text-xs">
-                            {card.tags.join(" · ")}
-                            {card.minutes ? ` · ${card.minutes} min` : ""}
-                          </p>
-                        )}
-                      {active && !open && !hinted && (
-                        <p className="mt-2 text-pretty text-slate-600 text-sm">
-                          Tap to reveal · hold to ask in chat
-                        </p>
-                      )}
-                    </div>
-                    {/* Hold progress: fills over the 2 s hold that opens chat. */}
-                    {active && (
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute inset-x-5 bottom-2.5 h-0.5 rounded-full bg-[#2f68c2]/70"
-                        style={{
-                          clipPath: `inset(0 ${holding ? 0 : 100}% 0 0 round 9999px)`,
-                          transition: holding
-                            ? `clip-path ${HOLD_MS}ms linear`
-                            : "clip-path 120ms ease-out",
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          if (!afterDrag(e)) ask();
                         }}
-                      />
-                    )}
+                        className="flashcard-ask -ml-3 mt-1 h-11 shrink-0 self-start rounded-xl px-3 text-left font-semibold text-[15px]"
+                      >
+                        {discover
+                          ? "Talk it through with Shalom"
+                          : "Ask Shalom about this"}
+                      </button>
+                    </div>
+                    <button
+                      ref={nextRef}
+                      type="button"
+                      onClick={(e) => {
+                        if (!afterDrag(e)) go(last ? 0 : index + 1);
+                      }}
+                      className="flashcard-primary relative mt-3 h-12 w-full shrink-0 rounded-2xl font-semibold text-[15px]"
+                    >
+                      {last ? "Start over" : "Next card"}
+                    </button>
                   </div>
-                </div>
+                )}
               </div>
-            </div>
+            </article>
           );
         })}
       </section>
 
-      <nav aria-label="Card position" className="flex items-center gap-2">
-        {ticks.map((i) => (
-          <button
-            key={i}
-            type="button"
-            aria-label={`Card ${i + 1}`}
-            aria-current={i === index ? "true" : undefined}
-            onClick={() => go(i)}
-            className="flex h-6 w-2.5 items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            <span
-              className="block w-px rounded-full bg-white transition-all duration-500 motion-reduce:transition-none"
-              style={{
-                height: i === index ? 20 : 10,
-                width: i === index ? 2 : 1,
-                opacity: i === index ? 1 : 0.6,
-              }}
-            />
-          </button>
-        ))}
-        <span className="ml-2 font-mono text-white/90 text-xs tabular-nums">
-          {pad(index + 1)} / {pad(cards.length)}
+      <nav
+        aria-label="Card position"
+        className="flex h-11 items-center gap-1 text-white"
+      >
+        <button
+          type="button"
+          aria-label="Previous card"
+          disabled={index === 0}
+          onClick={() => go(index - 1)}
+          className="grid size-11 place-items-center rounded-full hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white/80 disabled:opacity-40 disabled:hover:bg-transparent"
+        >
+          <ChevronLeft className="size-5" />
+        </button>
+        <span className="min-w-24 text-center text-[14px] tabular-nums">
+          {index + 1} of {cards.length}
         </span>
+        <button
+          type="button"
+          aria-label="Next card"
+          disabled={last}
+          onClick={() => go(index + 1)}
+          className="grid size-11 place-items-center rounded-full hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white/80 disabled:opacity-40 disabled:hover:bg-transparent"
+        >
+          <ChevronRight className="size-5" />
+        </button>
       </nav>
-
-      <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={ask}
-          className="bg-[rgb(30_70_150/0.3)]"
-        >
-          Ask in chat
-        </Button>
-        <Button
-          size="sm"
-          onClick={() => (last ? go(0) : go(index + 1))}
-          className="bg-[rgb(30_70_150/0.45)]"
-        >
-          {last ? "Start over" : "Next"}
-        </Button>
-      </div>
     </div>
   );
 }

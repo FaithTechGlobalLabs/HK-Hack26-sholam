@@ -31,7 +31,8 @@ export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
   const [focusId, setFocusId] = useState<string | null>(null);
 
   return (
-    <div className="flex h-full flex-col">
+    // Clip the 3D carousel at the page edge, not inside the padding.
+    <div className="flex h-full flex-col overflow-x-clip">
       <Suspense fallback={null}>
         <LinkedCard cards={cards} onCard={setFocusId} />
       </Suspense>
