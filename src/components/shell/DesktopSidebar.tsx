@@ -1,6 +1,14 @@
 "use client";
 
-import { Layers, LogIn, PanelLeft, Search, SquarePen, X } from "lucide-react";
+import {
+  Layers,
+  LogIn,
+  PanelLeft,
+  QrCode,
+  Search,
+  SquarePen,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -22,14 +30,16 @@ import { cn } from "@/lib/utils";
 import { AccountBadge, AccountMenu } from "./AccountMenu";
 import { KeepTabChats } from "./KeepTabChats";
 import { sectionOf, sectionTransition } from "./nav";
+import { ShareApp } from "./ShareApp";
 
 const STORE = "shalom.sidebar";
 
 /**
  * The desktop sidebar, laid out like ChatGPT's: logo and collapse at the
  * top, New chat / Search chats / Flashcards, the chat list (the account's
- * saved chats when signed in, this tab's otherwise), and the account at the
- * bottom (Sign in, or the account menu with Sign out). It collapses to an icon rail (remembered per browser). Phones
+ * saved chats when signed in, this tab's otherwise), and at the bottom
+ * "Share Shalom" (link + QR code) and the account (Sign in, or the account
+ * menu with Sign out). It collapses to an icon rail (remembered per browser). Phones
  * use the dock instead (ShellDock); CSS decides which one shows.
  *
  * The highlight on the current item is one shared <ViewTransition>, so it
@@ -192,10 +202,16 @@ function SidebarBody({
 
       <div
         className={cn(
-          "mt-auto border-white/20 border-t pt-2 transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+          "mt-auto flex flex-col gap-0.5 border-white/20 border-t pt-2 transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
           width(collapsed),
         )}
       >
+        <ShareApp triggerClassName={cn(ITEM, width(collapsed))}>
+          <Icon>
+            <QrCode />
+          </Icon>
+          <span className="relative truncate">Share {BRAND_NAME}</span>
+        </ShareApp>
         <SidebarAccount pathname={pathname} collapsed={collapsed} />
       </div>
     </div>
