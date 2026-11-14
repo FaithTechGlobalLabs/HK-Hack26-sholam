@@ -18,7 +18,7 @@ export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
           <Plus /> New card
         </Button>
       </div>
-      <div className="flex flex-1 items-center justify-center px-4 pb-8">
+      <div className="flex flex-1 items-center justify-center px-4 pb-28">
         <SwipeDeck cards={cards} />
       </div>
       {creating && <NewCardDialog onClose={() => setCreating(false)} />}

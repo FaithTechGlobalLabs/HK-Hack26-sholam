@@ -43,7 +43,7 @@ export type DockSpring = {
 export type DockProps = {
   items?: DockItemData[];
   position?: DockSide;
-  theme?: "dark" | "light";
+  theme?: "dark" | "light" | "sky";
   baseItemSize?: number;
   magnification?: number;
   distance?: number;
@@ -229,7 +229,7 @@ const MENU_SEPARATOR =
 
 const MUTED = "text-[color:var(--dock-menu-muted)]";
 
-const THEMES: Record<"dark" | "light", Tokens> = {
+const THEMES: Record<"dark" | "light" | "sky", Tokens> = {
   dark: {
     "--dock-panel": "rgba(38, 35, 46, 0.66)",
     "--dock-panel-edge": "rgba(255, 255, 255, 0.08)",
@@ -277,6 +277,33 @@ const THEMES: Record<"dark" | "light", Tokens> = {
     "--dock-menu-separator": "rgba(24, 24, 27, 0.1)",
     "--dock-menu-shadow":
       "0 18px 40px -14px rgba(24, 24, 27, 0.3), 0 3px 10px rgba(24, 24, 27, 0.1)",
+  },
+  /** Frosted blue glass to match sholam's sky UI (see app/sky.css). */
+  sky: {
+    "--dock-panel":
+      "linear-gradient(180deg, rgba(120, 175, 255, 0.5) 0%, rgba(88, 148, 240, 0.4) 100%)",
+    "--dock-panel-edge": "rgba(255, 255, 255, 0.35)",
+    "--dock-panel-highlight": "rgba(255, 255, 255, 0.4)",
+    "--dock-panel-shadow":
+      "0 16px 40px -14px rgba(35, 75, 150, 0.35), 0 4px 14px -8px rgba(35, 75, 150, 0.2)",
+    "--dock-tile":
+      "linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.14) 100%)",
+    "--dock-tile-edge": "rgba(255, 255, 255, 0.35)",
+    "--dock-tile-highlight": "rgba(255, 255, 255, 0.55)",
+    "--dock-tile-shadow": "0 6px 14px -6px rgba(35, 75, 150, 0.35)",
+    "--dock-ink": "#ffffff",
+    "--dock-label": "rgba(74, 128, 214, 0.85)",
+    "--dock-label-ink": "#ffffff",
+    "--dock-dot": "rgba(255, 255, 255, 0.9)",
+    "--dock-separator": "rgba(255, 255, 255, 0.3)",
+    "--dock-press": "brightness(1.15)",
+    "--dock-menu": "rgba(84, 138, 222, 0.82)",
+    "--dock-menu-edge": "rgba(255, 255, 255, 0.3)",
+    "--dock-menu-ink": "#ffffff",
+    "--dock-menu-muted": "rgba(255, 255, 255, 0.6)",
+    "--dock-menu-separator": "rgba(255, 255, 255, 0.2)",
+    "--dock-menu-shadow":
+      "0 18px 40px -14px rgba(35, 75, 150, 0.4), 0 3px 10px rgba(35, 75, 150, 0.15)",
   },
 };
 
@@ -1375,6 +1402,8 @@ export default function Dock({
             type="button"
             className={`${ITEM}${item.className ? ` ${item.className}` : ""}`}
             aria-label={item.label}
+            aria-current={item.active ? "page" : undefined}
+            data-active={item.active ? "" : undefined}
             aria-haspopup={item.menu?.length ? "menu" : undefined}
             aria-expanded={item.menu?.length ? openIndex === index : undefined}
             data-open={openIndex === index ? "" : undefined}
@@ -1412,7 +1441,9 @@ export default function Dock({
             onKeyDown={(event) => onItemKeyDown(event, index)}
           >
             <span className={TILE}>
-              <span className={`${FACE} ${tiles ? FACE_TILE : FACE_BARE}`}>
+              <span
+                className={`dock-face ${FACE} ${tiles ? FACE_TILE : FACE_BARE}`}
+              >
                 {item.icon}
               </span>
               {showBadges && hasBadge(item.badge) ? (
@@ -1424,10 +1455,17 @@ export default function Dock({
               ) : null}
             </span>
             {showIndicators && item.active ? (
-              <span
-                className={`${DOT} ${DOT_SIDES[side]}`}
-                aria-hidden="true"
-              />
+              side === "bottom" ? (
+                <span
+                  className="dock-underline pointer-events-none absolute top-[calc(100%_+_max(var(--dock-pad)/2,5px)_-_3px)] left-1/2 h-[3px] w-[46%] -translate-x-1/2 rounded-full [background:var(--dock-dot)]"
+                  aria-hidden="true"
+                />
+              ) : (
+                <span
+                  className={`${DOT} ${DOT_SIDES[side]}`}
+                  aria-hidden="true"
+                />
+              )
             ) : null}
             {showLabels && item.label && !menu ? (
               <span

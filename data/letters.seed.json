@@ -1,0 +1,112 @@
+[
+  {
+    "id": "letter-still-here",
+    "topic": "hope",
+    "greeting": "Dear friend,",
+    "body": [
+      "I don't know what today has asked of you, but you opened this letter, and that tells me some part of you is still reaching for light. Hold on to that part. It is braver than it feels.",
+      "You don't have to have everything figured out tonight. You only need the next small step: a glass of water, a deep breath, a message to someone who loves you.",
+      "God is not waiting for you to be strong before He comes close. He comes close to the tired and the broken first."
+    ],
+    "signoff": "Someone who is praying for you"
+  },
+  {
+    "id": "letter-anxious-mind",
+    "topic": "anxiety",
+    "greeting": "Dear you,",
+    "body": [
+      "If your mind won't stop racing, I want you to know that you are not failing. Worry is loud, but it is not the truest voice in the room.",
+      "Try this with me: breathe in for four, hold for four, breathe out for six. Do it three times. Then name one thing you can see that is good, even if it's tiny.",
+      "You are held by a love that isn't anxious about you. You can lean on it, even while your hands are shaking."
+    ],
+    "signoff": "A fellow worrier, learning to rest"
+  },
+  {
+    "id": "letter-not-alone",
+    "topic": "loneliness",
+    "greeting": "Hello, you,",
+    "body": [
+      "Loneliness has a way of whispering that nobody would notice if you disappeared. That whisper is a liar.",
+      "Somewhere, someone is glad you exist, even if they haven't said it lately. I'm a stranger and I'm glad you exist.",
+      "If you can, reach out to one person today. A church, a friend, a classmate, a helpline. You were never meant to carry life alone."
+    ],
+    "signoff": "Someone in your corner"
+  },
+  {
+    "id": "letter-grief",
+    "topic": "grief",
+    "greeting": "Dear grieving heart,",
+    "body": [
+      "I'm so sorry for what you've lost. There's no right speed for grief, and no need to be 'over it' by now.",
+      "Tears aren't a lack of faith. Jesus himself wept at a graveside. Your sorrow is a measure of your love, and that love still matters.",
+      "Be gentle with yourself this week. Eat something warm. Let someone sit with you, even in silence."
+    ],
+    "signoff": "Someone who has grieved too"
+  },
+  {
+    "id": "letter-purpose",
+    "topic": "purpose",
+    "greeting": "Dear friend,",
+    "body": [
+      "If you feel like you're behind everyone else, I want to tell you that your life isn't a race against theirs.",
+      "You were made on purpose, with care. Your worth wasn't earned by your grades, your job or your follower count, and it can't be lost by them either.",
+      "Do one faithful thing today, however small. Small faithful things add up to a beautiful life."
+    ],
+    "signoff": "A student who also wonders sometimes"
+  },
+  {
+    "id": "letter-rest",
+    "topic": "rest",
+    "greeting": "Dear tired one,",
+    "body": [
+      "You've been carrying a lot. Has anyone told you that it's okay to stop for a while?",
+      "Rest isn't laziness. It's a gift. Even creation was given a day to rest. Put your phone down after this, close your eyes, and let yourself simply be loved for a moment.",
+      "Tomorrow will have its own strength. Tonight, you're allowed to just breathe."
+    ],
+    "signoff": "Someone who is learning to rest"
+  },
+  {
+    "id": "letter-mistakes",
+    "topic": "hope",
+    "greeting": "Dear you,",
+    "body": [
+      "Maybe you're replaying something you said or did, wishing you could take it back. I've been there.",
+      "Grace means your worst moment isn't the final word on who you are. You can say sorry, make it right where you can, and then let yourself be forgiven.",
+      "New mercies come with every morning. Tomorrow is yours to begin again."
+    ],
+    "signoff": "A forgiven friend"
+  },
+  {
+    "id": "letter-exams",
+    "topic": "anxiety",
+    "greeting": "Hi there,",
+    "body": [
+      "If exams, deadlines or expectations feel crushing right now, please hear this: a result is information, not a verdict on your worth.",
+      "Do what you can today. Then close the books, eat a proper meal, and sleep. A rested mind remembers more than a panicked one.",
+      "Whatever the outcome, you are still loved, still needed, and still on your way."
+    ],
+    "signoff": "Someone cheering you on"
+  },
+  {
+    "id": "letter-new-city",
+    "topic": "loneliness",
+    "greeting": "Dear newcomer,",
+    "body": [
+      "Starting over somewhere new can feel like standing outside a window, watching everyone else's life through the glass.",
+      "Friendships take time. Keep showing up to the same places, say yes to one invitation, and let people see a little of the real you.",
+      "Until then, you are not invisible. You are seen, and you are welcome here."
+    ],
+    "signoff": "Someone who once felt new too"
+  },
+  {
+    "id": "letter-you-matter",
+    "topic": "hope",
+    "greeting": "Dear reader,",
+    "body": [
+      "If today is one of the dark ones, please stay. Stay for the sunrise you haven't seen yet, the friend you haven't met yet, the laugh you haven't laughed yet.",
+      "Your story isn't finished. The chapter you're in is not the whole book.",
+      "Please tell someone how you're really doing. Letting people help you is not weakness. It's how love works."
+    ],
+    "signoff": "Someone who is glad you're here"
+  }
+]
