@@ -11,12 +11,13 @@ import {
 } from "@/lib/agent/openrouter-config";
 import { SYSTEM_PROMPT } from "@/lib/agent/system-prompt";
 import { TOOLS, toolDefinitions } from "@/lib/agent/tools";
-import { isVerseId } from "@/lib/bible/refs";
+import { isPassageRef, isVerseId } from "@/lib/bible/refs";
 import {
   FLASHCARD_MATCH_THRESHOLD,
   rankFlashcards,
 } from "@/lib/flashcards/rank";
-import { SEED_FLASHCARDS } from "@/lib/flashcards/repo";
+import { SEED_DISCOVER, SEED_FLASHCARDS } from "@/lib/flashcards/repo";
+import { DISCOVER_CATEGORIES } from "@/lib/flashcards/types";
 
 describe("citations", () => {
   const md =
@@ -153,5 +154,34 @@ describe("seed flashcards", () => {
     );
     for (const card of SEED_FLASHCARDS)
       for (const ref of card.refs) expect(isVerseId(ref)).toBe(true);
+  });
+});
+
+describe("discover cards (FaithMap)", () => {
+  it("has 129 unique open questions with passage refs and no answers", () => {
+    expect(SEED_DISCOVER).toHaveLength(129);
+    expect(new Set(SEED_DISCOVER.map((c) => c.id)).size).toBe(129);
+    expect(new Set(SEED_DISCOVER.map((c) => c.question)).size).toBe(129);
+    for (const card of SEED_DISCOVER) {
+      expect(card.kind).toBe("discover");
+      expect(card).not.toHaveProperty("answer");
+      expect(DISCOVER_CATEGORIES).toContain(card.category);
+      expect(card.refs.length).toBeGreaterThan(0);
+      for (const ref of card.refs)
+        expect(isPassageRef(ref), `${card.id}: ${ref}`).toBe(true);
+    }
+  });
+
+  it("keeps the source's level, tags and time where given", () => {
+    const card = SEED_DISCOVER.find((c) =>
+      c.question.startsWith("Can you forgive someone and still not trust them"),
+    );
+    expect(card).toMatchObject({
+      difficulty: 3,
+      tags: ["Real Life", "Deep"],
+      minutes: 3,
+      refs: ["MAT.18.21-MAT.18.35", "LUK.17.3-LUK.17.4"],
+      section: "Everyday Life, Social Media & Identity",
+    });
   });
 });

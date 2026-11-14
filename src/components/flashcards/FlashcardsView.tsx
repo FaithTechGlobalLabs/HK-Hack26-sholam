@@ -7,17 +7,24 @@ import { Button } from "@/components/ui/button";
 import {
   CATEGORIES,
   CATEGORY_LABELS,
+  type CardKind,
   type Flashcard,
   type FlashcardCategory,
+  KIND_LABELS,
+  KINDS,
 } from "@/lib/flashcards/types";
 import { cn } from "@/lib/utils";
 import { FlashcardCard } from "./FlashcardCard";
 import { NewCardDialog } from "./NewCardDialog";
 import { StudyMode } from "./StudyMode";
 
+const searchText = (c: Flashcard) =>
+  `${c.question} ${c.kind === "fact" ? c.answer : `${c.section} ${c.tags.join(" ")}`}`.toLowerCase();
+
 export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
+  const [kind, setKind] = useState<CardKind | null>(null);
   const [category, setCategory] = useState<FlashcardCategory | null>(null);
   const [studying, setStudying] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -30,16 +37,25 @@ export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
 
   const focused = focusId ? cards.find((c) => c.id === focusId) : undefined;
 
+  const ofKind = useMemo(
+    () => cards.filter((c) => !kind || c.kind === kind),
+    [cards, kind],
+  );
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return cards.filter(
+    return ofKind.filter(
       (c) =>
         (!category || c.category === category) &&
-        (!q || `${c.question} ${c.answer}`.toLowerCase().includes(q)),
+        (!q || searchText(c).includes(q)),
     );
-  }, [cards, query, category]);
+  }, [ofKind, query, category]);
 
-  const used = new Set(cards.map((c) => c.category));
+  const used = new Set(ofKind.map((c) => c.category));
+  const chip = (active: boolean) =>
+    cn(
+      "rounded-full border px-3 py-1 text-sm",
+      active ? "bg-foreground text-background" : "hover:bg-muted",
+    );
 
   return (
     <div className="h-full overflow-y-auto">
@@ -85,6 +101,26 @@ export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
         </label>
 
         <fieldset className="mt-3 flex flex-wrap gap-2">
+          <legend className="sr-only">Kind</legend>
+          {[null, ...KINDS].map((k) => (
+            <button
+              key={k ?? "all"}
+              type="button"
+              aria-pressed={kind === k}
+              onClick={() => {
+                setKind(k);
+                setCategory(null);
+              }}
+              className={chip(kind === k)}
+            >
+              {k
+                ? `${KIND_LABELS[k]} (${cards.filter((c) => c.kind === k).length})`
+                : `All (${cards.length})`}
+            </button>
+          ))}
+        </fieldset>
+
+        <fieldset className="mt-2 flex flex-wrap gap-2">
           <legend className="sr-only">Category</legend>
           {[null, ...CATEGORIES.filter((c) => used.has(c))].map((c) => (
             <button
@@ -92,14 +128,9 @@ export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
               type="button"
               aria-pressed={category === c}
               onClick={() => setCategory(c)}
-              className={cn(
-                "rounded-full border px-3 py-1 text-sm",
-                category === c
-                  ? "bg-foreground text-background"
-                  : "hover:bg-muted",
-              )}
+              className={cn(chip(category === c), "text-xs")}
             >
-              {c ? CATEGORY_LABELS[c] : "All"}
+              {c ? CATEGORY_LABELS[c] : "Every topic"}
             </button>
           ))}
         </fieldset>

@@ -36,10 +36,12 @@ Without env vars the app still runs: `/api/chat` streams `lib/agent/demo.ts`, an
 
 | Tool | Does | Emits |
 |---|---|---|
-| `search_flashcards(query, category?, limit)` | Keyword rank over published cards (thresholded) | `flashcards` |
-| `lookup_verses(references[])` | Parse refs, fetch exact BSB text | `verses` |
-| `search_bible(query, testament?, book?, limit)` | Keyword search over cached BSB | `verses` |
-| `propose_flashcard(draft)` | Check refs seen this turn; **saves nothing** | `flashcard_proposal` |
+| `search_flashcards(query, kind?, category?, limit)` | Keyword rank over published fact and discover cards (thresholded). With `DATABASE_URL`, the list itself is Postgres FTS | `flashcards` |
+| `lookup_verses(references[])` | `parseReference`, then fetch exact BSB text (helloao cache today; `verses` in Phase 2) | `verses` |
+| `search_bible(query, testament?, book?, limit)` | Keyword search over the cached BSB. Phase 2 moves this to verse full-text + section headings (SEARCH.md §5) | `verses` |
+| `propose_flashcard(draft)` | Check refs were fetched this turn; **saves nothing** | `flashcard_proposal` |
+
+`read_passage` (a verse with context, a range, a section, or a chapter) is specified for Phase 2 and is not registered yet. Search strategy, indexes and the agent's search policy: [SEARCH.md](SEARCH.md). Tool lifecycle, `search_result` citations and the UI catalog: [HARNESS-UI.md](HARNESS-UI.md).
 
 Each tool gets a `ToolContext` with the user id, translation, `emit()` and `versesSeen` (verse id → record) for the citation check.
 
@@ -62,16 +64,16 @@ One frame per event: `event: <type>\ndata: <json>\n\n`. The browser uses fetch +
 
 The model cites as markdown links: `[John 3:16](verse:JHN.3.16)`. A citation is **verified** when its verse id is in `versesSeen` for the turn. `MessageList` lets `verse:` URLs through react-markdown's URL filter and renders them with `VerseChip`: verified cites become chips with the verse text on hover and feed the Sources panel; others show the label with an "unverified" mark.
 
-## Data model (`src/db/schema.ts`, migration `drizzle/0000_init.sql`)
+## Data model (`src/db/schema.ts`, migrations in `drizzle/`)
 
 | Table | Key columns | RLS |
 |---|---|---|
 | `profiles` | `id` = `auth.users.id`, `display_name` | read/update own |
 | `chats` | `user_id`, `title`, timestamps | owner only |
-| `messages` | `chat_id`, `seq`, `role`, `content` jsonb | read via owned chat |
-| `flashcards` | `slug`, `question`, `answer`, … | anyone reads `published` |
-| `flashcard_reports` | `flashcard_id`, `user_id`, `reason` | insert own |
-| `verses` | PK (`translation`, `id`), text + FTS | public read |
+| `messages` | `chat_id`, `seq`, `role`, `content` jsonb (verbatim blocks) | read via owned chat |
+| `flashcards` | `kind` (`fact` \| `discover`), `slug` (seed key), `question`, `answer`, `explanation`, `category`, `tone`, `difficulty`, `refs` text[] (passage refs), `tags`, `minutes`, `section`, `source`, `author_id`, `status`, `search` tsvector (generated, GIN). Check `flashcards_fact_fields`: fact cards need answer, tone and difficulty | anyone reads `published`; authors insert/update own |
+| `flashcard_reports` | `flashcard_id`, `user_id`, `reason` (one per user per card) | insert own |
+| `verses` | PK (`translation`, `id`), `book`, `book_order`, `testament`, `chapter`, `verse`, `text`, `search` tsvector (generated, GIN) | public read |
 
 Until `DATABASE_URL` is set, flashcards come from `data/flashcards.seed.json` and BSB text is fetched/cached from helloao (see SOURCES.md). Chat threads are kept in the browser `sessionStorage` and resent as text history with each turn.
 
@@ -81,6 +83,19 @@ The server queries through Drizzle as the database owner when configured, which 
 
 Supabase magic link. `src/proxy.ts` refreshes the session on page requests (`auth.getClaims()`); `src/lib/supabase/server.ts` gives Server Components and Route Handlers a client and `currentUserId()`. Reading flashcards needs no account; live chat works signed out with local history.
 
+Supabase Auth settings (set 2026-11-14 through the Management API): site URL `https://sholam.vercel.app`; redirect allow-list `https://sholam.vercel.app/**`, `https://sholam-*-owenisas-projects.vercel.app/**` (previews) and `http://localhost:5310/**`. The magic link returns to `/auth/callback`. Supabase's built-in mailer is rate-limited on the free plan; a custom SMTP sender is a Phase 5 item.
+
 ## Bible references (`src/lib/bible/`)
 
-`books.ts` holds the 66-book canon with USFM codes, names, chapter counts and aliases. Verse ids are `BOOK.chapter.verse`. `refs.ts` validates ids and labels them; `parseReference` handles human references like "John 3:16-18". `bsb.ts` fetches and caches chapter text for tools.
+`books.ts` holds the 66-book canon with USFM codes, names, chapter counts and aliases (`findBook` handles "1 Cor", "I John", "First John", "Ps"). Verse ids are `BOOK.chapter.verse`. `refs.ts` handles verse ids and passage refs (`MAT.18.21-MAT.18.35`, `DAN.4`, `GEN.1-GEN.2`), labels them ("Matthew 18:21–35"), and `parseReference` turns human references ("John 3:16-18", "1 Cor 13:4, 7", "Daniel 4", "John 12:1–8; Mark 14:3–9") into passage refs. `passageToVerseRanges` expands those into per-chapter spans for the helloao fetcher in `bsb.ts`. Verse bounds for stored cards are checked against `verses`, not in code.
+
+## Data pipeline and environments
+
+- **Connections:** the app uses `DATABASE_URL` (Supabase transaction pooler, port 6543, `prepare: false`); migrations and scripts use `DIRECT_URL` (session pooler, port 5432). Both are owner connections that bypass RLS.
+- **Bible import** (`scripts/import-bible.ts`): download the pinned BSB USJ release into `tmp/` (gitignored) → check sha256 → `extractVerses` (`src/lib/bible/usj.ts`) per book → check chapter counts and spot verses → upsert 1,000 rows per batch in one transaction, keyed on (`translation`, `id`), so a rerun after a parser fix rewrites text in place.
+- **Seed decks** (`scripts/seed-flashcards.ts`): zod-validate `data/flashcards.seed.json` (fact) and `data/faithmap.cards.json` (discover), resolve every passage ref (its first and last verse must exist in `verses`), upsert by `slug`.
+- **FaithMap conversion** (`scripts/convert-faithmap.ts`): `data/sources/faithmap_132_curated_questions.md` → `data/faithmap.cards.json`. Sections become categories, "Medium · Real Life, Curious · 3 min" becomes difficulty/tags/minutes, Scripture lines go through `parseReference`, exact repeats are skipped and reported. Deterministic; the JSON is generated, not hand-edited.
+- **Flashcard reads** (`listFlashcards`): published cards; `q` matches `websearch_to_tsquery('english', q)` on the generated `search` column, or the question by `ILIKE` for partial words; ranked by `ts_rank_cd`. The live agent then keyword-ranks that list (`rankFlashcards`) before it mentions a card.
+- **Migrations:** `drizzle/0000_init.sql` (tables, enums, RLS policies), `drizzle/0001_profiles_on_signup.sql` (`on_auth_user_created` trigger inserting a `profiles` row; `SECURITY DEFINER`, empty `search_path`), `drizzle/0002_discover_cards.sql` (card kinds and discover fields; hand-reordered because drizzle-kit re-added the generated `search` column before `section` existed and dropped its GIN index without recreating it; check generated SQL for this whenever a generated column changes).
+- **Environments:** local (`.env.local`), Vercel Production (`main`) and Preview (pull requests) with the Supabase variables plus `OPENROUTER_API_KEY` for live chat, and CI with none. All share one Supabase project for now; a separate preview database is a Phase 5 question.
+- **CI** (`.github/workflows/ci.yml`): `npm ci`, lint, typecheck, Vitest, seed `--check`, `next build` without secrets. Vercel builds and deploys independently through its Git integration.

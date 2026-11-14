@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { verseIdToLabel } from "@/lib/bible/refs";
+import { passageLabel } from "@/lib/bible/refs";
 import type { FlashcardDraft } from "@/lib/flashcards/types";
 import { saveFlashcard } from "./saveFlashcard";
 
@@ -28,7 +28,7 @@ export function FlashcardProposal({ draft }: { draft: FlashcardDraft }) {
       <p className="mt-2 font-medium">{draft.question}</p>
       <p className="mt-1 text-sm">{draft.answer}</p>
       <p className="mt-2 text-muted-foreground text-xs">
-        {draft.refs.map(verseIdToLabel).join(" · ")}
+        {draft.refs.map(passageLabel).join(" · ")}
       </p>
       {error && <p className="mt-2 text-muted-foreground text-sm">{error}</p>}
       <div className="mt-3 flex gap-2">

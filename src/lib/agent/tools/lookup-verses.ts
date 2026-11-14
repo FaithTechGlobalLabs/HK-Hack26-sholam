@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { lookupRanges } from "@/lib/bible/bsb";
-import { parseReference } from "@/lib/bible/refs";
+import {
+  parsePassageRef,
+  parseReference,
+  passageToVerseRanges,
+  type VerseRange,
+} from "@/lib/bible/refs";
 import { defineTool } from "./types";
 
 export const lookupVerses = defineTool({
@@ -19,7 +24,20 @@ export const lookupVerses = defineTool({
     const errors: string[] = [];
 
     for (const ref of input.references) {
-      const ranges = parseReference(ref);
+      let ranges: VerseRange[];
+      try {
+        ranges = parseReference(ref).flatMap((id) => {
+          const passage = parsePassageRef(id);
+          return passage ? passageToVerseRanges(passage) : [];
+        });
+      } catch (err) {
+        errors.push(
+          err instanceof Error
+            ? err.message
+            : `Could not parse reference: ${ref}`,
+        );
+        continue;
+      }
       if (!ranges.length) {
         errors.push(`Could not parse reference: ${ref}`);
         continue;

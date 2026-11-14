@@ -13,7 +13,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "bible:import": "tsx scripts/import-bible.ts",
-    "seed:flashcards": "tsx scripts/seed-flashcards.ts"
+    "seed:flashcards": "tsx scripts/seed-flashcards.ts",
+    "search:baseline": "tsx scripts/experiments/search-baseline.ts",
+    "faithmap:convert": "tsx scripts/convert-faithmap.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

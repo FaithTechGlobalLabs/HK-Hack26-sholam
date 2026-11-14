@@ -6,9 +6,11 @@ import {
   normalizeBookName,
 } from "@/lib/bible/books";
 import {
+  isPassageRef,
   isVerseId,
   parseReference,
   parseVerseId,
+  passageLabel,
   verseIdToLabel,
 } from "@/lib/bible/refs";
 
@@ -82,27 +84,35 @@ describe("verse ids", () => {
     expect(isVerseId("JHN.0.1")).toBe(false);
   });
 
-  it("parseReference: John 3:16-18 -> one range of three verses", () => {
-    expect(parseReference("John 3:16-18")).toEqual([
-      { book: "JHN", chapter: 3, verseStart: 16, verseEnd: 18 },
-    ]);
+  it.each([
+    ["John 3:16", ["JHN.3.16"]],
+    ["John 3:16-18", ["JHN.3.16-JHN.3.18"]],
+    ["Matthew 18:21–35", ["MAT.18.21-MAT.18.35"]],
+    ["Genesis 1:1–2:3", ["GEN.1.1-GEN.2.3"]],
+    ["Daniel 4", ["DAN.4"]],
+    ["Hosea 1–3", ["HOS.1-HOS.3"]],
+    ["Ps 23", ["PSA.23"]],
+    ["1 Cor 13:4, 7", ["1CO.13.4", "1CO.13.7"]],
+    ["Galatians 1:10, John 12:42–43", ["GAL.1.10", "JHN.12.42-JHN.12.43"]],
+    ["John 12:1–8; Mark 14:3–9", ["JHN.12.1-JHN.12.8", "MRK.14.3-MRK.14.9"]],
+    ["Romans 8:28; 12:1-2", ["ROM.8.28", "ROM.12.1-ROM.12.2"]],
+  ])("parseReference(%s)", (input, expected) => {
+    expect(parseReference(input)).toEqual(expected);
   });
 
-  it("parseReference: Ps 23 -> whole chapter", () => {
-    const ranges = parseReference("Ps 23");
-    expect(ranges).toHaveLength(1);
-    expect(ranges[0]).toMatchObject({
-      book: "PSA",
-      chapter: 23,
-      verseStart: 1,
-    });
-    expect(ranges[0]?.verseEnd).toBeGreaterThan(100);
+  it("parseReference rejects unknown books and malformed parts", () => {
+    expect(() => parseReference("Hezekiah 3:1")).toThrow(/Unknown book/);
+    expect(() => parseReference("John 3:16-12")).toThrow(/Not a valid passage/);
+    expect(() => parseReference("Jude 2")).toThrow(/Not a valid passage/);
   });
 
-  it("parseReference: 1 Cor 13:4, 7 -> two ranges", () => {
-    expect(parseReference("1 Cor 13:4, 7")).toEqual([
-      { book: "1CO", chapter: 13, verseStart: 4, verseEnd: 4 },
-      { book: "1CO", chapter: 13, verseStart: 7, verseEnd: 7 },
-    ]);
+  it("labels passages", () => {
+    expect(passageLabel("MAT.18.21-MAT.18.35")).toBe("Matthew 18:21–35");
+    expect(passageLabel("GEN.1.1-GEN.2.3")).toBe("Genesis 1:1–2:3");
+    expect(passageLabel("DAN.4")).toBe("Daniel 4");
+    expect(passageLabel("GEN.1-GEN.2")).toBe("Genesis 1–2");
+    expect(passageLabel("JHN.3.16")).toBe("John 3:16");
+    expect(isPassageRef("JHN.3.16-JHN.3")).toBe(false);
+    expect(isPassageRef("JHN.3.16-MAT.1.1")).toBe(false);
   });
 });
