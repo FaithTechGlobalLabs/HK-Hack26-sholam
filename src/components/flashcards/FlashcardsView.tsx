@@ -14,7 +14,7 @@ import {
 } from "@/lib/flashcards/types";
 import { cn } from "@/lib/utils";
 import { NewCardDialog } from "./NewCardDialog";
-import { SwipeDeck } from "./SwipeDeck";
+import { SwipeDeck, SwipeDeckPlaceholder } from "./SwipeDeck";
 
 /**
  * One card at a time (Ricky's swipe deck), with a small switch between the
@@ -72,7 +72,7 @@ export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
         )}
       </div>
       <div className="flex min-h-0 flex-1 items-center justify-center px-4 py-3">
-        <Suspense fallback={<DeckPlaceholder />}>
+        <Suspense fallback={<SwipeDeckPlaceholder />}>
           <ShuffledDeck cards={cards} kind={kind} focusId={focusId} />
         </Suspense>
       </div>
@@ -125,22 +125,5 @@ function ShuffledDeck({
   return (
     // key: a new deck (kind or focus change) starts fresh, with no gesture state carried over
     <SwipeDeck key={`${kind ?? "all"}:${focusId ?? ""}`} cards={deck} />
-  );
-}
-
-/** The deck's card frame (its no-WebGL gradient), its button row and its
- *  hint line, shown until the browser renders the deck. Same heights, so
- *  nothing moves when the cards arrive. */
-function DeckPlaceholder() {
-  return (
-    <div
-      aria-busy="true"
-      className="flex h-full max-h-[34rem] w-full max-w-md flex-col gap-3"
-    >
-      <span className="sr-only">Shuffling the deck…</span>
-      <div className="min-h-0 w-full flex-1 rounded-3xl bg-[linear-gradient(180deg,#4338ca,#1e1b4b)]" />
-      <div className="h-7" />
-      <div className="h-4" />
-    </div>
   );
 }
