@@ -1,15 +1,21 @@
 /**
- * Converts the FaithMap question list (markdown) into discover-card seed
- * data. Source: data/sources/faithmap_132_curated_questions.md, provided by
- * the sholam team on 2026-11-14. Output: data/faithmap.cards.json, which
- * `npm run seed:flashcards` loads.
+ * Converts the FaithMap question database (markdown) into discover-card seed
+ * data. Source: data/sources/shalom_132_question_content_database.md, written
+ * by the sholam team (updated 2026-11-14). Output: data/faithmap.cards.json,
+ * which `npm run seed:flashcards` loads.
  *
  * Shapes in the source:
- *   ## Section heading            (optionally "### Subsection")
- *   - **Question?**
- *     - *Medium · Real Life, Curious · 3 min*      (optional)
- *     - Scripture starting points: Galatians 1:10, John 12:42–43
- *     - Scripture: John 12:1–8; Mark 14:3–9          (alternate label)
+ *   ## Section heading
+ *   ### FM001 | Question?
+ *   *Medium · Real Life, Curious · 3 min*
+ *   **Primary Scripture:** Galatians 1:10
+ *   **Supporting Scripture:** John 12:42–43, Proverbs 29:25
+ *   **Clear answer**               then a paragraph
+ *   **Why this passage matters**   then a paragraph
+ *   **Key takeaway**               then a line
+ *
+ * Every entry must have all of these. Card ids come from the question text,
+ * so a card keeps its database row when its wording elsewhere changes.
  *
  * Run: npm run faithmap:convert
  */
@@ -21,7 +27,7 @@ import {
   discoverCardSchema,
 } from "../src/lib/flashcards/types";
 
-const SOURCE = "data/sources/faithmap_132_curated_questions.md";
+const SOURCE = "data/sources/shalom_132_question_content_database.md";
 const OUT = "data/faithmap.cards.json";
 const SOURCE_TAG = "faithmap-132";
 
@@ -37,6 +43,13 @@ const SECTION_CATEGORY: Record<string, DiscoverCardSeed["category"]> = {
   "Wait, That's in the Bible?": "wait-really",
 };
 
+const PROSE_FIELDS = {
+  "Clear answer": "answer",
+  "Why this passage matters": "explanation",
+  "Key takeaway": "takeaway",
+} as const;
+type ProseField = (typeof PROSE_FIELDS)[keyof typeof PROSE_FIELDS];
+
 const LEVELS: Record<string, number> = { easy: 1, medium: 2, deep: 3 };
 
 function slug(text: string): string {
@@ -51,53 +64,80 @@ function slug(text: string): string {
 
 interface Draft {
   id: string;
-  card: Partial<DiscoverCardSeed> & { question: string };
+  ref: string;
   line: number;
+  card: Partial<DiscoverCardSeed> & { question: string };
+  primary?: string;
+  supporting?: string;
+  prose: Partial<Record<ProseField, string[]>>;
+}
+
+/** Lines of a field → paragraphs joined by a blank line, wrapped lines by a space. */
+function paragraphs(lines: string[]): string {
+  return lines
+    .join("\n")
+    .split(/\n\s*\n/)
+    .map((p) => p.split("\n").join(" ").trim())
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 function convert(markdown: string) {
   const drafts: Draft[] = [];
   let section = "";
-  let subsection = "";
   let current: Draft | null = null;
+  let field: ProseField | null = null;
 
   markdown.split("\n").forEach((raw, i) => {
     const line = raw.replace(/\s+$/, "");
     const lineNo = i + 1;
     const sectionMatch = /^## (.+)$/.exec(line);
-    const subsectionMatch = /^### (.+)$/.exec(line);
-    const questionMatch = /^- \*\*(.+?)\*\*\s*$/.exec(line);
-    const metaMatch = /^\s+- \*(.+)\*$/.exec(line);
-    const refsMatch = /^\s+- Scripture(?: starting points)?:\s*(.+)$/.exec(
+    const entryMatch = /^### (FM\d{3}) \| (.+)$/.exec(line);
+    const metaMatch = /^\*(?!\*)(.+)\*$/.exec(line);
+    const refsMatch = /^\*\*(Primary|Supporting) Scripture:\*\*\s*(.+)$/.exec(
       line,
     );
+    const proseMatch = /^\*\*(.+)\*\*$/.exec(line);
 
     if (sectionMatch) {
-      section = sectionMatch[1].replace(/\s*\(\d+ questions\)$/, "").trim();
-      subsection = "";
+      section = sectionMatch[1].trim();
       current = null;
-    } else if (subsectionMatch) {
-      subsection = subsectionMatch[1].trim();
-      current = null;
-    } else if (questionMatch) {
+      field = null;
+    } else if (line.startsWith("### ")) {
+      if (!entryMatch)
+        throw new Error(`line ${lineNo}: expected "### FM000 | Question"`);
       const category = SECTION_CATEGORY[section];
       if (!category)
         throw new Error(`line ${lineNo}: unknown section "${section}"`);
-      const question = questionMatch[1].trim();
+      const question = entryMatch[2].trim();
       current = {
         id: `faithmap-${slug(question)}`,
+        ref: entryMatch[1],
         line: lineNo,
         card: {
           kind: "discover",
           question,
           category,
-          section: subsection ? `${section}: ${subsection}` : section,
+          section,
           tags: [],
           source: SOURCE_TAG,
         },
+        prose: {},
       };
+      field = null;
       drafts.push(current);
-    } else if (current && metaMatch) {
+    } else if (!current) {
+      // Front matter and editorial notes before the first entry.
+    } else if (refsMatch) {
+      field = null;
+      if (refsMatch[1] === "Primary") current.primary = refsMatch[2];
+      else current.supporting = refsMatch[2];
+    } else if (proseMatch && proseMatch[1] in PROSE_FIELDS) {
+      field = PROSE_FIELDS[proseMatch[1] as keyof typeof PROSE_FIELDS];
+      current.prose[field] = [];
+    } else if (proseMatch) {
+      throw new Error(`line ${lineNo}: unknown label "${proseMatch[1]}"`);
+    } else if (metaMatch && !field) {
       // "Medium · Real Life, Curious · 3 min"
       const [level, tags, time] = metaMatch[1].split("·").map((s) => s.trim());
       const difficulty = LEVELS[level?.toLowerCase() ?? ""];
@@ -110,33 +150,46 @@ function convert(markdown: string) {
         .filter(Boolean);
       const minutes = /^(\d+)\s*min$/.exec(time ?? "");
       if (minutes) current.card.minutes = Number(minutes[1]);
-    } else if (current && refsMatch) {
-      current.card.refs = parseReference(refsMatch[1]);
+    } else if (field) {
+      current.prose[field]?.push(line);
+    } else if (line.trim()) {
+      throw new Error(`line ${lineNo}: text outside a labelled field`);
     }
   });
 
-  // The source repeats a few questions in a second section (same question,
-  // same refs, no metadata). Keep the first, fuller entry; refuse real clashes.
+  // A few questions appear twice (a second write-up in a later section).
+  // One card per question: keep the first, report the repeat.
   const seen = new Map<string, Draft>();
   const skipped: string[] = [];
   const cards = [];
   for (const draft of drafts) {
-    const { id, card, line } = draft;
+    const { id, card, line, ref } = draft;
     const first = seen.get(id);
     if (first) {
-      if (JSON.stringify(first.card.refs) !== JSON.stringify(card.refs)) {
-        throw new Error(
-          `line ${line}: "${card.question}" repeats line ${first.line} with different refs`,
-        );
-      }
-      skipped.push(`line ${line} repeats line ${first.line}: ${card.question}`);
+      skipped.push(
+        `${ref} (line ${line}) repeats ${first.ref}: ${card.question}`,
+      );
       continue;
     }
     seen.set(id, draft);
-    const parsed = discoverCardSchema.safeParse(card);
+    if (!draft.primary)
+      throw new Error(`${ref} (line ${line}): no Primary Scripture`);
+    const refs = [
+      ...parseReference(draft.primary),
+      ...(draft.supporting ? parseReference(draft.supporting) : []),
+    ];
+    for (const name of Object.values(PROSE_FIELDS)) {
+      const text = paragraphs(draft.prose[name] ?? []);
+      if (!text) throw new Error(`${ref} (line ${line}): no ${name}`);
+      card[name] = text;
+    }
+    const parsed = discoverCardSchema.safeParse({
+      ...card,
+      refs: [...new Set(refs)],
+    });
     if (!parsed.success) {
       throw new Error(
-        `line ${line} ("${card.question}"): ${parsed.error.issues.map((x) => x.message).join("; ")}`,
+        `${ref} (line ${line}, "${card.question}"): ${parsed.error.issues.map((x) => `${x.path.join(".")}: ${x.message}`).join("; ")}`,
       );
     }
     cards.push({ id, ...parsed.data });

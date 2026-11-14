@@ -4,6 +4,7 @@ import { type FormEvent, useEffect, useReducer, useRef, useState } from "react";
 import { authStyles as s } from "@/components/auth/AuthFrame";
 import { DISPLAY_NAME_MAX } from "@/lib/account/types";
 import { refreshAccount } from "@/lib/account/use-account";
+import { SIGN_IN_EMAIL_HAS_CODE as CODES } from "@/lib/auth/email";
 import {
   CODE_LENGTH,
   canResend,
@@ -26,6 +27,10 @@ import { createClient } from "@/lib/supabase/client";
  * email is read in. The link (/auth/confirm) signs in whichever browser
  * opens it. New accounts then pick a display name. Steps and messages live
  * in lib/auth/login-state.ts and lib/auth/problems.ts.
+ *
+ * Until the email templates carry the code (`SIGN_IN_EMAIL_HAS_CODE`,
+ * lib/auth/email.ts), the email holds only Supabase's default link, which
+ * signs in this browser: the form then asks for no code.
  */
 export function LoginForm({
   enabled,
@@ -151,6 +156,7 @@ export function LoginForm({
 
   if (state.step === "email") {
     const offerCode =
+      CODES &&
       state.problem !== null &&
       [
         "email_limit",
@@ -167,8 +173,10 @@ export function LoginForm({
       >
         <h1 className={s.title}>Sign in to Shalom</h1>
         <p className={s.lead}>
-          We'll email you a sign-in link and code. New here? The same steps
-          create your account.
+          {CODES
+            ? "We'll email you a sign-in link and code."
+            : "We'll email you a sign-in link."}{" "}
+          New here? The same steps create your account.
         </p>
         {problem}
         <label htmlFor="login-email" className={`${s.label} mt-5`}>
@@ -208,6 +216,40 @@ export function LoginForm({
     );
   }
 
+  if (state.step === "code" && !CODES) {
+    const wait = Math.ceil((state.resendAfter - now) / 1000);
+    return (
+      <div>
+        <h1 className={s.title}>Check your email</h1>
+        <p className={s.lead}>
+          We sent a sign-in link to{" "}
+          <span className="font-semibold [overflow-wrap:anywhere]">
+            {state.email}
+          </span>
+          . Open it in this browser to finish. It works once, for an hour.
+        </p>
+        {problem}
+        <div className="mt-6 flex flex-wrap justify-between gap-x-4 gap-y-2">
+          <button
+            type="button"
+            className={s.textButton}
+            disabled={!canResend(state, now)}
+            onClick={() => void send(state.email)}
+          >
+            {wait > 0 ? `New link in ${wait}s` : "Send a new link"}
+          </button>
+          <button
+            type="button"
+            className={s.textButton}
+            onClick={() => dispatch({ type: "change_email" })}
+          >
+            Use another email
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (state.step === "code") {
     const wait = Math.ceil((state.resendAfter - now) / 1000);
     return (
@@ -215,8 +257,10 @@ export function LoginForm({
         <h1 className={s.title}>Check your email</h1>
         <p className={s.lead}>
           {state.sent ? "We sent an email to " : "Use the email we sent to "}
-          <span className="font-semibold break-all">{state.email}</span>. Type
-          its code here, or open its link on the device you want to use.
+          <span className="font-semibold [overflow-wrap:anywhere]">
+            {state.email}
+          </span>
+          . Type its code here, or open its link on the device you want to use.
         </p>
         {problem}
         <label htmlFor="login-code" className={`${s.label} mt-5`}>

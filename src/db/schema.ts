@@ -122,12 +122,14 @@ export const flashcards = pgTable(
     id: uuid().primaryKey().defaultRandom(),
     /** Stable key for seed cards (e.g. `seed-shortest-verse`); null for user cards. */
     slug: text().unique(),
-    /** fact: question + answer. discover: open question + Scripture starting points. */
+    /** fact: question + answer. discover: open question + Scripture passages, optionally the team's answer, explanation and takeaway. */
     kind: flashcardKind().notNull().default("fact"),
     question: text().notNull(),
-    /** Required for fact cards (see the check below); null for discover cards. */
+    /** Required for fact cards (see the check below); the team's answer on discover cards, or null. */
     answer: text(),
     explanation: text(),
+    /** discover: the team's one-line takeaway. */
+    takeaway: text(),
     category: text().notNull(),
     tone: flashcardTone(),
     /** 1 easy … 3 deep; required for fact cards. */

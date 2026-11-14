@@ -375,9 +375,9 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
   const passagesText = current.refs.map(passageLabel).join(", ");
   const announcement = !revealed
     ? `Card ${index + 1} of ${cards.length}. ${current.question}`
-    : current.kind === "discover"
+    : current.kind === "discover" && !current.answer
       ? `Start reading: ${passagesText}.`
-      : `Answer: ${sentence(current.answer ?? "")} ${passagesText}.`;
+      : `Answer: ${current.kind === "discover" && current.takeaway ? `${sentence(current.takeaway)} ` : ""}${sentence(current.answer ?? "")} ${passagesText}.`;
 
   return (
     <div
@@ -484,7 +484,9 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                         }}
                         className="flashcard-show mt-4 h-12 w-full shrink-0 rounded-2xl font-semibold text-[15px]"
                       >
-                        {discover ? "Where to start" : "Show answer"}
+                        {discover && !card.answer
+                          ? "Where to start"
+                          : "Show answer"}
                       </button>
                     )}
                   </div>
@@ -510,7 +512,23 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                       {card.question}
                     </p>
                     <div className="flashcard-scroll relative mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto border-[color:var(--card-rule)] border-t pt-3">
-                      {discover ? (
+                      {discover && card.answer ? (
+                        // The team's answer (FaithMap): the takeaway leads,
+                        // then the answer, then the passages.
+                        <>
+                          {card.takeaway && (
+                            <p className="text-balance font-semibold text-[19px] leading-snug">
+                              {card.takeaway}
+                            </p>
+                          )}
+                          <p className="mt-2 text-pretty text-[15px] leading-relaxed">
+                            {card.answer}
+                          </p>
+                          <p className="mt-2 font-medium text-[14px] text-[color:var(--card-accent)]">
+                            {card.refs.map(passageLabel).join(" · ")}
+                          </p>
+                        </>
+                      ) : discover ? (
                         <>
                           <p className="font-semibold text-[13px] text-[color:var(--card-accent)]">
                             Start reading

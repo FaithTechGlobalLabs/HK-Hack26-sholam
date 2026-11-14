@@ -220,6 +220,16 @@ export function parseReference(input: string): PassageRef[] {
       ref = n3
         ? `${book}.${chapter}.${n1}-${book}.${chapter}.${n3}`
         : `${book}.${chapter}.${n1}`;
+    } else if (
+      n2 === undefined &&
+      bookByCode(book)?.chapters === 1 &&
+      (Number(n1) > 1 || n3 !== undefined)
+    ) {
+      // One-chapter books cite verses without a chapter: "Jude 11",
+      // "Philemon 8–16". A lone "Jude 1" stays the whole book.
+      chapter = 1;
+      lastHadVerse = true;
+      ref = n3 ? `${book}.1.${n1}-${book}.1.${n3}` : `${book}.1.${n1}`;
     } else if (n2 === undefined) {
       // Chapter or chapter range: "Daniel 4", "Hosea 1–3".
       chapter = Number(n1);

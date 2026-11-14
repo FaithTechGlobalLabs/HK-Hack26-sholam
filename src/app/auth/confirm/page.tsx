@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AuthFrame, authStyles as s } from "@/components/auth/AuthFrame";
+import { SIGN_IN_EMAIL_HAS_CODE } from "@/lib/auth/email";
 import { parseSignInLink } from "@/lib/auth/link";
 
 export const metadata: Metadata = {
@@ -36,7 +37,9 @@ async function Confirm({
       <>
         <h1 className={s.title}>This link is incomplete</h1>
         <p className={s.lead}>
-          Enter the code from the same email instead, or ask for a new one.
+          {SIGN_IN_EMAIL_HAS_CODE
+            ? "Enter the code from the same email instead, or ask for a new one."
+            : "Ask for a new one on the sign-in page."}
         </p>
         <Link href="/login?error=link_missing" className={s.primary}>
           Go to sign in

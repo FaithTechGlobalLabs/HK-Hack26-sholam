@@ -5,9 +5,10 @@ import { isPassageRef, isVerseId } from "@/lib/bible/refs";
  * Two kinds of card share the public deck:
  * - fact: a question with an answer, backed by specific verses (seed deck,
  *   agent proposals, the "New card" form).
- * - discover: an open question with Scripture starting points and no fixed
- *   answer, explored in chat (the FaithMap set). Its references are places
- *   to start reading, not proof of a predetermined answer.
+ * - discover: an open question with Scripture passages, explored in chat
+ *   (the FaithMap set). It may carry the team's written answer, an
+ *   explanation of the passage and a one-line takeaway, taken from the
+ *   source file as written; nothing generates them.
  */
 export const KINDS = ["fact", "discover"] as const;
 export type CardKind = (typeof KINDS)[number];
@@ -77,6 +78,12 @@ export const discoverCardSchema = z.strictObject({
   minutes: z.number().int().min(1).max(30).optional(),
   difficulty: z.number().int().min(1).max(3).optional(),
   source: z.string().max(80),
+  /** The team's written answer ("Clear answer" in the source). */
+  answer: z.string().min(1).max(600).optional(),
+  /** Why the passage matters, in context. */
+  explanation: z.string().min(1).max(900).optional(),
+  /** One line to remember. */
+  takeaway: z.string().min(1).max(240).optional(),
 });
 
 export type FlashcardDraft = z.infer<typeof flashcardDraftSchema>;
@@ -106,7 +113,7 @@ export type FlashcardSummary = {
   id: string;
   kind: CardKind;
   question: string;
-  /** fact cards only */
+  /** fact cards, and discover cards that carry the team's answer */
   answer?: string;
   refs: string[];
   category: FlashcardCategory;

@@ -59,6 +59,7 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Signed in, the account sits at the bottom of the desktop sidebar (menu with Sign out) and top-right on phones (Jeff's chip); sign-out clears the tab's chat history | ChatGPT's placement on desktop; Jeff's design (jeffs-uis `30df585`) on phones. Clearing protects shared devices |
 | 2026-11-14 | Signed-in chats are saved per account in Postgres and listed newest first; `/c/[chatId]` opens a saved chat only for its owner (others get not-found). Signed-out chats stay in the tab; on sign-in the tab's chats can be kept | Product rule 4 (chats are private). The server bypasses RLS, so the store filters every query by user id |
 | 2026-11-14 | `messages.content` v1: user rows `{ v, text }`; assistant rows keep the OpenRouter turn's messages verbatim plus the shown text and the verse records fetched that turn | Rule 7 (append-only, verbatim) for an OpenAI-format provider; rule 1 needs the turn's verses to re-render citations honestly |
+| 2026-11-14 | Discover cards now carry the team's written answer, "why this passage matters" and a one-line takeaway (FaithMap teaching notes); a revealed discover card shows takeaway, answer and refs; the agent gets the answer and why. New nullable `flashcards.takeaway` column | Owner decision, replacing the "no answers on discover cards" part of the two-kinds row: the team wrote the answers themselves, so nothing is invented. The source asks for disputed or sensitive lessons to be reviewed before publication |
 
 ## In flight
 

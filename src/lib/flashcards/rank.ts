@@ -58,7 +58,7 @@ export function rankFlashcards(
   for (const card of cards) {
     const hay = (
       card.kind === "discover"
-        ? `${card.question} ${card.section} ${card.tags.join(" ")}`
+        ? `${card.question} ${card.section} ${card.tags.join(" ")} ${card.answer ?? ""} ${card.takeaway ?? ""}`
         : `${card.question} ${card.answer} ${card.explanation ?? ""}`
     ).toLowerCase();
     let score = 0;
@@ -91,7 +91,7 @@ export function toSummary(card: Flashcard): FlashcardSummary {
     id: card.id,
     kind: card.kind,
     question: card.question,
-    ...(card.kind === "fact" ? { answer: card.answer } : {}),
+    ...(card.answer ? { answer: card.answer } : {}),
     refs: card.refs,
     category: card.category,
   };
@@ -99,7 +99,8 @@ export function toSummary(card: Flashcard): FlashcardSummary {
 
 export function formatCardForPrompt(card: Flashcard): string {
   if (card.kind === "discover") {
-    return `${card.id}: ${card.question} (discover; starting points ${card.refs.join(", ")})`;
+    const takeaway = card.takeaway ? ` → ${card.takeaway}` : "";
+    return `${card.id}: ${card.question}${takeaway} (discover; passages ${card.refs.join(", ")})`;
   }
   return `${card.id}: ${card.question} → ${card.answer}`;
 }
