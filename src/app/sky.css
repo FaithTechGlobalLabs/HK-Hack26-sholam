@@ -263,6 +263,38 @@
   }
 }
 
+/* Reveal: the white panel only. The new face paints already soft, then
+   sharpens. The sky stays sharp, and nothing waits before the words change. */
+.deck-panel {
+  transition: filter 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.deck-copy {
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.deck-face[data-shift="in"] .deck-panel {
+  filter: blur(3px);
+  transition: none;
+}
+.deck-face[data-shift="in"] .deck-copy {
+  transition: none;
+}
+.deck-face[data-shift="in"][data-dir="forward"] .deck-copy {
+  transform: translateY(4px);
+}
+.deck-face[data-shift="in"][data-dir="back"] .deck-copy {
+  transform: translateY(-4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .deck-panel,
+  .deck-copy,
+  .deck-face[data-shift="in"] .deck-panel,
+  .deck-face[data-shift="in"] .deck-copy {
+    filter: none;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* ---------- Dock: selected tile + underline ---------- */
 .dock-face {
   transition:

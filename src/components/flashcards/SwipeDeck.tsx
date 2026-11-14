@@ -22,9 +22,10 @@ import GradientASCII from "./GradientASCII";
  * text panels are joined by a gooey "bubble bridge"; neighbours sit blurred
  * at the sides with their two panels drifted apart. Swipe, arrow keys, a tap
  * on a side card, the ticks or Next move between cards. Tap the centred card
- * to reveal it; hold it for two seconds (or press Ask in chat) to ask about
- * it in chat. The parent remounts this per deck (`key`), so there is no
- * deck-change bookkeeping here.
+ * to reveal it: the white panel softens as the new face appears, then
+ * sharpens. Hold it for two seconds (or press Ask in chat) to
+ * ask about it in chat. The parent remounts this per deck (`key`), so there
+ * is no deck-change bookkeeping here.
  */
 
 const HOLD_MS = 2000;
@@ -180,6 +181,10 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const [shift, setShift] = useState<{
+    phase: "idle" | "in";
+    dir: "forward" | "back";
+  }>({ phase: "idle", dir: "forward" });
   const [drag, setDrag] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [holding, setHolding] = useState(false);
@@ -196,6 +201,8 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
     card: number;
   } | null>(null);
   const holdTimer = useRef<number | null>(null);
+  const shiftGen = useRef(0);
+  const revealTarget = useRef(false);
   const asked = useRef(false);
   const suppressClick = useRef(false);
   const refocus = useRef(false);
@@ -207,6 +214,7 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
     () => () => {
       if (holdTimer.current !== null) window.clearTimeout(holdTimer.current);
       holdTimer.current = null;
+      shiftGen.current += 1;
       gesture.current = null;
       asked.current = false;
       suppressClick.current = false;
@@ -244,7 +252,31 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
       document.activeElement !== stageRef.current;
     setIndex(n);
     setRevealed(false);
+    revealTarget.current = false;
+    shiftGen.current += 1;
+    setShift((s) => (s.phase === "idle" ? s : { ...s, phase: "idle" }));
     setHinted(true);
+  };
+
+  /** The new face paints soft, then the white panel sharpens. No lead-in. */
+  const toggleReveal = () => {
+    setHinted(true);
+    const next = !revealTarget.current;
+    revealTarget.current = next;
+    if (reduce) {
+      setRevealed(next);
+      return;
+    }
+    const gen = ++shiftGen.current;
+    const dir = next ? "forward" : "back";
+    setRevealed(next);
+    setShift({ phase: "in", dir });
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (shiftGen.current !== gen) return;
+        setShift({ phase: "idle", dir });
+      });
+    });
   };
 
   const clearHold = () => {
@@ -353,10 +385,8 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
     const el = (e.target as HTMLElement).closest<HTMLElement>("[data-card]");
     if (!el) return;
     const i = Number(el.dataset.card);
-    if (i === index) {
-      setRevealed((r) => !r);
-      setHinted(true);
-    } else go(i);
+    if (i === index) toggleReveal();
+    else go(i);
   };
 
   // Arrow keys move between cards anywhere on the page, except while typing,
@@ -471,152 +501,169 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
               }}
             >
               <div
-                className="relative overflow-hidden rounded-2xl shadow-[0_18px_40px_rgb(35_75_150/0.22)]"
-                style={{
-                  height: ART_H,
-                  transform: `translateY(${-split}px)`,
-                  transition,
-                }}
+                className="deck-face"
+                data-shift={
+                  active && shift.phase !== "idle" ? shift.phase : undefined
+                }
+                data-dir={
+                  active && shift.phase !== "idle" ? shift.dir : undefined
+                }
               >
-                {/* Also what shows when WebGL is unavailable and the ASCII
-                    field cannot draw. */}
                 <div
-                  className="absolute inset-0"
+                  className="relative overflow-hidden rounded-2xl shadow-[0_18px_40px_rgb(35_75_150/0.22)]"
                   style={{
-                    background: `linear-gradient(180deg, ${sky.colors[0]} 0%, ${sky.colors[1]} 40%, ${sky.colors[2]} 78%, ${sky.colors[3]} 100%)`,
+                    height: ART_H,
+                    transform: `translateY(${-split}px)`,
+                    transition,
                   }}
-                />
-                {a < 1.6 ? (
-                  <GradientASCII
-                    colors={sky.colors}
-                    shape="horizon"
-                    characters={SKY_GLYPHS}
-                    cellSize={15}
-                    density={0.75}
-                    glyphOpacity={0.55}
-                    glow={0.18}
-                    softness={0.95}
-                    flicker={0.08}
-                    scale={1.4}
-                    speed={0.3}
-                    grain={0.03}
-                    gradientOpacity={1}
-                    clickEffect="none"
-                    mouseInteraction={false}
-                    intro={false}
-                  />
-                ) : null}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden whitespace-nowrap text-center leading-none"
-                  style={{ textShadow: "none" }}
                 >
-                  <div className="text-[13px] text-white/40 tracking-[0.12em]">
-                    {TREES_FAR}
-                  </div>
-                  <div className="-mt-0.5 pb-2 text-[19px] text-white/60 tracking-[0.08em]">
-                    {TREES_NEAR}
-                  </div>
-                </div>
-                <div
-                  className="pointer-events-none absolute inset-0"
-                  style={{
-                    background: `linear-gradient(180deg, rgb(255 255 255 / 0.12) 0%, transparent 70%, ${sky.drip} 100%)`,
-                  }}
-                />
-              </div>
-
-              <Bridge
-                key={active ? `on-${index}` : "off"}
-                top={sky.drip}
-                play={active && !dragging}
-              />
-
-              <div
-                className="relative min-h-40 rounded-2xl p-5 text-slate-800 shadow-[0_18px_40px_rgb(35_75_150/0.18)]"
-                style={{
-                  background: PANEL,
-                  textShadow: "none",
-                  transform: `translateY(${split}px)`,
-                  transition,
-                }}
-              >
-                <p className="font-mono text-[11px] text-slate-600 uppercase tracking-[0.2em]">
-                  No. {pad(i + 1)} · {label}
-                </p>
-                {active ? (
-                  <button
-                    ref={flipRef}
-                    type="button"
-                    aria-pressed={revealed}
-                    className="-mx-1 mt-1 block w-[calc(100%+0.5rem)] cursor-[inherit] rounded-md px-1 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#2f68c2]"
-                  >
-                    {open && card.kind === "discover" ? (
-                      <span className="block font-semibold text-lg leading-snug">
-                        {passages.map((ref) => (
-                          <span key={ref} className="block">
-                            {ref}
-                          </span>
-                        ))}
-                      </span>
-                    ) : (
-                      <span className="line-clamp-4 block text-balance font-semibold text-lg leading-snug">
-                        {open && card.kind === "fact"
-                          ? card.answer
-                          : card.question}
-                      </span>
-                    )}
-                    {!open && (
-                      <span className="sr-only">. Press to reveal.</span>
-                    )}
-                  </button>
-                ) : (
-                  <p className="mt-2 line-clamp-4 text-balance font-semibold text-lg leading-snug">
-                    {card.question}
-                  </p>
-                )}
-                {open && card.kind === "fact" && (
-                  <>
-                    <p className="mt-2 text-slate-600 text-sm">
-                      {passages.join(" · ")}
-                    </p>
-                    {card.explanation && (
-                      <p className="mt-1 line-clamp-3 text-slate-700 text-sm">
-                        {card.explanation}
-                      </p>
-                    )}
-                  </>
-                )}
-                {open && card.kind === "discover" && (
-                  <p className="mt-2 text-slate-600 text-sm">
-                    An open question with no single answer. Explore it with Ask
-                    in chat.
-                  </p>
-                )}
-                {!open && card.kind === "discover" && card.tags.length > 0 && (
-                  <p className="mt-2 text-slate-600 text-xs">
-                    {card.tags.join(" · ")}
-                    {card.minutes ? ` · ${card.minutes} min` : ""}
-                  </p>
-                )}
-                {active && !open && !hinted && (
-                  <p className="mt-2 text-pretty text-slate-600 text-sm">
-                    Tap to reveal · hold to ask in chat
-                  </p>
-                )}
-                {/* Hold progress: fills over the 2 s hold that opens chat. */}
-                {active && (
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-x-5 bottom-2.5 h-0.5 rounded-full bg-[#2f68c2]/70"
+                  {/* Also what shows when WebGL is unavailable and the ASCII
+                    field cannot draw. */}
+                  <div
+                    className="absolute inset-0"
                     style={{
-                      clipPath: `inset(0 ${holding ? 0 : 100}% 0 0 round 9999px)`,
-                      transition: holding
-                        ? `clip-path ${HOLD_MS}ms linear`
-                        : "clip-path 120ms ease-out",
+                      background: `linear-gradient(180deg, ${sky.colors[0]} 0%, ${sky.colors[1]} 40%, ${sky.colors[2]} 78%, ${sky.colors[3]} 100%)`,
                     }}
                   />
-                )}
+                  {a < 1.6 ? (
+                    <GradientASCII
+                      colors={sky.colors}
+                      shape="horizon"
+                      characters={SKY_GLYPHS}
+                      cellSize={15}
+                      density={0.75}
+                      glyphOpacity={0.55}
+                      glow={0.18}
+                      softness={0.95}
+                      flicker={0.08}
+                      scale={1.4}
+                      speed={0.3}
+                      grain={0.03}
+                      gradientOpacity={1}
+                      clickEffect="none"
+                      mouseInteraction={false}
+                      intro={false}
+                    />
+                  ) : null}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden whitespace-nowrap text-center leading-none"
+                    style={{ textShadow: "none" }}
+                  >
+                    <div className="text-[13px] text-white/40 tracking-[0.12em]">
+                      {TREES_FAR}
+                    </div>
+                    <div className="-mt-0.5 pb-2 text-[19px] text-white/60 tracking-[0.08em]">
+                      {TREES_NEAR}
+                    </div>
+                  </div>
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                      background: `linear-gradient(180deg, rgb(255 255 255 / 0.12) 0%, transparent 70%, ${sky.drip} 100%)`,
+                    }}
+                  />
+                </div>
+
+                <Bridge
+                  key={active ? `on-${index}` : "off"}
+                  top={sky.drip}
+                  play={active && !dragging}
+                />
+
+                <div
+                  style={{
+                    transform: `translateY(${split}px)`,
+                    transition:
+                      dragging || reduce ? "none" : `transform 700ms ${EASE}`,
+                  }}
+                >
+                  <div
+                    className="deck-panel relative min-h-40 rounded-2xl p-5 text-slate-800 shadow-[0_18px_40px_rgb(35_75_150/0.18)]"
+                    style={{ background: PANEL, textShadow: "none" }}
+                  >
+                    <div className="deck-copy">
+                      <p className="font-mono text-[11px] text-slate-600 uppercase tracking-[0.2em]">
+                        No. {pad(i + 1)} · {label}
+                      </p>
+                      {active ? (
+                        <button
+                          ref={flipRef}
+                          type="button"
+                          aria-pressed={revealed}
+                          className="-mx-1 mt-1 block w-[calc(100%+0.5rem)] cursor-[inherit] rounded-md px-1 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#2f68c2]"
+                        >
+                          {open && card.kind === "discover" ? (
+                            <span className="block font-semibold text-lg leading-snug">
+                              {passages.map((ref) => (
+                                <span key={ref} className="block">
+                                  {ref}
+                                </span>
+                              ))}
+                            </span>
+                          ) : (
+                            <span className="line-clamp-4 block text-balance font-semibold text-lg leading-snug">
+                              {open && card.kind === "fact"
+                                ? card.answer
+                                : card.question}
+                            </span>
+                          )}
+                          {!open && (
+                            <span className="sr-only">. Press to reveal.</span>
+                          )}
+                        </button>
+                      ) : (
+                        <p className="mt-2 line-clamp-4 text-balance font-semibold text-lg leading-snug">
+                          {card.question}
+                        </p>
+                      )}
+                      {open && card.kind === "fact" && (
+                        <>
+                          <p className="mt-2 text-slate-600 text-sm">
+                            {passages.join(" · ")}
+                          </p>
+                          {card.explanation && (
+                            <p className="mt-1 line-clamp-3 text-slate-700 text-sm">
+                              {card.explanation}
+                            </p>
+                          )}
+                        </>
+                      )}
+                      {open && card.kind === "discover" && (
+                        <p className="mt-2 text-slate-600 text-sm">
+                          An open question with no single answer. Explore it
+                          with Ask in chat.
+                        </p>
+                      )}
+                      {!open &&
+                        card.kind === "discover" &&
+                        card.tags.length > 0 && (
+                          <p className="mt-2 text-slate-600 text-xs">
+                            {card.tags.join(" · ")}
+                            {card.minutes ? ` · ${card.minutes} min` : ""}
+                          </p>
+                        )}
+                      {active && !open && !hinted && (
+                        <p className="mt-2 text-pretty text-slate-600 text-sm">
+                          Tap to reveal · hold to ask in chat
+                        </p>
+                      )}
+                    </div>
+                    {/* Hold progress: fills over the 2 s hold that opens chat. */}
+                    {active && (
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-x-5 bottom-2.5 h-0.5 rounded-full bg-[#2f68c2]/70"
+                        style={{
+                          clipPath: `inset(0 ${holding ? 0 : 100}% 0 0 round 9999px)`,
+                          transition: holding
+                            ? `clip-path ${HOLD_MS}ms linear`
+                            : "clip-path 120ms ease-out",
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           );
