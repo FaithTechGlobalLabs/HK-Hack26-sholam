@@ -45,6 +45,7 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Desktop (768px and up) keeps ChatGPT's layout: a collapsible left sidebar (New chat, Search chats, Flashcards, this tab's chats, Sign in) and a Chat \| Flashcards toggle at the top centre. The dock is for phones only | Owner decision. The dock suits thumbs; on a desktop the ChatGPT layout is what people expect |
 | 2026-11-14 | Switching views animates with React `<ViewTransition>`: the page slides left going to Flashcards and right coming back; the toggle pill, the sidebar highlight and the dock tile glide to the new item | Owner request. Built on Next 16's view transitions, so unsupported browsers switch instantly and reduced motion turns the slide into a quick crossfade |
 | 2026-11-14 | Free OpenRouter models only, default `nvidia/nemotron-3-ultra-550b-a55b:free`: `SHOLAM_MODEL` must end in `:free`, otherwise the default is used. `OPENROUTER_API_KEY` (sensitive) and `SHOLAM_MODEL` are set in Vercel for Production and Preview | Owner decision, replacing the DeepSeek row. The key also carries a $3 credit limit on the OpenRouter side |
+| 2026-11-14 | The public deck is cached (`"use cache"`, hourly, tag `flashcards`) and `/flashcards` is a static page; the browser shuffles it once per visit; functions run in `sin1` next to the database | The page took seconds: every request ran a function in `iad1` that opened a connection to Singapore before the deck could stream. Now the CDN serves the cards (first card 1.4 s → 0.18 s locally). Numbers in ARCHITECTURE.md |
 
 ## In flight
 
@@ -76,7 +77,7 @@ The OpenRouter streaming loop is already in `harness.ts` (helloao text, keyword 
 
 ### Phase 3: flashcards and semantic search
 - Hybrid semantic search (pgvector embeddings fused with full-text by RRF) once the Phase 2 eval is in; embedding provider to be chosen.
-- Save from the form and from chat proposals (refs checked against `verses`), report/flag, a small moderation view.
+- Save from the form and from chat proposals (refs checked against `verses`), report/flag, a small moderation view. Every write calls `revalidateDeck()` so the cached deck drops.
 - Study mode scoring and resurfacing missed cards; random suggestion chips from the live deck.
 - Design pass with `deslop-law` + `hallmark` across both modes.
 

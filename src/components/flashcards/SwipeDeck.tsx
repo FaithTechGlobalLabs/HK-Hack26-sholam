@@ -176,6 +176,53 @@ function Bridge({ top, play }: { top: string; play: boolean }) {
   );
 }
 
+/**
+ * The carousel with no card in it yet: the centred card's art and panel at
+ * their real size, and room for the ticks and buttons. FlashcardsView shows
+ * it until the browser renders the shuffled deck, so nothing moves when the
+ * cards arrive. Built from the same constants as the deck below.
+ */
+export function SwipeDeckPlaceholder() {
+  const sky = SKIES[0];
+  return (
+    <div
+      aria-busy="true"
+      className="flex h-full w-full flex-col items-center justify-center gap-3"
+      style={{ containerType: "size" }}
+    >
+      <span className="sr-only">Shuffling the deck…</span>
+      <div
+        className="relative w-full"
+        style={{
+          height: `calc(${ART_H} + ${GAP + PANEL_SPACE}px)`,
+          containerType: "inline-size",
+        }}
+      >
+        <div
+          data-placeholder-card
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{ width: CARD_W }}
+        >
+          <div
+            className="rounded-2xl shadow-[0_18px_40px_rgb(35_75_150/0.22)]"
+            style={{
+              height: ART_H,
+              background: `linear-gradient(180deg, ${sky.colors[0]} 0%, ${sky.colors[1]} 40%, ${sky.colors[2]} 78%, ${sky.colors[3]} 100%)`,
+            }}
+          />
+          <div style={{ height: GAP }} />
+          <div
+            className="min-h-40 rounded-2xl shadow-[0_18px_40px_rgb(35_75_150/0.18)]"
+            style={{ background: PANEL }}
+          />
+        </div>
+      </div>
+      <div className="h-6" />
+      <div className="h-7" />
+    </div>
+  );
+}
+
 export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
   const router = useRouter();
   const reduce = useReducedMotion();

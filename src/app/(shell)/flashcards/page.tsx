@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { FlashcardsView } from "@/components/flashcards/FlashcardsView";
 import { SectionTransition } from "@/components/shell/SectionTransition";
-import { listFlashcards } from "@/lib/flashcards/repo";
+import { getPublicDeck } from "@/lib/flashcards/deck";
 
 export default function FlashcardsPage() {
   return (
@@ -17,7 +17,8 @@ export default function FlashcardsPage() {
   );
 }
 
+/** Cached and public (see getPublicDeck), so it is part of the static shell. */
 async function Deck() {
-  const cards = await listFlashcards({ limit: 200 });
+  const cards = await getPublicDeck();
   return <FlashcardsView cards={cards} />;
 }

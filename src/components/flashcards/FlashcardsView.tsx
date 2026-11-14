@@ -2,8 +2,10 @@
 
 import { Plus, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, use, useEffect, useMemo, useState } from "react";
+import { browser } from "react-dom";
 import { Button } from "@/components/ui/button";
+import { deckView, shuffled } from "@/lib/flashcards/shuffle";
 import {
   type CardKind,
   type Flashcard,
@@ -12,34 +14,27 @@ import {
 } from "@/lib/flashcards/types";
 import { cn } from "@/lib/utils";
 import { NewCardDialog } from "./NewCardDialog";
-import { SwipeDeck } from "./SwipeDeck";
+import { SwipeDeck, SwipeDeckPlaceholder } from "./SwipeDeck";
 
 /**
  * One card at a time (Ricky's swipe deck), with a small switch between the
- * two kinds of card. A link from chat (`?card=<id>`, "Related in Shalom")
- * opens the deck on that card first.
+ * two kinds of card. The deck is shuffled in the browser on each visit; a
+ * link from chat (`?card=<id>`, "Related in Shalom") opens it on that card.
+ *
+ * The header is prerendered with the page. The deck itself renders in the
+ * browser only (its order is random), and `?card` is read in its own
+ * Suspense boundary so it does not pull the page out of the static shell.
  */
 export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
-  const searchParams = useSearchParams();
   const [creating, setCreating] = useState(false);
   const [kind, setKind] = useState<CardKind | null>(null);
   const [focusId, setFocusId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const id = searchParams.get("card");
-    if (id && cards.some((c) => c.id === id)) setFocusId(id);
-  }, [searchParams, cards]);
-
-  const deck = useMemo(() => {
-    const ofKind = kind ? cards.filter((c) => c.kind === kind) : cards;
-    const focused = focusId ? ofKind.find((c) => c.id === focusId) : undefined;
-    return focused
-      ? [focused, ...ofKind.filter((c) => c.id !== focusId)]
-      : ofKind;
-  }, [cards, kind, focusId]);
-
   return (
     <div className="flex h-full flex-col">
+      <Suspense fallback={null}>
+        <LinkedCard cards={cards} onCard={setFocusId} />
+      </Suspense>
       <div className="mx-auto flex w-full max-w-md flex-wrap items-center gap-3 px-4 pt-4">
         <h1 className="mr-auto font-semibold text-xl">Flashcards</h1>
         <Button onClick={() => setCreating(true)}>
@@ -77,10 +72,58 @@ export function FlashcardsView({ cards }: { cards: Flashcard[] }) {
         )}
       </div>
       <div className="flex min-h-0 flex-1 items-center justify-center px-4 py-3">
-        {/* key: a new deck (kind or focus change) starts fresh, with no gesture state carried over */}
-        <SwipeDeck key={`${kind ?? "all"}:${focusId ?? ""}`} cards={deck} />
+        <Suspense fallback={<SwipeDeckPlaceholder />}>
+          <ShuffledDeck cards={cards} kind={kind} focusId={focusId} />
+        </Suspense>
       </div>
       {creating && <NewCardDialog onClose={() => setCreating(false)} />}
     </div>
+  );
+}
+
+/** Reports the card a chat link points at (`?card=<id>`), if it is in the deck. */
+function LinkedCard({
+  cards,
+  onCard,
+}: {
+  cards: Flashcard[];
+  onCard: (id: string | null) => void;
+}) {
+  const id = useSearchParams().get("card");
+  useEffect(() => {
+    if (id && cards.some((c) => c.id === id)) onCard(id);
+  }, [id, cards, onCard]);
+  return null;
+}
+
+/**
+ * Browser-only: the shuffle is random, so the server cannot render a
+ * matching first card. Shuffled once per mount (a visit); filters and the
+ * chat focus reorder that same shuffle. A new card list (after the cache
+ * revalidates) gets a new shuffle.
+ */
+function ShuffledDeck({
+  cards,
+  kind,
+  focusId,
+}: {
+  cards: Flashcard[];
+  kind: CardKind | null;
+  focusId: string | null;
+}) {
+  use(browser("The deck order is random per visit."));
+  const [deal, setDeal] = useState(() => ({
+    from: cards,
+    order: shuffled(cards),
+  }));
+  if (deal.from !== cards) setDeal({ from: cards, order: shuffled(cards) });
+  const deck = useMemo(
+    () => deckView(deal.order, { kind, focusId }),
+    [deal.order, kind, focusId],
+  );
+
+  return (
+    // key: a new deck (kind or focus change) starts fresh, with no gesture state carried over
+    <SwipeDeck key={`${kind ?? "all"}:${focusId ?? ""}`} cards={deck} />
   );
 }
