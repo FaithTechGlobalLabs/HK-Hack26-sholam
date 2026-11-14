@@ -22,6 +22,7 @@
  */
 
 import type Anthropic from "@anthropic-ai/sdk";
+import { defaultModel, modelRoute } from "./client";
 import type { AgentEvent } from "./events";
 import { SYSTEM_PROMPT } from "./system-prompt";
 import { toolDefinitions } from "./tools";
@@ -30,10 +31,11 @@ export type Effort = "low" | "medium" | "high" | "xhigh" | "max";
 
 export interface AgentConfig {
   model: string;
-  effort: Effort;
+  /** null = send no effort (SHOLAM_EFFORT=off), for routes that reject it */
+  effort: Effort | null;
   maxTokens: number;
   maxSteps: number;
-  /** "default" turns on server-side refusal fallbacks (Anthropic API only). */
+  /** "default" turns on server-side refusal fallbacks (direct Anthropic API only). */
   fallbacks: "default" | "off";
 }
 
@@ -42,13 +44,22 @@ const EFFORTS: readonly Effort[] = ["low", "medium", "high", "xhigh", "max"];
 export function agentConfig(
   env: Record<string, string | undefined> = process.env,
 ): AgentConfig {
-  const effort = env.SHOLAM_EFFORT as Effort | undefined;
+  const effort = env.SHOLAM_EFFORT as Effort | "off" | undefined;
   return {
-    model: env.SHOLAM_MODEL || "claude-opus-5-5",
-    effort: effort && EFFORTS.includes(effort) ? effort : "medium",
+    model: defaultModel(env),
+    effort:
+      effort === "off"
+        ? null
+        : effort && EFFORTS.includes(effort)
+          ? effort
+          : "medium",
     maxTokens: 16000,
     maxSteps: 8,
-    fallbacks: env.SHOLAM_FALLBACKS === "default" ? "default" : "off",
+    // The fallbacks beta is an Anthropic API feature; gateways may not pass it on.
+    fallbacks:
+      env.SHOLAM_FALLBACKS === "default" && modelRoute(env) === "anthropic"
+        ? "default"
+        : "off",
   };
 }
 
@@ -67,7 +78,7 @@ export function buildRequest(
   return {
     model: config.model,
     max_tokens: config.maxTokens,
-    output_config: { effort: config.effort },
+    ...(config.effort ? { output_config: { effort: config.effort } } : {}),
     tools: toolDefinitions(),
     system: [
       {

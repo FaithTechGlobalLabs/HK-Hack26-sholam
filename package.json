@@ -15,7 +15,8 @@
     "bible:import": "tsx scripts/import-bible.ts",
     "seed:flashcards": "tsx scripts/seed-flashcards.ts",
     "search:baseline": "tsx scripts/experiments/search-baseline.ts",
-    "faithmap:convert": "tsx scripts/convert-faithmap.ts"
+    "faithmap:convert": "tsx scripts/convert-faithmap.ts",
+    "model:smoke": "tsx scripts/model-smoke.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",

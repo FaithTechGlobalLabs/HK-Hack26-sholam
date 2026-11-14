@@ -48,6 +48,18 @@ Search strategy, indexes and the agent's search policy: [SEARCH.md](SEARCH.md). 
 
 Each tool gets a `ToolContext` with the user id, translation, `emit()` and `versesSeen` (verse id → record) for the citation check.
 
+## Model route (`src/lib/agent/client.ts`)
+
+Always the official Anthropic SDK and the Messages API; only the endpoint changes.
+
+| Route | When | Endpoint and auth | Model id (default) |
+|---|---|---|---|
+| OpenRouter | `OPENROUTER_API_KEY` set | `https://openrouter.ai/api` ("Anthropic Skin"), `Authorization: Bearer`, no `x-api-key`; `HTTP-Referer`/`X-Title` attribution headers | `anthropic/claude-opus-5.5` |
+| Anthropic | `ANTHROPIC_API_KEY` or `ANTHROPIC_AUTH_TOKEN` set | `api.anthropic.com` or `ANTHROPIC_BASE_URL` (local gateways) | `claude-opus-5-5` |
+| none | neither | `/api/chat` streams the demo | — |
+
+`SHOLAM_MODEL` overrides the id; `SHOLAM_EFFORT=off` drops `output_config` for routes that reject it; refusal fallbacks are only requested on the direct route. `GET /api/health` reports the route, model id, agent mode and a database ping without secrets; `npm run model:smoke` sends one tiny request with the real request shape (system prompt with `cache_control`, tools, effort).
+
 ## SSE protocol (`events.ts`)
 
 One frame per event: `event: <type>\ndata: <json>\n\n`. The browser uses fetch + `ReadableStream` (EventSource cannot POST) and `SseDecoder`, which tolerates arbitrary chunk splits and drops unknown or malformed frames.

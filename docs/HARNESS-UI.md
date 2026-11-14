@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-14
 
-> Status note (2026-11-14): search tools and the search policy are specified in [SEARCH.md](SEARCH.md), which builds on §3–4 here. A first non-basic card kind now exists: `discover` cards (open questions with Scripture starting points, the FaithMap set), stored with `kind = 'discover'`. The kind names in §5 should extend that union.
+> Status note (2026-11-14): search tools and the search policy are specified in [SEARCH.md](SEARCH.md), which builds on §3–4 here. A first non-basic card kind now exists: `discover` cards (open questions with Scripture starting points, the FaithMap set), stored with `kind = 'discover'`. The kind names in §5 should extend that union. Flashcard UI/UX is owned by a teammate (docs/TEAM.md); §5–6 are input for that work, not a fixed spec.
 
 Design for the next version of sholam's chat harness and the custom UI it drives: how verse citations look in several formats, and how the agent proposes flashcards or asks the user for input (multiple choice, true/false, fill-in-the-blank, short and long answers). This is a design document only; nothing here is built yet. Where it changes code, the snippets show the intended shape.
 

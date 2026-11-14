@@ -29,6 +29,12 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Agentic search over several small indexes (verses, section headings; later embeddings, Strong's, cross-references), with tool results as the only quotable source | Baseline on our data: verse full-text 12/25, headings 17/25, both 24/25. Design in [SEARCH.md](SEARCH.md) |
 | 2026-11-14 | Two card kinds in one deck: `fact` (question + answer + verses) and `discover` (open question + Scripture starting points, no answer) | The team's FaithMap set is open questions for ages ~13–20; its editorial note says references are starting points, not proof, so no answers were invented |
 | 2026-11-14 | Harness and agent-UI direction from [HARNESS-UI.md](HARNESS-UI.md): closed component catalog, two channels per tool, `search_result` citations, `ask_user`, more card kinds | Research session; open questions listed there |
+| 2026-11-14 | Model through OpenRouter's Anthropic-compatible endpoint, default `anthropic/claude-opus-5.5`, still via the Anthropic SDK (`src/lib/agent/client.ts`) | Team decision; same price as Anthropic direct ($4/$20 per M tokens on OpenRouter's model list, checked 2026-11-14). Effort, prompt caching and `search_result` citations must be confirmed on this route with `npm run model:smoke` once the key exists |
+| 2026-11-14 | Flashcard UI/UX and the visual theme are owned by teammates (docs/TEAM.md) | Parallel work; the current flashcard UI on `main` is a functional skeleton they will replace |
+
+## In flight
+
+Teammate branches and the decisions they carry (bottom dock instead of the sidebar, one-card swipe deck, cloud-sky glass theme) are tracked in [TEAM.md](TEAM.md#branch-status-2026-11-14). When they merge, update this plan, AGENTS.md's layout and ARCHITECTURE.md in the same PR.
 
 ## Phases
 

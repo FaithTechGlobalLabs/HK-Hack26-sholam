@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { classifyCitations, extractCitations } from "@/lib/agent/citations";
+import {
+  createModelClient,
+  modelRoute,
+  OPENROUTER_BASE_URL,
+} from "@/lib/agent/client";
 import { agentConfig, buildRequest } from "@/lib/agent/harness";
 import { SYSTEM_PROMPT } from "@/lib/agent/system-prompt";
 import { TOOLS, toolDefinitions } from "@/lib/agent/tools";
@@ -63,8 +68,11 @@ describe("request", () => {
     ]);
   });
 
-  it("ignores an invalid effort", () => {
+  it("ignores an invalid effort and can omit effort", () => {
     expect(agentConfig({ SHOLAM_EFFORT: "turbo" }).effort).toBe("medium");
+    const off = agentConfig({ SHOLAM_EFFORT: "off" });
+    expect(off.effort).toBeNull();
+    expect(buildRequest([], off)).not.toHaveProperty("output_config");
   });
 
   it("keeps the system prompt free of per-request values", () => {
@@ -109,5 +117,40 @@ describe("discover cards (FaithMap)", () => {
       refs: ["MAT.18.21-MAT.18.35", "LUK.17.3-LUK.17.4"],
       section: "Everyday Life, Social Media & Identity",
     });
+  });
+});
+
+describe("model route", () => {
+  it("prefers OpenRouter when its key is set", () => {
+    const env = {
+      OPENROUTER_API_KEY: "sk-or-test",
+      ANTHROPIC_API_KEY: "sk-ant-test",
+    };
+    expect(modelRoute(env)).toBe("openrouter");
+    expect(agentConfig(env).model).toBe("anthropic/claude-opus-5.5");
+    expect(agentConfig({ ...env, SHOLAM_FALLBACKS: "default" }).fallbacks).toBe(
+      "off",
+    );
+  });
+
+  it("builds an OpenRouter client with bearer auth and no x-api-key", () => {
+    const client = createModelClient({ OPENROUTER_API_KEY: "sk-or-test" });
+    expect(client.baseURL).toBe(OPENROUTER_BASE_URL);
+    expect(client.apiKey).toBeNull();
+    expect(client.authToken).toBe("sk-or-test");
+  });
+
+  it("uses Anthropic model ids on the direct route and refuses without credentials", () => {
+    expect(agentConfig({ ANTHROPIC_API_KEY: "sk-ant-test" }).model).toBe(
+      "claude-opus-5-5",
+    );
+    expect(
+      agentConfig({
+        OPENROUTER_API_KEY: "k",
+        SHOLAM_MODEL: "anthropic/claude-sonnet-5.5",
+      }).model,
+    ).toBe("anthropic/claude-sonnet-5.5");
+    expect(modelRoute({})).toBe("none");
+    expect(() => createModelClient({})).toThrow(/No model credentials/);
   });
 });
