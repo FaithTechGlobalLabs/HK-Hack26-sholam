@@ -1,6 +1,7 @@
 "use client";
 
-import { BookOpen, Check, Copy, Loader2 } from "lucide-react";
+import { BookOpen, Check, Copy, Layers, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import Markdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -76,13 +77,23 @@ function AssistantMessage({
           remarkPlugins={[remarkGfm]}
           urlTransform={urlTransform}
           components={{
-            a: ({ href, children }) =>
-              href?.startsWith(VERSE_PROTOCOL) ? (
-                <VerseChip
-                  verse={message.verses[href.slice(VERSE_PROTOCOL.length)]}
-                  label={children}
-                />
-              ) : (
+            a: ({ href, children }) => {
+              if (href?.startsWith(VERSE_PROTOCOL)) {
+                return (
+                  <VerseChip
+                    verse={message.verses[href.slice(VERSE_PROTOCOL.length)]}
+                    label={children}
+                  />
+                );
+              }
+              if (href?.startsWith("/")) {
+                return (
+                  <Link href={href} className="underline underline-offset-4">
+                    {children}
+                  </Link>
+                );
+              }
+              return (
                 <a
                   href={href}
                   target="_blank"
@@ -91,7 +102,8 @@ function AssistantMessage({
                 >
                   {children}
                 </a>
-              ),
+              );
+            },
           }}
         >
           {message.text}
@@ -100,6 +112,24 @@ function AssistantMessage({
           <Loader2 className="size-4 animate-spin text-muted-foreground" />
         )}
       </div>
+
+      {message.cards.length > 0 && !message.streaming && (
+        <ul className="flex flex-col gap-2 rounded-xl border bg-muted/40 p-3">
+          <li className="flex items-center gap-1.5 text-muted-foreground text-xs">
+            <Layers className="size-3.5" /> Related in Shalom
+          </li>
+          {message.cards.map((card) => (
+            <li key={card.id}>
+              <Link
+                href={`/flashcards?card=${encodeURIComponent(card.id)}`}
+                className="block text-sm underline-offset-4 hover:underline"
+              >
+                {card.question}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {message.proposal && <FlashcardProposal draft={message.proposal} />}
       {message.error && (

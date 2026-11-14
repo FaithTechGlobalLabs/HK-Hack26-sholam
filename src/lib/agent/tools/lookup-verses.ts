@@ -1,5 +1,7 @@
 import { z } from "zod";
-import { defineTool, NotImplementedError } from "./types";
+import { lookupRanges } from "@/lib/bible/bsb";
+import { parseReference } from "@/lib/bible/refs";
+import { defineTool } from "./types";
 
 export const lookupVerses = defineTool({
   name: "lookup_verses",
@@ -12,10 +14,57 @@ export const lookupVerses = defineTool({
       .max(10)
       .describe("One reference per item"),
   }),
-  // Phase 2: parseReference() -> select from `verses` (cap ~60 verses per
-  // call), add each to ctx.versesSeen, emit { type: "verses" }, return
-  // "JHN.3.16 | For God so loved..." lines. Unknown refs come back as errors.
-  async run() {
-    throw new NotImplementedError("lookup_verses");
+  async run(input, ctx) {
+    const verses = [];
+    const errors: string[] = [];
+
+    for (const ref of input.references) {
+      const ranges = parseReference(ref);
+      if (!ranges.length) {
+        errors.push(`Could not parse reference: ${ref}`);
+        continue;
+      }
+      try {
+        const found = await lookupRanges(ranges);
+        if (!found.length) {
+          errors.push(`No verses found for: ${ref}`);
+          continue;
+        }
+        // Cap ~60 verses per call across all refs.
+        for (const v of found) {
+          if (verses.length >= 60) break;
+          verses.push(v);
+        }
+      } catch (err) {
+        errors.push(
+          err instanceof Error ? err.message : `Failed to fetch ${ref}`,
+        );
+      }
+    }
+
+    if (verses.length) {
+      for (const v of verses) {
+        ctx.versesSeen.set(v.id, {
+          id: v.id,
+          label: v.label,
+          text: v.text,
+          translation: v.translation,
+        });
+      }
+      ctx.emit({
+        type: "verses",
+        verses: verses.map((v) => ({
+          id: v.id,
+          label: v.label,
+          text: v.text,
+          translation: v.translation,
+        })),
+      });
+    }
+
+    const lines = verses.map((v) => `${v.id} | ${v.text}`);
+    if (errors.length) lines.push(`Errors: ${errors.join("; ")}`);
+    if (!lines.length) throw new Error(errors.join("; ") || "No verses found");
+    return lines.join("\n");
   },
 });

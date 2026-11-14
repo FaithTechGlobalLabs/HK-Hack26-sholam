@@ -82,11 +82,27 @@ describe("verse ids", () => {
     expect(isVerseId("JHN.0.1")).toBe(false);
   });
 
-  it("parseReference is a Phase 2 stub", () => {
-    expect(() => parseReference("John 3:16")).toThrow(/not implemented/);
+  it("parseReference: John 3:16-18 -> one range of three verses", () => {
+    expect(parseReference("John 3:16-18")).toEqual([
+      { book: "JHN", chapter: 3, verseStart: 16, verseEnd: 18 },
+    ]);
   });
 
-  it.todo("parseReference: 'John 3:16-18' -> one range of three verses");
-  it.todo("parseReference: 'Ps 23' -> whole chapter");
-  it.todo("parseReference: '1 Cor 13:4, 7' -> two ranges");
+  it("parseReference: Ps 23 -> whole chapter", () => {
+    const ranges = parseReference("Ps 23");
+    expect(ranges).toHaveLength(1);
+    expect(ranges[0]).toMatchObject({
+      book: "PSA",
+      chapter: 23,
+      verseStart: 1,
+    });
+    expect(ranges[0]?.verseEnd).toBeGreaterThan(100);
+  });
+
+  it("parseReference: 1 Cor 13:4, 7 -> two ranges", () => {
+    expect(parseReference("1 Cor 13:4, 7")).toEqual([
+      { book: "1CO", chapter: 13, verseStart: 4, verseEnd: 4 },
+      { book: "1CO", chapter: 13, verseStart: 7, verseEnd: 7 },
+    ]);
+  });
 });

@@ -6,7 +6,7 @@ Last updated: 2026-11-14
 
 A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app has a **Chat / Work** switch at the top of the page (Work launched 2026-07-09); sholam keeps **Chat** and puts **Flashcards** where Work would be.
 
-- **Chat** is a real agent harness. It answers questions the way a gentle, peaceful Christian would, cites Bible verses fetched from a database, searches the flashcard deck, and offers to draft a new card when none fits.
+- **Chat** is Shalom Guide: an OpenRouter agent that answers faith and Bible questions for young people, cites Berean Standard Bible text fetched from tools (not memory), searches the flashcard deck when a real match exists, and offers to draft a new card when none fits.
 - **Flashcards** is a public deck of questions and answers: funny, surprising or interesting facts about the Bible, Jesus and God, each tied to verses.
 
 ## Decisions
@@ -16,9 +16,12 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Next.js 16 (App Router, Cache Components), TypeScript, Tailwind 4, shadcn (base-nova), npm | Same family as other web apps in the workspace; route handlers stream SSE cleanly |
 | 2026-11-14 | Supabase: Postgres + Auth + RLS; Drizzle ORM for schema and migrations | User chose Postgres; Supabase gives auth and row-level security in one place |
 | 2026-11-14 | Chats are per user and private; all flashcards are public | User decision |
-| 2026-11-14 | Claude via `@anthropic-ai/sdk`, default `claude-opus-5-5`, effort `medium`, model and base URL from env | Current default model; base URL lets the local CLIProxyAPI/LiteLLM gateways stand in for a direct key |
-| 2026-11-14 | Manual streaming tool loop, not the SDK's beta tool runner | The browser needs typed custom events (verse chips, card hits, proposals) |
-| 2026-11-14 | Verse text from a database, never model memory; uncited/unfetched verses shown as unverified | Citations have to be checkable |
+| 2026-11-14 | Claude via `@anthropic-ai/sdk`, default `claude-opus-5-5`, effort `medium`, model and base URL from env | Superseded the same day by OpenRouter (row below) |
+| 2026-11-14 | OpenRouter chat completions, default `baidu/ernie-5.5-flash-preview:free`, model and base URL from env (`OPENROUTER_API_KEY`, `SHOLAM_MODEL`) | User chose OpenRouter; model stays configurable without code changes |
+| 2026-11-14 | Manual streaming tool loop over OpenAI-compatible tool calls | The browser needs typed custom events (verse chips, card hits, proposals) |
+| 2026-11-14 | Verse text from fetched BSB (helloao cache today; Postgres `verses` when imported), never model memory; uncited/unfetched verses shown as unverified | Citations have to be checkable |
+| 2026-11-14 | Chat continuity via sessionStorage until Supabase chat persistence lands | No DATABASE_URL yet; Anthropic-shaped `messages.content` is not replayed for OpenRouter |
+| 2026-11-14 | Answers lead with the point, usually 1–3 verses, `max_tokens` 700, temperature 0.4 | The first live answers read as essays; clarity over coverage |
 | 2026-11-14 | Berean Standard Bible (BSB) as the default text | Public domain (CC0) since 2023-04-30, modern English; see SOURCES.md |
 | 2026-11-14 | Doctrinal default: historic creedal Christianity, no denomination; differences described fairly | Fits "answer like a Christian, with peace" for a broad audience; open to revision below |
 | 2026-11-14 | Agent proposes cards; only the user saves them | Public deck needs a human in the loop |
@@ -60,4 +63,4 @@ Vercel + Supabase production, a citation-accuracy eval set (does every quoted ve
 1. **Doctrinal stance wording.** The default is non-denominational creedal Christianity. Should sholam lean toward a tradition, or name one in settings?
 2. **Card publishing.** Do user cards publish at once (flag to hide), or wait in a review queue?
 3. **Second translation in the UI.** Offer a BSB/WEB toggle, or keep one text?
-4. **Model and cost.** Opus 5.5 at medium effort is the default. Revisit with real usage numbers in Phase 5.
+4. **Model and cost.** ERNIE 5.5 Flash Preview (free) via OpenRouter is the default. Revisit with real usage numbers in Phase 5.

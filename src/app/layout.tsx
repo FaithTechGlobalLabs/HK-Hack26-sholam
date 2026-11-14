@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "sholam",
+  title: "Shalom",
   description:
-    "Ask about the Bible and the Christian faith, and learn with Bible flashcards.",
+    "Shalom Guide helps you explore the Bible and the Christian faith, with Bible flashcards to keep learning.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

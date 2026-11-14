@@ -7,41 +7,39 @@ Last updated: 2026-11-14
 ```
 Browser (React client components)
   ChatView ── POST /api/chat ──────────────► route handler ──► harness.runAgentTurn
-     ▲            (SSE: AgentEvent frames)                     │  Anthropic Messages API (stream)
-     └── SseDecoder ◄──────────────────────────────────────────┤  tools ──► Postgres (Drizzle)
+     ▲            (SSE: AgentEvent frames)                     │  OpenRouter chat completions (stream)
+     └── SseDecoder ◄──────────────────────────────────────────┤  tools ──► BSB (helloao) + seed deck
   FlashcardsView ── GET/POST /api/flashcards ──► repo ─────────┘
   LoginForm ── Supabase Auth (magic link) ──► /auth/callback
 src/proxy.ts refreshes the Supabase session cookie on page requests.
 ```
 
-Without env vars the app still runs: `/api/chat` streams `lib/agent/demo.ts`, and flashcards come from `data/flashcards.seed.json`.
+Without env vars the app still runs: `/api/chat` streams `lib/agent/demo.ts`, and flashcards come from `data/flashcards.seed.json`. With `OPENROUTER_API_KEY` set (and `SHOLAM_AGENT` not `demo`), Chat runs Shalom Guide live.
 
 ## Agent harness (`src/lib/agent/`)
 
-**Why a manual loop:** we need our own event stream to the browser (verse records, card hits, proposals) alongside text, so we drive `client.messages.stream()` ourselves rather than use the SDK's beta tool runner.
+**Why a manual loop:** we need our own event stream to the browser (verse records, card hits, proposals) alongside text, so we drive OpenRouter streaming ourselves.
 
-**Request** (`buildRequest` in `harness.ts`): `model` from `SHOLAM_MODEL` (default `claude-opus-5-5`), `output_config.effort` from `SHOLAM_EFFORT` (default `medium`), `max_tokens` 16000, the four tools, and the system prompt as one text block with `cache_control: ephemeral`. Thinking stays at the model default (adaptive; Opus 5.5 does not allow turning it off). Render order is tools → system → messages, so the cached prefix covers both tools and prompt; neither may contain per-request values. With `SHOLAM_FALLBACKS=default`, Phase 2 sends through `client.beta.messages.stream` with beta `server-side-fallback-2026-07-01` and `fallbacks: "default"` (direct Anthropic API only).
+**Provider** (`openrouter.ts`): OpenAI-compatible `POST {OPENROUTER_BASE_URL}/chat/completions` with `Authorization: Bearer` from `OPENROUTER_API_KEY` (server only). Model from `SHOLAM_MODEL` (default `baidu/ernie-5.5-flash-preview:free`). Timeouts ~45s; one tool round then an answer (at most 3 completions); `temperature` 0.4; `max_tokens` 700. Free-model calls are spaced to stay under OpenRouter's ~20/minute cap, and a short 429 is retried. A daily free cap still fails with a message that names the reset rather than burning more requests.
 
-**Loop** (Phase 2), per user turn:
+**Request** (`buildMessages` in `harness.ts`): stable `SYSTEM_PROMPT`, prior user/assistant text turns from the browser, then the new user message plus a trailing personalization note (earlier questions + strong flashcard matches). Tools stay a fixed ordered list from zod schemas.
 
-1. Load the chat's stored messages (verbatim content blocks) and append the user message.
-2. Stream a step; forward text deltas as `text_delta`.
-3. `finalMessage()`; persist `message.content` unchanged (thinking blocks included: Opus 5.5 checks replayed history, so history is append-only).
-4. On `stop_reason`:
-   - `tool_use`: validate each input with its zod schema; run tools in parallel; emit `tool_start` / `tool_result`; append **all** `tool_result` blocks in **one** user message (`is_error: true` on failure); go to 2.
-   - `pause_turn`: append the assistant content and go to 2.
-   - `end_turn`: run the citation check, emit `done`.
-   - `max_tokens` / `refusal`: emit `done` with that reason; never run tools from a truncated or refused turn.
-5. Stop after 8 tool rounds with an `error` event.
+**Loop**, per user turn:
 
-**Tools** (`tools/`, one file each; zod schema → JSON Schema via `z.toJSONSchema`, order fixed):
+1. Build messages; stream one completion.
+2. Forward text deltas as `text_delta`.
+3. On `tool_calls`: validate each input with its zod schema; run tools; emit `tool_start` / `tool_result` (and `verses` / `flashcards` / `flashcard_proposal` from tools); append tool results; loop.
+4. On a plain text finish: citation check against `versesSeen`, emit `done`.
+5. Stop after `maxSteps` with an `error` event. Provider failures become friendly `error` events (no credentials in the message).
+
+**Tools** (`tools/`, one file each; zod schema → JSON Schema, order fixed):
 
 | Tool | Does | Emits |
 |---|---|---|
-| `search_flashcards(query, category?, limit)` | FTS over published cards | `flashcards` |
-| `lookup_verses(references[])` | Parse refs, fetch exact text | `verses` |
-| `search_bible(query, testament?, book?, limit)` | FTS over verses | `verses` |
-| `propose_flashcard(draft)` | Check refs exist; **saves nothing** | `flashcard_proposal` |
+| `search_flashcards(query, category?, limit)` | Keyword rank over published cards (thresholded) | `flashcards` |
+| `lookup_verses(references[])` | Parse refs, fetch exact BSB text | `verses` |
+| `search_bible(query, testament?, book?, limit)` | Keyword search over cached BSB | `verses` |
+| `propose_flashcard(draft)` | Check refs seen this turn; **saves nothing** | `flashcard_proposal` |
 
 Each tool gets a `ToolContext` with the user id, translation, `emit()` and `versesSeen` (verse id → record) for the citation check.
 
@@ -62,7 +60,7 @@ One frame per event: `event: <type>\ndata: <json>\n\n`. The browser uses fetch +
 
 ## Citations (`citations.ts`)
 
-The model cites as markdown links: `[John 3:16](verse:JHN.3.16)`. A citation is **verified** when its verse id is in `versesSeen` for the turn. `MessageList` lets `verse:` URLs through react-markdown's URL filter and renders them with `VerseChip`: verified cites become chips with the verse text on hover and feed the Sources panel; others show the label with an "unverified" mark. Phase 2 adds a server-side count of unverified cites to the `done` event for logging and evals.
+The model cites as markdown links: `[John 3:16](verse:JHN.3.16)`. A citation is **verified** when its verse id is in `versesSeen` for the turn. `MessageList` lets `verse:` URLs through react-markdown's URL filter and renders them with `VerseChip`: verified cites become chips with the verse text on hover and feed the Sources panel; others show the label with an "unverified" mark.
 
 ## Data model (`src/db/schema.ts`, migration `drizzle/0000_init.sql`)
 
@@ -70,17 +68,19 @@ The model cites as markdown links: `[John 3:16](verse:JHN.3.16)`. A citation is 
 |---|---|---|
 | `profiles` | `id` = `auth.users.id`, `display_name` | read/update own |
 | `chats` | `user_id`, `title`, timestamps | owner only |
-| `messages` | `chat_id`, `seq`, `role`, `content` jsonb (verbatim blocks) | read via owned chat |
-| `flashcards` | `slug` (seed key), `question`, `answer`, `explanation`, `category`, `tone`, `difficulty`, `refs` text[], `author_id`, `status`, `search` tsvector (generated, GIN) | anyone reads `published`; authors insert/update own |
-| `flashcard_reports` | `flashcard_id`, `user_id`, `reason` (one per user per card) | insert own |
-| `verses` | PK (`translation`, `id`), `book`, `book_order`, `testament`, `chapter`, `verse`, `text`, `search` tsvector (generated, GIN) | public read |
+| `messages` | `chat_id`, `seq`, `role`, `content` jsonb | read via owned chat |
+| `flashcards` | `slug`, `question`, `answer`, … | anyone reads `published` |
+| `flashcard_reports` | `flashcard_id`, `user_id`, `reason` | insert own |
+| `verses` | PK (`translation`, `id`), text + FTS | public read |
 
-The server queries through Drizzle as the database owner, which **bypasses RLS**. Server code must scope chats and messages to the signed-in user itself; RLS protects anything reached with supabase-js from the browser.
+Until `DATABASE_URL` is set, flashcards come from `data/flashcards.seed.json` and BSB text is fetched/cached from helloao (see SOURCES.md). Chat threads are kept in the browser `sessionStorage` and resent as text history with each turn.
+
+The server queries through Drizzle as the database owner when configured, which **bypasses RLS**. Server code must scope chats and messages to the signed-in user itself.
 
 ## Auth
 
-Supabase magic link. `src/proxy.ts` refreshes the session on page requests (`auth.getClaims()`); `src/lib/supabase/server.ts` gives Server Components and Route Handlers a client and `currentUserId()`. Reading flashcards needs no account; chats need one (Phase 2).
+Supabase magic link. `src/proxy.ts` refreshes the session on page requests (`auth.getClaims()`); `src/lib/supabase/server.ts` gives Server Components and Route Handlers a client and `currentUserId()`. Reading flashcards needs no account; live chat works signed out with local history.
 
 ## Bible references (`src/lib/bible/`)
 
-`books.ts` holds the 66-book canon with USFM codes, names, chapter counts and aliases (`findBook` handles "1 Cor", "I John", "First John", "Ps"). Verse ids are `BOOK.chapter.verse`. `refs.ts` validates ids and labels them; `parseReference` (human references like "John 3:16-18") is a Phase 2 stub with todo tests.
+`books.ts` holds the 66-book canon with USFM codes, names, chapter counts and aliases. Verse ids are `BOOK.chapter.verse`. `refs.ts` validates ids and labels them; `parseReference` handles human references like "John 3:16-18". `bsb.ts` fetches and caches chapter text for tools.

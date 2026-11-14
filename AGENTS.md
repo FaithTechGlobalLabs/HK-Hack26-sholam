@@ -12,7 +12,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 `CLAUDE.md` is a symlink to this file. Edit `AGENTS.md` only.
 
-sholam is a ChatGPT-style web app with two modes: **Chat** (a Claude agent that answers Bible and faith questions gently, citing verses from a database) and **Flashcards** (a public deck of Bible Q&A cards). Read `docs/PLAN.md` for scope and phase, `docs/ARCHITECTURE.md` for how it fits together, and `docs/SOURCES.md` before touching any Bible or reference data.
+Shalom (package name `sholam`) is a ChatGPT-style web app with two modes: **Chat** (Shalom Guide via OpenRouter — answers Bible and faith questions clearly, citing verses fetched by tools) and **Flashcards** (a public deck of Bible Q&A cards). Read `docs/PLAN.md` for scope and phase, `docs/ARCHITECTURE.md` for how it fits together, and `docs/SOURCES.md` before touching any Bible or reference data.
 
 ## Commands
 
@@ -36,7 +36,7 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 - Supabase keys are `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (not the old anon key). Session refresh uses `auth.getClaims()`.
 - Drizzle uses `casing: "snake_case"` in both `drizzle.config.ts` and `src/db/index.ts`; keep them in step. The server connects as the DB owner and **bypasses RLS**: every chat/message query must filter by the signed-in user.
 - shadcn `base-nova` style on Base UI; `cn` comes from the `cn` package (shadcn's own), re-exported by `src/lib/utils.ts`.
-- Everything must run with no env vars set: Supabase helpers return null, flashcards fall back to `data/flashcards.seed.json`, `/api/chat` streams the scripted demo unless `SHOLAM_AGENT=live`.
+- Everything must run with no env vars set: Supabase helpers return null, flashcards fall back to `data/flashcards.seed.json`, `/api/chat` streams the scripted demo unless `OPENROUTER_API_KEY` is set (or `SHOLAM_AGENT=live`). Never put secrets in `NEXT_PUBLIC_*` or client code.
 
 ## Non-negotiable product rules
 

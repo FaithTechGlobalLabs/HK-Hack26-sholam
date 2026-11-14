@@ -8,7 +8,7 @@ Only data listed here as **in use** or **approved** may ship. Researched 2026-11
 
 | Data | Licence | Where | Notes |
 |---|---|---|---|
-| Berean Standard Bible (BSB) | Public domain, CC0, dedicated 2023-04-30 ([berean.bible/terms.htm](https://berean.bible/terms.htm), checked; [CrossWire](https://www.crosswire.org/sword/copyright/ModInfoCopyright.jsp?modName=BSB)) | Import source: [BSB-publishing/bsb2usfm](https://github.com/BSB-publishing/bsb2usfm) releases (v5.2 when checked), USJ/USFM. Fallback: [bible.helloao.org](https://bible.helloao.org/docs/) (no key, caching allowed) | Publisher asks that altered text not use the "Berean" name. We store the text unchanged. Demo verses and seed-card facts were checked against helloao's BSB on 2026-11-14 |
+| Berean Standard Bible (BSB) | Public domain, CC0, dedicated 2023-04-30 ([berean.bible/terms.htm](https://berean.bible/terms.htm), checked; [CrossWire](https://www.crosswire.org/sword/copyright/ModInfoCopyright.jsp?modName=BSB)) | Runtime fetch/cache: [bible.helloao.org](https://bible.helloao.org/docs/) chapter + `complete.simple.json` (no key; store & cache allowed). Planned import: [BSB-publishing/bsb2usfm](https://github.com/BSB-publishing/bsb2usfm) into Postgres `verses`. | Publisher asks that altered text not use the "Berean" name. We keep the text unchanged. Demo verses and seed-card facts were checked against helloao's BSB on 2026-11-14 |
 | Seed flashcards (`data/flashcards.seed.json`) | Written for sholam | This repo | Each card's refs and facts checked against BSB text |
 
 ## Approved for later phases

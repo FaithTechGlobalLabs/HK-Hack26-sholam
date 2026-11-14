@@ -1,5 +1,5 @@
-import type Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
+import type { OpenAiTool } from "@/lib/agent/openai-types";
 import { lookupVerses } from "./lookup-verses";
 import { proposeFlashcard } from "./propose-flashcard";
 import { searchBible } from "./search-bible";
@@ -18,16 +18,19 @@ export function toolByName(name: string): SholamTool | undefined {
   return TOOLS.find((t) => t.name === name);
 }
 
-/** Anthropic tool definitions generated from the zod schemas. */
-export function toolDefinitions(): Anthropic.Tool[] {
+/** OpenAI-compatible tool definitions generated from the zod schemas. */
+export function toolDefinitions(): OpenAiTool[] {
   return TOOLS.map((tool) => ({
-    name: tool.name,
-    description: tool.description,
-    input_schema: toInputSchema(tool.inputSchema),
+    type: "function" as const,
+    function: {
+      name: tool.name,
+      description: tool.description,
+      parameters: toParameters(tool.inputSchema),
+    },
   }));
 }
 
-function toInputSchema(schema: z.ZodType): Anthropic.Tool.InputSchema {
+function toParameters(schema: z.ZodType): Record<string, unknown> {
   const { $schema: _ignored, ...json } = z.toJSONSchema(schema, {
     io: "input",
   }) as Record<string, unknown>;

@@ -6,7 +6,7 @@ export default function LoginPage() {
   return (
     <main className="mx-auto flex h-full max-w-sm flex-col justify-center gap-6 p-6">
       <div>
-        <h1 className="font-semibold text-xl">Sign in to sholam</h1>
+        <h1 className="font-semibold text-xl">Sign in to Shalom</h1>
         <p className="mt-1 text-muted-foreground text-sm">
           Signing in keeps your chats. Flashcards are public and need no account
           to read.

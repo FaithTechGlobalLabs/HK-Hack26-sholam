@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, Suspense, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "./ModeToggle";
 import { Sidebar } from "./Sidebar";
@@ -21,7 +21,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           drawerOpen && "translate-x-0",
         )}
       >
-        <Sidebar onNavigate={() => setDrawerOpen(false)} />
+        <Suspense
+          fallback={
+            <aside className="h-full border-r bg-sidebar px-3 pt-3 font-semibold">
+              Shalom
+            </aside>
+          }
+        >
+          <Sidebar onNavigate={() => setDrawerOpen(false)} />
+        </Suspense>
       </div>
       {drawerOpen && (
         <button
@@ -42,7 +50,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             <Menu className="size-5" />
           </button>
-          <ModeToggle />
+          <Suspense
+            fallback={
+              <div className="h-8 w-40 rounded-full bg-muted" aria-hidden />
+            }
+          >
+            <ModeToggle />
+          </Suspense>
           <span />
         </header>
         <main className="min-h-0 flex-1">{children}</main>

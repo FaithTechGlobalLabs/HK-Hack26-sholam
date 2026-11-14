@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { defineTool, NotImplementedError } from "./types";
+import { searchBibleText } from "@/lib/bible/bsb";
+import { defineTool } from "./types";
 
 export const searchBible = defineTool({
   name: "search_bible",
@@ -14,9 +15,33 @@ export const searchBible = defineTool({
       .describe("Limit to one book, by name or code, e.g. 'Psalms' or 'PSA'"),
     limit: z.number().int().min(1).max(20).default(8),
   }),
-  // Phase 2: websearch_to_tsquery over verses.search ranked by ts_rank_cd,
-  // add hits to ctx.versesSeen, emit { type: "verses" }.
-  async run() {
-    throw new NotImplementedError("search_bible");
+  async run(input, ctx) {
+    const hits = await searchBibleText({
+      query: input.query,
+      testament: input.testament,
+      book: input.book,
+      limit: input.limit,
+    });
+    if (!hits.length) return `No verses matched "${input.query}".`;
+
+    for (const v of hits) {
+      ctx.versesSeen.set(v.id, {
+        id: v.id,
+        label: v.label,
+        text: v.text,
+        translation: v.translation,
+      });
+    }
+    ctx.emit({
+      type: "verses",
+      verses: hits.map((v) => ({
+        id: v.id,
+        label: v.label,
+        text: v.text,
+        translation: v.translation,
+      })),
+    });
+
+    return hits.map((v) => `${v.id} | ${v.text}`).join("\n");
   },
 });
