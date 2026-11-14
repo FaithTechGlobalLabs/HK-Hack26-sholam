@@ -18,7 +18,8 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Chats are per user and private; all flashcards are public | User decision |
 | 2026-11-14 | Claude via `@anthropic-ai/sdk`, default `claude-opus-5-5`, effort `medium`, model and base URL from env | Superseded the same day by OpenRouter (row below) |
 | 2026-11-14 | OpenRouter chat completions, default `baidu/ernie-5.5-flash-preview:free`, model and base URL from env (`OPENROUTER_API_KEY`, `SHOLAM_MODEL`) | Superseded the same day by Nemotron (row below) |
-| 2026-11-14 | Default model `nvidia/nemotron-3-ultra-550b-a55b:free` only; reasoning off; no paid fallback | Free ERNIE quota was exhausted. The paid Nemotron id is never called |
+| 2026-11-14 | Default model `nvidia/nemotron-3-ultra-550b-a55b:free` only; reasoning off; no paid fallback | Superseded by DeepSeek, then restored the same day (rows below) |
+| 2026-11-14 | Default model `deepseek/deepseek-v4.1-flash`; reasoning off; providers sorted by price | User asked to leave the free-model quota. This id is paid and cheap. Superseded the same day: free models only (row below) |
 | 2026-11-14 | Manual streaming tool loop over OpenAI-compatible tool calls | The browser needs typed custom events (verse chips, card hits, proposals) |
 | 2026-11-14 | Verse text from fetched BSB (helloao cache today; Postgres `verses` when imported), never model memory; uncited/unfetched verses shown as unverified | Citations have to be checkable |
 | 2026-11-14 | Chat continuity via sessionStorage until Supabase chat persistence lands | No DATABASE_URL yet; Anthropic-shaped `messages.content` is not replayed for OpenRouter |
@@ -43,7 +44,7 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Chat never sends from a URL; questions from other views use a one-shot same-origin hand-off; the site cannot be framed | Engineering review of PR #2: `?send=1` let any link or hidden iframe spend the OpenRouter key |
 | 2026-11-14 | Desktop (768px and up) keeps ChatGPT's layout: a collapsible left sidebar (New chat, Search chats, Flashcards, this tab's chats, Sign in) and a Chat \| Flashcards toggle at the top centre. The dock is for phones only | Owner decision. The dock suits thumbs; on a desktop the ChatGPT layout is what people expect |
 | 2026-11-14 | Switching views animates with React `<ViewTransition>`: the page slides left going to Flashcards and right coming back; the toggle pill, the sidebar highlight and the dock tile glide to the new item | Owner request. Built on Next 16's view transitions, so unsupported browsers switch instantly and reduced motion turns the slide into a quick crossfade |
-| 2026-11-14 | Free OpenRouter models only: `SHOLAM_MODEL` must end in `:free`, otherwise the default is used. `OPENROUTER_API_KEY` is set in Vercel (Production and Preview, sensitive) | Owner decision; the key also carries a $3 credit limit on the OpenRouter side |
+| 2026-11-14 | Free OpenRouter models only, default `nvidia/nemotron-3-ultra-550b-a55b:free`: `SHOLAM_MODEL` must end in `:free`, otherwise the default is used. `OPENROUTER_API_KEY` (sensitive) and `SHOLAM_MODEL` are set in Vercel for Production and Preview | Owner decision, replacing the DeepSeek row. The key also carries a $3 credit limit on the OpenRouter side |
 
 ## In flight
 

@@ -74,7 +74,7 @@ describe("request", () => {
     });
     expect(messages[0]).toEqual({ role: "system", content: SYSTEM_PROMPT });
     expect(messages.at(-1)?.content).toContain("Why did Judas betray him?");
-    expect(messages.at(-1)?.content).toContain("Earlier questions");
+    expect(messages.at(-1)?.content).toContain("Already discussed");
     expect(JSON.stringify(messages)).not.toMatch(/OPENROUTER_API_KEY|sk-/i);
   });
 
@@ -158,6 +158,12 @@ describe("flashcard ranking", () => {
     expect(miss).toHaveLength(0);
 
     expect(rankFlashcards(SEED_FLASHCARDS, "Who is Jesus?")).toHaveLength(0);
+    expect(
+      rankFlashcards(
+        SEED_FLASHCARDS,
+        "why does God allow so many problems to people who dont deserve it? like newborns",
+      ),
+    ).toHaveLength(0);
   });
 });
 

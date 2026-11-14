@@ -56,16 +56,18 @@ export function buildMessages(input: {
   userMessage: string;
   matchedCardLines?: string[];
 }): ChatMessage[] {
-  const priorQuestions = input.history
+  const recent = input.history.slice(-8).map((m) => ({
+    role: m.role,
+    content:
+      m.content.length > 1200 ? `${m.content.slice(0, 1200)}…` : m.content,
+  }));
+  const priorQuestions = recent
     .filter((m) => m.role === "user")
     .map((m) => m.content);
 
   const messages: ChatMessage[] = [
     { role: "system", content: SYSTEM_PROMPT },
-    ...input.history.map((m) => ({
-      role: m.role,
-      content: m.content,
-    })),
+    ...recent,
     {
       role: "user",
       content: `${input.userMessage}\n\n${personalizationNote({
@@ -109,7 +111,6 @@ export async function* runAgentTurn(
   };
 
   let steps = 0;
-  let citationRetries = 0;
   let toolRoundUsed = false;
   try {
     while (steps < config.maxSteps) {
@@ -126,8 +127,9 @@ export async function* runAgentTurn(
         config,
       })) {
         if (chunk.type === "text" && chunk.text) {
-          // Buffer text until we know citations are backed by tools (or we give up).
           assistantText += chunk.text;
+          // Show the answer as it arrives. Do not wait for a second model call.
+          yield { type: "text_delta", text: chunk.text };
         } else if (chunk.type === "tool_calls_done" && chunk.toolCalls) {
           toolCalls = chunk.toolCalls;
           finishReason = chunk.finishReason ?? "tool_calls";
@@ -144,7 +146,7 @@ export async function* runAgentTurn(
         if (event) yield event;
       }
 
-      if (toolCalls?.length) {
+      if (toolCalls?.length && !assistantText) {
         toolRoundUsed = true;
         // Don't show "let me look that up" text from the same turn as a tool call.
         messages.push({
@@ -259,17 +261,14 @@ export async function* runAgentTurn(
         continue;
       }
 
-      // Final text turn — recover once if the model cited without fetching.
+      // Attach real verse text for the chips. Do not spend another model call rewriting.
       const citations = extractCitations(assistantText);
       const { unverified } = classifyCitations(
         citations,
         new Set(versesSeen.keys()),
       );
-
-      if (unverified.length && citationRetries < 1 && steps < config.maxSteps) {
-        citationRetries += 1;
-        // Feed back only a few verses so the rewrite does not turn into a survey.
-        const fetched = await fetchCitedVerses(
+      if (unverified.length) {
+        await fetchCitedVerses(
           unverified.map((c) => c.verseId).slice(0, 3),
           ctx,
         );
@@ -277,31 +276,7 @@ export async function* runAgentTurn(
           const event = pending.shift();
           if (event) yield event;
         }
-
-        messages.push({ role: "assistant", content: assistantText });
-        messages.push({
-          role: "user",
-          content: [
-            "Internal check, not a user message. Do not reply to it, agree with it, or mention a draft.",
-            "Replace the previous answer with a clearer, shorter one. Start with the direct answer in ordinary language. Use at most three of these verses, as a short phrase plus a verse: link, and only where they carry the point. No headings. No tradition survey.",
-            fetched || "(no verse text was fetched — do not invent quotations)",
-          ].join("\n\n"),
-        });
-        continue;
       }
-
-      if (unverified.length) {
-        await fetchCitedVerses(
-          unverified.map((c) => c.verseId),
-          ctx,
-        );
-        while (pending.length) {
-          const event = pending.shift();
-          if (event) yield event;
-        }
-      }
-
-      if (assistantText) yield { type: "text_delta", text: assistantText };
 
       yield {
         type: "done",

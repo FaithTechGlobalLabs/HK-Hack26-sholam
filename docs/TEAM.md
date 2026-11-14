@@ -88,6 +88,6 @@ DiscoverCard  { kind: "discover"; id; question; refs: string[] /* passages: MAT.
 | Production | [sholam.vercel.app](https://sholam.vercel.app); health check at [`/api/health`](https://sholam.vercel.app/api/health) | Vercel team `owenisas-projects` (Hobby) |
 | Previews | one per PR, from Vercel's Git integration | same |
 | Database and auth | Supabase project `sholam`, Singapore, free plan | owenisas |
-| Model | OpenRouter chat completions (`nvidia/nemotron-3-ultra-550b-a55b:free` by default); key in Vercel env only | team |
+| Model | OpenRouter chat completions, free models only (`nvidia/nemotron-3-ultra-550b-a55b:free` by default); key in Vercel env only | team |
 
 Secrets never go into the repo, issues or chat. Production and preview env vars are managed in Vercel; local values in `.env.local` (gitignored, see `.env.example`).

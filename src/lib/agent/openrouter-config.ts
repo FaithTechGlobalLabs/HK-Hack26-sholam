@@ -31,7 +31,7 @@ export function openRouterConfig(
     apiKey: env.OPENROUTER_API_KEY?.trim() || undefined,
     baseUrl: (env.OPENROUTER_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, ""),
     model: freeModelOrDefault(env.SHOLAM_MODEL),
-    maxTokens: 700,
+    maxTokens: 900,
     maxSteps: 3,
   };
 }

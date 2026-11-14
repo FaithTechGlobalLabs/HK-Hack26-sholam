@@ -14,7 +14,10 @@
       "!dist",
       "!build",
       "!drizzle",
-      "!data/faithmap.cards.json"
+      "!data/faithmap.cards.json",
+      "!.agents",
+      "!.aider-desk",
+      "!skills-lock.json"
     ]
   },
   "formatter": {

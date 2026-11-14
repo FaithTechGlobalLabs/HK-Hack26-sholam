@@ -13,6 +13,7 @@ import {
   isFreeModel,
   planRateLimit,
 } from "./rate-limit";
+import { createReasoningFilter } from "./reasoning-filter";
 
 export type { ChatMessage, OpenAiTool, ToolCall };
 export {
@@ -111,11 +112,14 @@ export async function* streamChatCompletion(options: {
           stream: true,
           temperature: 0.4,
           max_tokens: config.maxTokens,
-          // Nemotron is a reasoning model. Keep thinking off so a reply stays
-          // inside max_tokens and does not spend a reasoning budget.
-          reasoning: { effort: "none", exclude: true },
-          // Never fall through to the paid Nemotron endpoint if the free one is busy.
-          provider: { allow_fallbacks: false },
+          // A little hidden reasoning. DeepSeek must not print a thought trace.
+          reasoning: { effort: "low", exclude: true },
+          // Fast providers, but not the expensive ones. Price-only routing
+          // was landing on slow hosts.
+          provider: {
+            sort: "latency",
+            max_price: { prompt: 0.15, completion: 0.7 },
+          },
         }),
         signal: controller.signal,
       });
@@ -150,6 +154,7 @@ export async function* streamChatCompletion(options: {
       let finishReason: string | null = null;
       let sawContent = false;
       let retryMidStream = false;
+      const hideReasoning = createReasoningFilter();
 
       for (;;) {
         const { value, done } = await reader.read();
@@ -169,6 +174,8 @@ export async function* streamChatCompletion(options: {
             choices?: {
               delta?: {
                 content?: string | null;
+                reasoning?: string | null;
+                reasoning_content?: string | null;
                 tool_calls?: {
                   index?: number;
                   id?: string;
@@ -196,8 +203,11 @@ export async function* streamChatCompletion(options: {
           if (choice.finish_reason) finishReason = choice.finish_reason;
           const delta = choice.delta;
           if (delta?.content) {
-            sawContent = true;
-            yield { type: "text", text: delta.content };
+            const visible = hideReasoning(delta.content);
+            if (visible) {
+              sawContent = true;
+              yield { type: "text", text: visible };
+            }
           }
           for (const tc of delta?.tool_calls ?? []) {
             const idx = tc.index ?? 0;
