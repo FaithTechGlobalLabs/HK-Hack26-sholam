@@ -1,4 +1,3 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSession } from "../session";
 import { colors, LIMITS } from "../theme";
@@ -18,11 +17,7 @@ export function Paywall() {
   const ready = session.usage?.stripe.ready === true;
 
   return (
-    <LinearGradient
-      colors={[colors.skyTop, colors.skyMid, colors.skyDeep]}
-      locations={[0, 0.46, 1]}
-      style={styles.backdrop}
-    >
+    <View style={styles.backdrop}>
       <ScrollView contentContainerStyle={styles.sheet}>
         <Text style={styles.kicker}>
           {plan === "plus" ? "Shalom Plus" : "Free plan"}
@@ -104,7 +99,7 @@ export function Paywall() {
           <Text style={styles.link}>Not now</Text>
         </Pressable>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -131,7 +126,7 @@ function PlanColumn({
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: colors.skyMid,
+    backgroundColor: "rgba(74, 122, 196, 0.28)",
   },
   sheet: { padding: 24, paddingTop: 72, gap: 14 },
   kicker: {

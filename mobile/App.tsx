@@ -5,6 +5,8 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { Mark } from "./src/icons";
+import { SkyDock } from "./src/SkyDock";
 import { AccountScreen } from "./src/screens/AccountScreen";
 import { CardsScreen } from "./src/screens/CardsScreen";
 import { ChatScreen } from "./src/screens/ChatScreen";
@@ -12,9 +14,8 @@ import { ChatsScreen } from "./src/screens/ChatsScreen";
 import { Onboarding } from "./src/screens/Onboarding";
 import { Paywall } from "./src/screens/Paywall";
 import { SessionProvider, useSession } from "./src/session";
-import { colors, DOCK_BODY } from "./src/theme";
-import type { Tab } from "./src/types";
-import { Mark, Sky } from "./src/ui";
+import { colors } from "./src/theme";
+import { Sky } from "./src/ui";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -60,10 +61,12 @@ function Root() {
             <Mark size={28} />
             <Text style={styles.wordSmall}>Shalom</Text>
           </View>
-          <Pressable style={styles.pill} onPress={session.openPaywall}>
+          <Pressable
+            style={styles.pill}
+            onPress={() => session.setTab("account")}
+          >
             <Text style={styles.pillText}>
-              {session.usage?.plan === "plus" ? "Plus · " : ""}
-              {session.questionsLeft} left
+              {session.usage?.plan === "plus" ? "Plus" : "Sign in"}
             </Text>
           </Pressable>
         </View>
@@ -73,35 +76,15 @@ function Root() {
           {session.tab === "chats" && <ChatsScreen />}
           {session.tab === "account" && <AccountScreen />}
         </View>
-        <View style={[styles.dock, { bottom: Math.max(insets.bottom, 10) }]}>
-          <DockButton tab="chat" label="Chat" />
-          <DockButton tab="cards" label="Cards" />
-          <DockButton tab="chats" label="Chats" />
-          <DockButton tab="account" label="Account" />
-        </View>
+        <SkyDock
+          tab={session.tab}
+          onTab={session.setTab}
+          bottom={Math.max(insets.bottom, 12)}
+        />
       </View>
       {session.paywall ? <Paywall /> : null}
       <StatusBar style="light" />
     </Sky>
-  );
-}
-
-function DockButton({ tab, label }: { tab: Tab; label: string }) {
-  const session = useSession();
-  const active = session.tab === tab;
-  return (
-    <Pressable style={styles.dockItem} onPress={() => session.setTab(tab)}>
-      <View style={[styles.dockFace, active && styles.dockFaceOn]}>
-        <Text style={[styles.dockLabel, active && styles.dockLabelOn]}>
-          {label}
-        </Text>
-      </View>
-      {active ? (
-        <View style={styles.underline} />
-      ) : (
-        <View style={styles.underlineGap} />
-      )}
-    </Pressable>
   );
 }
 
@@ -117,46 +100,50 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   brand: { flexDirection: "row", alignItems: "center", gap: 8 },
-  wordSmall: { color: colors.white, fontSize: 20, fontWeight: "700" },
+  wordSmall: {
+    color: colors.white,
+    fontSize: 17,
+    fontWeight: "600",
+    letterSpacing: -0.3,
+  },
   pill: {
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "rgba(255,255,255,0.22)",
     borderRadius: 999,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 7,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.35)",
+    borderColor: "rgba(255,255,255,0.4)",
   },
-  pillText: { color: colors.white, fontWeight: "600", fontSize: 13 },
+  pillText: { color: colors.white, fontWeight: "600", fontSize: 14 },
   body: { flex: 1 },
-  dock: {
+  dockSlot: {
     position: "absolute",
-    left: 16,
-    right: 16,
-    height: DOCK_BODY - 16,
-    borderRadius: 28,
-    backgroundColor: colors.dock,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.28)",
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  dock: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 6,
+    gap: 6,
+    padding: 8,
+    borderRadius: 22,
+    backgroundColor: "rgba(120, 175, 255, 0.46)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.4)",
   },
-  dockItem: { flex: 1, alignItems: "center", gap: 4 },
   dockFace: {
-    borderRadius: 16,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
+    width: 52,
+    height: 46,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.16)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.28)",
   },
   dockFaceOn: {
-    backgroundColor: "rgba(255,255,255,0.55)",
+    backgroundColor: "rgba(255,255,255,0.42)",
+    borderColor: "rgba(255,255,255,0.7)",
   },
-  dockLabel: { color: colors.white, fontSize: 12, fontWeight: "600" },
-  dockLabelOn: { color: colors.ink },
-  underline: {
-    width: 18,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: colors.white,
-  },
-  underlineGap: { width: 18, height: 3 },
 });

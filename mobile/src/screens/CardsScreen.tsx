@@ -1,5 +1,5 @@
 import * as Haptics from "expo-haptics";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { loadDeck } from "../api";
@@ -23,6 +23,8 @@ export function CardsScreen() {
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [drag, setDrag] = useState(0);
+  const dragStart = useRef(0);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
@@ -83,7 +85,7 @@ export function CardsScreen() {
       <View style={styles.top}>
         <Text style={styles.title}>Flashcards</Text>
         <Pressable style={styles.newBtn} onPress={() => setCreating(true)}>
-          <Text style={styles.newText}>New card</Text>
+          <Text style={styles.newText}>+ New card</Text>
         </Pressable>
       </View>
       <View style={styles.kinds}>
@@ -120,69 +122,122 @@ export function CardsScreen() {
         </Pressable>
       ) : null}
       {card ? (
-        <Pressable
-          style={[glass, styles.card]}
-          onPress={() => {
-            setFlipped((value) => !value);
-            void Haptics.selectionAsync();
+        <View
+          style={styles.stage}
+          onStartShouldSetResponder={() => true}
+          onResponderGrant={(event) => {
+            dragStart.current = event.nativeEvent.pageX;
+          }}
+          onResponderMove={(event) => {
+            setDrag(event.nativeEvent.pageX - dragStart.current);
+          }}
+          onResponderRelease={(event) => {
+            const dx = event.nativeEvent.pageX - dragStart.current;
+            if (dx < -70) step(1);
+            else if (dx > 70) step(-1);
+            setDrag(0);
           }}
         >
-          <Text style={styles.meta}>
-            {categoryLabel(card.category)} ·{" "}
-            {flipped
-              ? card.kind === "discover"
-                ? "Starting points"
-                : "Answer"
-              : card.kind === "discover"
-                ? "Discover"
-                : "Question"}
-          </Text>
-          {!flipped ? (
-            <Text style={styles.question}>{card.question}</Text>
-          ) : card.kind === "fact" ? (
-            <>
-              <Text style={styles.question}>{card.answer}</Text>
-              {card.explanation ? (
-                <Text style={styles.body}>{card.explanation}</Text>
-              ) : null}
-              <Text style={styles.meta}>
-                {card.refs.map(passageLabel).join(" · ")}
-              </Text>
-            </>
-          ) : (
-            <>
-              {card.refs.map((ref) => (
-                <Text key={ref} style={styles.questionSmall}>
-                  {passageLabel(ref)}
-                </Text>
-              ))}
-              {card.takeaway ? (
-                <Text style={styles.body}>{card.takeaway}</Text>
-              ) : null}
-              <Text style={styles.meta}>
-                Places to start, not a fixed answer.
-              </Text>
-            </>
-          )}
-          <Text style={styles.count}>
-            {deck.length ? (index % deck.length) + 1 : 0} / {deck.length}
-          </Text>
-        </Pressable>
+          {[-1, 0, 1].map((offset) => {
+            const item = deck[index + offset];
+            if (!item) return null;
+            const front = offset === 0;
+            return (
+              <View
+                key={item.id}
+                pointerEvents={front ? "auto" : "none"}
+                style={[
+                  styles.slot,
+                  {
+                    zIndex: 10 - Math.abs(offset),
+                    opacity: front ? 1 : 0.8,
+                    transform: [
+                      { perspective: 900 },
+                      { translateX: offset * 250 + (front ? drag : 0) },
+                      { rotateY: `${-offset * 30}deg` },
+                      { scale: front ? 1 : 0.94 },
+                    ],
+                  },
+                ]}
+              >
+                <View style={[glass, styles.card, front && styles.cardFront]}>
+                  <Text style={styles.meta}>
+                    {front
+                      ? `${categoryLabel(item.category)} · ${
+                          flipped
+                            ? item.kind === "discover"
+                              ? "Starting points"
+                              : "Answer"
+                            : item.kind === "discover"
+                              ? "Discover"
+                              : "Question"
+                        }`
+                      : item.kind === "discover"
+                        ? "Discover"
+                        : "Quick fact"}
+                  </Text>
+                  {front && !flipped ? (
+                    <Text style={styles.question}>{item.question}</Text>
+                  ) : null}
+                  {front && flipped && item.kind === "fact" ? (
+                    <>
+                      <Text style={styles.question}>{item.answer}</Text>
+                      {item.explanation ? (
+                        <Text style={styles.body}>{item.explanation}</Text>
+                      ) : null}
+                    </>
+                  ) : null}
+                  {front && flipped && item.kind === "discover"
+                    ? item.refs.map((ref) => (
+                        <Text key={ref} style={styles.questionSmall}>
+                          {passageLabel(ref)}
+                        </Text>
+                      ))
+                    : null}
+                  {!front ? (
+                    <Text style={styles.question} numberOfLines={4}>
+                      {item.question}
+                    </Text>
+                  ) : null}
+                  {front ? (
+                    <Pressable
+                      style={styles.show}
+                      onPress={() => {
+                        setFlipped((value) => !value);
+                        void Haptics.selectionAsync();
+                      }}
+                    >
+                      <Text style={styles.showText}>
+                        {flipped
+                          ? "Show question"
+                          : item.kind === "discover"
+                            ? "Where to start"
+                            : "Show answer"}
+                      </Text>
+                    </Pressable>
+                  ) : null}
+                  {front && flipped ? (
+                    <Pressable onPress={() => session.ask(item.question)}>
+                      <Text style={styles.link}>Ask Shalom</Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              </View>
+            );
+          })}
+        </View>
       ) : (
         <Text style={styles.body}>No cards match.</Text>
       )}
-      <View style={styles.nav}>
-        <Pressable style={styles.navBtn} onPress={() => step(-1)}>
-          <Text style={styles.navText}>Previous</Text>
+      <View style={styles.pager}>
+        <Pressable onPress={() => step(-1)} hitSlop={10}>
+          <Text style={styles.navText}>‹</Text>
         </Pressable>
-        <Pressable
-          style={styles.navBtn}
-          onPress={() => card && session.ask(card.question)}
-        >
-          <Text style={styles.navText}>Ask</Text>
-        </Pressable>
-        <Pressable style={styles.navBtn} onPress={() => step(1)}>
-          <Text style={styles.navText}>Next</Text>
+        <Text style={styles.count}>
+          {deck.length ? (index % deck.length) + 1 : 0} of {deck.length}
+        </Text>
+        <Pressable onPress={() => step(1)} hitSlop={10}>
+          <Text style={styles.navText}>›</Text>
         </Pressable>
       </View>
       {creating && (
@@ -273,14 +328,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  title: { color: colors.white, fontSize: 28, fontWeight: "700" },
+  title: { color: colors.white, fontSize: 22, fontWeight: "600" },
   newBtn: {
-    backgroundColor: colors.white,
+    backgroundColor: "rgba(120,175,255,0.55)",
     borderRadius: 999,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.45)",
+    paddingHorizontal: 12,
+    paddingVertical: 7,
   },
-  newText: { color: colors.ink, fontWeight: "700" },
+  newText: { color: colors.white, fontWeight: "600" },
   kinds: { flexDirection: "row", gap: 8 },
   kind: {
     borderRadius: 999,
@@ -297,7 +354,27 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: colors.white,
   },
-  card: { flex: 1, borderRadius: 28, padding: 22, gap: 12 },
+  stage: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  slot: {
+    position: "absolute",
+    width: "88%",
+    maxWidth: 360,
+  },
+  cardFront: {
+    backgroundColor: "rgba(30, 78, 176, 0.62)",
+  },
+  card: {
+    width: "100%",
+    minHeight: 390,
+    borderRadius: 28,
+    padding: 22,
+    gap: 12,
+    backgroundColor: "rgba(104, 158, 236, 0.55)",
+  },
   meta: { color: colors.textSoft, fontSize: 13 },
   question: {
     color: colors.white,
@@ -307,15 +384,21 @@ const styles = StyleSheet.create({
   },
   questionSmall: { color: colors.white, fontSize: 20, fontWeight: "600" },
   body: { color: colors.text, fontSize: 16, lineHeight: 22 },
-  count: { marginTop: "auto", color: colors.textSoft, fontSize: 13 },
-  nav: { flexDirection: "row", gap: 8 },
-  navBtn: {
-    flex: 1,
+  count: { color: colors.white, fontSize: 14 },
+  pager: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 18,
+  },
+  show: {
+    marginTop: "auto",
+    backgroundColor: colors.white,
     borderRadius: 999,
     paddingVertical: 12,
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.18)",
   },
+  showText: { color: colors.ink, fontSize: 15, fontWeight: "600" },
   navText: { color: colors.white, fontWeight: "600" },
   link: { color: colors.white, textAlign: "center" },
   formWrap: {

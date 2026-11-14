@@ -230,11 +230,36 @@ export function ChatScreen() {
               about.
             </Text>
             <Text style={styles.sub}>
-              {session.usage?.ai === "live"
-                ? "Live answers, with verses looked up rather than remembered."
-                : "Demo answers until an OpenRouter key is set on the server."}{" "}
-              {session.questionsLeft} questions left today.
+              Clear answers, honest about uncertainty, with pathways into Shalom
+              when a real card fits.
             </Text>
+            <View style={[glass, styles.composer, styles.heroComposer]}>
+              <TextInput
+                value={draft}
+                onChangeText={setDraft}
+                placeholder="Ask anything"
+                placeholderTextColor="rgba(255,255,255,0.78)"
+                style={styles.input}
+              />
+              <Pressable
+                style={[styles.send, !draft.trim() && styles.sendOff]}
+                onPress={() => void send(draft)}
+                accessibilityLabel="Send"
+              >
+                <Text style={styles.sendLabel}>↑</Text>
+              </Pressable>
+            </View>
+            <View style={styles.suggestions}>
+              {SUGGESTIONS.map((suggestion) => (
+                <Pressable
+                  key={suggestion}
+                  style={styles.chip}
+                  onPress={() => void send(suggestion)}
+                >
+                  <Text style={styles.chipText}>{suggestion}</Text>
+                </Pressable>
+              ))}
+            </View>
           </View>
         ) : (
           messages.map((message) =>
@@ -253,55 +278,44 @@ export function ChatScreen() {
           )
         )}
       </ScrollView>
-      {empty && (
-        <View style={styles.suggestions}>
-          {SUGGESTIONS.map((suggestion) => (
-            <Pressable
-              key={suggestion}
-              style={styles.chip}
-              onPress={() => void send(suggestion)}
-            >
-              <Text style={styles.chipText}>{suggestion}</Text>
-            </Pressable>
-          ))}
+      {empty ? null : (
+        <View style={[styles.composerWrap, { marginBottom: bottom }]}>
+          <View style={[glass, styles.composer]}>
+            <TextInput
+              value={draft}
+              onChangeText={setDraft}
+              placeholder="Ask anything"
+              placeholderTextColor="rgba(255,255,255,0.7)"
+              style={styles.input}
+              multiline
+            />
+            {busy ? (
+              <Pressable
+                style={styles.send}
+                onPress={() => abortRef.current?.abort()}
+                accessibilityLabel="Stop"
+              >
+                <View style={styles.stop} />
+              </Pressable>
+            ) : (
+              <Pressable
+                style={[styles.send, !draft.trim() && styles.sendOff]}
+                onPress={() => {
+                  void Haptics.selectionAsync();
+                  void send(draft);
+                }}
+                accessibilityLabel="Send"
+              >
+                <Text style={styles.sendLabel}>↑</Text>
+              </Pressable>
+            )}
+          </View>
+          <Text style={styles.fine}>
+            Verse text is from the Berean Standard Bible. Shalom Guide can still
+            make mistakes.
+          </Text>
         </View>
       )}
-      <View style={[styles.composerWrap, { marginBottom: bottom }]}>
-        <View style={[glass, styles.composer]}>
-          <TextInput
-            value={draft}
-            onChangeText={setDraft}
-            placeholder="Ask anything"
-            placeholderTextColor="rgba(255,255,255,0.7)"
-            style={styles.input}
-            multiline
-          />
-          {busy ? (
-            <Pressable
-              style={styles.send}
-              onPress={() => abortRef.current?.abort()}
-              accessibilityLabel="Stop"
-            >
-              <View style={styles.stop} />
-            </Pressable>
-          ) : (
-            <Pressable
-              style={[styles.send, !draft.trim() && styles.sendOff]}
-              onPress={() => {
-                void Haptics.selectionAsync();
-                void send(draft);
-              }}
-              accessibilityLabel="Send"
-            >
-              <Text style={styles.sendLabel}>↑</Text>
-            </Pressable>
-          )}
-        </View>
-        <Text style={styles.fine}>
-          Verse text is from the Berean Standard Bible. Shalom Guide can still
-          make mistakes.
-        </Text>
-      </View>
       <Modal visible={verse != null} transparent animationType="fade">
         <Pressable style={styles.modal} onPress={() => setVerse(null)}>
           <View style={[glass, styles.verseCard]}>
@@ -435,16 +449,34 @@ function SpanView({
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   thread: { paddingHorizontal: 18, paddingTop: 12, gap: 14 },
-  threadEmpty: { flexGrow: 1, justifyContent: "center" },
-  hero: { gap: 8 },
-  kicker: { color: colors.textSoft, fontSize: 13, letterSpacing: 0.4 },
+  threadEmpty: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingBottom: 96,
+  },
+  hero: { alignItems: "center", gap: 12, paddingHorizontal: 8 },
+  kicker: {
+    color: colors.textSoft,
+    fontSize: 14,
+    textAlign: "center",
+  },
   title: {
     color: colors.text,
-    fontSize: 26,
-    lineHeight: 32,
+    fontSize: 28,
+    lineHeight: 34,
     fontWeight: "600",
+    textAlign: "center",
+    textShadowColor: "rgba(18,48,110,0.45)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 8,
   },
-  sub: { color: colors.text, fontSize: 15, lineHeight: 21 },
+  sub: {
+    color: colors.text,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
+    maxWidth: 340,
+  },
   user: {
     alignSelf: "flex-end",
     maxWidth: "86%",
@@ -472,21 +504,20 @@ const styles = StyleSheet.create({
   tool: { color: colors.textSoft, fontSize: 13 },
   error: { color: colors.danger, fontSize: 14 },
   suggestions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    alignItems: "center",
     gap: 8,
-    paddingHorizontal: 18,
-    marginBottom: 10,
+    marginTop: 4,
   },
   chip: {
     borderRadius: 999,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 8,
-    backgroundColor: "rgba(30,70,150,0.35)",
+    backgroundColor: "rgba(96, 150, 230, 0.42)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.28)",
+    borderColor: "rgba(255,255,255,0.32)",
   },
-  chipText: { color: colors.white, fontSize: 14 },
+  chipText: { color: colors.white, fontSize: 14, fontWeight: "500" },
+  heroComposer: { alignSelf: "stretch", marginTop: 8 },
   composerWrap: { paddingHorizontal: 16, gap: 8 },
   composer: {
     borderRadius: 28,

@@ -1,20 +1,33 @@
 import { LinearGradient } from "expo-linear-gradient";
-import type { ReactNode } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { type ReactNode, useEffect } from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
+import { CloudSky } from "./CloudSky";
 import { colors } from "./theme";
 
 export function Sky({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    if (Platform.OS !== "web" || typeof document === "undefined") return;
+    const style = document.createElement("style");
+    style.textContent =
+      "@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap'); #root, #root * { font-family: Geist, ui-sans-serif, sans-serif; }";
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, []);
   return (
-    <LinearGradient
-      colors={[colors.skyTop, colors.skyMid, colors.skyDeep]}
-      locations={[0, 0.46, 1]}
-      style={styles.fill}
-    >
-      <View style={[styles.cloud, styles.cloudA]} />
-      <View style={[styles.cloud, styles.cloudB]} />
-      <View style={[styles.cloud, styles.cloudC]} />
-      {children}
-    </LinearGradient>
+    <View style={styles.fill}>
+      <LinearGradient
+        colors={[
+          colors.skyTop,
+          colors.skyMid,
+          colors.skyDeep,
+          colors.skyBottom,
+        ]}
+        locations={[0, 0.4, 0.75, 1]}
+        style={StyleSheet.absoluteFill}
+      />
+      <CloudSky />
+      <View style={styles.front}>{children}</View>
+    </View>
   );
 }
 
@@ -73,9 +86,11 @@ export function Mark({ size = 64 }: { size?: number }) {
 }
 
 export const glass = {
-  backgroundColor: colors.glass,
-  borderColor: colors.glassBorder,
+  backgroundColor: "rgba(116, 168, 240, 0.48)",
+  borderColor: "rgba(255,255,255,0.4)",
   borderWidth: 1,
+  // Web-only frost. Native keeps the translucent fill.
+  backdropFilter: "blur(22px) saturate(1.6)",
 } as const;
 
 export function UsageMeter({
@@ -106,32 +121,8 @@ export function UsageMeter({
 }
 
 const styles = StyleSheet.create({
-  fill: { flex: 1 },
-  cloud: {
-    position: "absolute",
-    backgroundColor: "rgba(255,255,255,0.16)",
-  },
-  cloudA: {
-    width: 220,
-    height: 80,
-    borderRadius: 40,
-    top: 80,
-    right: -40,
-  },
-  cloudB: {
-    width: 160,
-    height: 54,
-    borderRadius: 27,
-    top: 120,
-    left: -30,
-  },
-  cloudC: {
-    width: 280,
-    height: 90,
-    borderRadius: 45,
-    bottom: 120,
-    left: -60,
-  },
+  fill: { flex: 1, backgroundColor: colors.skyTop },
+  front: { flex: 1 },
   bar: {
     position: "absolute",
     backgroundColor: colors.white,
