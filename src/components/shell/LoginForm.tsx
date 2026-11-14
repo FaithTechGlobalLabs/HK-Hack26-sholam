@@ -41,7 +41,11 @@ export function LoginForm({ enabled }: { enabled: boolean }) {
         placeholder="you@example.com"
         className="rounded-lg border bg-background px-3 py-2"
       />
-      <Button type="submit" disabled={status === "sending"}>
+      <Button
+        type="submit"
+        disabled={status === "sending"}
+        className="bg-[#2f68c2] text-white [text-shadow:none] hover:bg-[#295ca9]"
+      >
         {status === "sending" ? "Sending…" : "Email me a sign-in link"}
       </Button>
       {status === "sent" && (

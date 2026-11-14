@@ -36,10 +36,17 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Harness and agent-UI direction from [HARNESS-UI.md](HARNESS-UI.md): closed component catalog, two channels per tool, `search_result` citations, `ask_user`, more card kinds | Research session; open questions listed there |
 | 2026-11-14 | Live chat stays OpenRouter chat completions in `src/lib/agent/openrouter.ts` (ERNIE flash default). A same-day proposal to call OpenRouter through the Anthropic SDK (`anthropic/claude-opus-5.5`) is not wired | One route only, so `/api/health` and `npm run model:smoke` match what `/api/chat` calls |
 | 2026-11-14 | Flashcard UI/UX and the visual theme are owned by teammates (docs/TEAM.md) | Parallel work; the current flashcard UI on `main` is a functional skeleton they will replace |
+| 2026-11-14 | The left sidebar and header mode switch are replaced by a bottom dock (React Bits): New chat, Flashcards, Sign in | Ricky, PR #2. Chat history still needs a home in Phase 2 |
+| 2026-11-14 | Flashcards show one card at a time: tap to reveal, swipe left for the next, hold to send the card to chat | Ricky, PR #2. Works for both card kinds: discover cards reveal their starting points |
+| 2026-11-14 | Animated cloud sky with a cross-shaped cloud and blue glass UI | Jeff, PR #1 (merged through PR #2) |
+| 2026-11-14 | Logo: a cross drawn as a cloud (billows on its sunlit top edges), bare mark + lowercase wordmark top-left like ChatGPT; favicon blue on light tabs, near-white on dark; iOS icon on the app's sky | Grows out of the sky's cross cloud, so the brand and the theme are one idea. The wordmark uses the UI font for now; custom lettering is a later polish |
+| 2026-11-14 | Chat history lives in a Chats panel opened from the dock; the UI name is one constant (`BRAND_NAME`) | Combining MustyDusty's sidebar history with PR #2's dock. The name ("Shalom" on main, "sholam" for the repo) is for the team to confirm |
+| 2026-11-14 | Chat never sends from a URL; questions from other views use a one-shot same-origin hand-off; the site cannot be framed | Engineering review of PR #2: `?send=1` let any link or hidden iframe spend the OpenRouter key |
 
 ## In flight
 
-Teammate branches and the decisions they carry (bottom dock instead of the sidebar, one-card swipe deck, cloud-sky glass theme) are tracked in [TEAM.md](TEAM.md#branch-status-2026-11-14). When they merge, update this plan, AGENTS.md's layout and ARCHITECTURE.md in the same PR.
+Teammate work and branch status are tracked in [TEAM.md](TEAM.md). When a branch changes a product decision, it adds a row above and updates AGENTS.md's layout and ARCHITECTURE.md in the same PR.
+
 
 ## Phases
 
@@ -60,7 +67,7 @@ The OpenRouter streaming loop is already in `harness.ts` (helloao text, keyword 
 - Magic-link sign-in; protect chat history routes in `src/proxy.ts`.
 - Search per SEARCH.md §8: `verses.pos`, a `sections` table from the importer, `search_bible` (verses + headings + any-term fallback), `read_passage`, `lookup_verses` on `parseReference`, the search policy in the prompt, and the eval on the real loop.
 - `search_flashcards` and `propose_flashcard` on the database; discover cards open in chat with their starting points.
-- The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, sidebar history and search.
+- The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, history and search. History no longer has a sidebar; it needs a home that fits the dock.
 - Server-side citation check before `done`; refusal and `max_tokens` handling; per-user rate limit.
 
 ### Phase 3: flashcards and semantic search

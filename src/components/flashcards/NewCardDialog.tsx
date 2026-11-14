@@ -55,7 +55,7 @@ export function NewCardDialog({ onClose }: { onClose: () => void }) {
     >
       <form
         onSubmit={submit}
-        className="flex w-full max-w-lg flex-col gap-3 rounded-2xl bg-background p-5"
+        className="flex w-full max-w-lg flex-col gap-3 rounded-2xl bg-background p-5 backdrop-blur-2xl"
       >
         <div className="flex items-center justify-between">
           <h2 className="font-semibold">New flashcard</h2>
