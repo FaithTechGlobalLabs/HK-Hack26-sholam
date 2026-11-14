@@ -1,0 +1,93 @@
+[
+  {
+    "id": "seed-shortest-verse",
+    "question": "What is the shortest verse in most English Bibles?",
+    "answer": "\"Jesus wept.\"",
+    "explanation": "At the tomb of His friend Lazarus, Jesus wept, even though He was about to raise him from the dead.",
+    "refs": ["JHN.11.35"],
+    "category": "jesus",
+    "tone": "fun",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-methuselah",
+    "question": "Who is the oldest person recorded in the Bible, and how old was he?",
+    "answer": "Methuselah, who lived 969 years.",
+    "refs": ["GEN.5.27"],
+    "category": "people",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-balaam-donkey",
+    "question": "Which animal spoke to the prophet Balaam?",
+    "answer": "His donkey, after Balaam had beaten her three times.",
+    "refs": ["NUM.22.28"],
+    "category": "old-testament",
+    "tone": "fun",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-first-sign",
+    "question": "In John's Gospel, what was the first of Jesus's signs?",
+    "answer": "Turning water into wine at a wedding in Cana of Galilee.",
+    "refs": ["JHN.2.9", "JHN.2.11"],
+    "category": "miracles",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-jonah-fish",
+    "question": "How long was Jonah inside the great fish?",
+    "answer": "Three days and three nights.",
+    "refs": ["JON.1.17"],
+    "category": "numbers",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-matthew-tax",
+    "question": "Which of Jesus's disciples was sitting at a tax booth when he was called?",
+    "answer": "Matthew.",
+    "refs": ["MAT.9.9"],
+    "category": "people",
+    "tone": "fact",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-five-thousand",
+    "question": "Feeding the five thousand: who wasn't counted in the five thousand?",
+    "answer": "The women and children. About five thousand men were fed, besides women and children.",
+    "refs": ["MAT.14.21"],
+    "category": "miracles",
+    "tone": "fun",
+    "difficulty": 2
+  },
+  {
+    "id": "seed-immanuel",
+    "question": "What does the name \"Immanuel\" mean?",
+    "answer": "\"God with us.\"",
+    "refs": ["MAT.1.23"],
+    "category": "jesus",
+    "tone": "deep",
+    "difficulty": 1
+  },
+  {
+    "id": "seed-ehud",
+    "question": "Which judge of Israel was left-handed, a detail that let him surprise King Eglon of Moab?",
+    "answer": "Ehud son of Gera, a Benjamite.",
+    "refs": ["JDG.3.15", "JDG.3.21"],
+    "category": "old-testament",
+    "tone": "fun",
+    "difficulty": 3
+  },
+  {
+    "id": "seed-zacchaeus",
+    "question": "What did Zacchaeus climb to see Jesus over the crowd?",
+    "answer": "A sycamore tree.",
+    "refs": ["LUK.19.4"],
+    "category": "people",
+    "tone": "fun",
+    "difficulty": 1
+  }
+]
