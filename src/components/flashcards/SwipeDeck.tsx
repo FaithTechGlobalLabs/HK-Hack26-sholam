@@ -514,7 +514,7 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                     <div className="flashcard-scroll relative mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto border-[color:var(--card-rule)] border-t pt-3">
                       {discover && card.answer ? (
                         // The team's answer (FaithMap): the takeaway leads,
-                        // then the answer, then the passages.
+                        // then the answer, the passages, and why they matter.
                         <>
                           {card.takeaway && (
                             <p className="text-balance font-semibold text-[19px] leading-snug">
@@ -527,6 +527,16 @@ export function SwipeDeck({ cards }: { cards: Flashcard[] }) {
                           <p className="mt-2 font-medium text-[14px] text-[color:var(--card-accent)]">
                             {card.refs.map(passageLabel).join(" · ")}
                           </p>
+                          {card.explanation && (
+                            <>
+                              <p className="mt-4 font-semibold text-[13px] text-[color:var(--card-accent)]">
+                                Why this passage matters
+                              </p>
+                              <p className="mt-1 text-pretty text-[14px] text-[color:var(--card-muted)] leading-relaxed">
+                                {card.explanation}
+                              </p>
+                            </>
+                          )}
                         </>
                       ) : discover ? (
                         <>
