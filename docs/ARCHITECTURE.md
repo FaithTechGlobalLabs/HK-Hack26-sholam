@@ -20,7 +20,7 @@ Without env vars the app still runs: `/api/chat` streams `lib/agent/demo.ts`, an
 
 **Why a manual loop:** we need our own event stream to the browser (verse records, card hits, proposals) alongside text, so we drive OpenRouter streaming ourselves.
 
-**Provider** (`openrouter.ts`): OpenAI-compatible `POST {OPENROUTER_BASE_URL}/chat/completions` with `Authorization: Bearer` from `OPENROUTER_API_KEY` (server only). Model from `SHOLAM_MODEL` (default `nvidia/nemotron-3-ultra-550b-a55b:free`). Reasoning is off (`effort: none`) and provider fallbacks are off, so a busy free endpoint cannot spill onto the paid Nemotron. Timeouts ~45s; one tool round then an answer (at most 3 completions); `temperature` 0.4; `max_tokens` 700. Free-model calls are spaced to stay under OpenRouter's ~20/minute cap, and a short 429 is retried. A daily free cap still fails with a message that names the reset rather than burning more requests.
+**Provider** (`openrouter.ts`): OpenAI-compatible `POST {OPENROUTER_BASE_URL}/chat/completions` with `Authorization: Bearer` from `OPENROUTER_API_KEY` (server only). Model from `SHOLAM_MODEL` (default `deepseek/deepseek-v4.1-flash`). Reasoning is `effort: low` and excluded from the reply; any leaked `<think>` text is stripped. Providers are sorted by latency under a price cap, so a cheap slow host is not preferred. The answer streams in one completion; verse text for citations is loaded after, without a second model call. Timeouts ~45s; `temperature` 0.4; `max_tokens` 700. `:free` models are still spaced under OpenRouter's ~20/minute cap. This default is paid, so it is not in that daily free cap.
 
 **Request** (`buildMessages` in `harness.ts`): stable `SYSTEM_PROMPT`, prior user/assistant text turns from the browser, then the new user message plus a trailing personalization note (earlier questions + strong flashcard matches). Tools stay a fixed ordered list from zod schemas.
 
@@ -47,7 +47,7 @@ Each tool gets a `ToolContext` with the user id, translation, `emit()` and `vers
 
 ## Model route (`src/lib/agent/openrouter.ts`)
 
-Chat calls OpenRouter's OpenAI-compatible chat completions. `OPENROUTER_API_KEY` selects the live guide; with no key, `/api/chat` streams the demo. `SHOLAM_MODEL` overrides the default `nvidia/nemotron-3-ultra-550b-a55b:free`. `GET /api/health` reports the route, model id, agent mode and a database ping without secrets. `npm run model:smoke` sends one tiny chat completion.
+Chat calls OpenRouter's OpenAI-compatible chat completions. `OPENROUTER_API_KEY` selects the live guide; with no key, `/api/chat` streams the demo. `SHOLAM_MODEL` overrides the default `deepseek/deepseek-v4.1-flash`. `GET /api/health` reports the route, model id, agent mode and a database ping without secrets. `npm run model:smoke` sends one tiny chat completion.
 
 ## SSE protocol (`events.ts`)
 

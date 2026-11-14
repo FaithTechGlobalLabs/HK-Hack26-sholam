@@ -2,8 +2,8 @@
  * OpenRouter env helpers — safe to import from tests (no server-only).
  */
 
-/** Free endpoint only. The paid id `nvidia/nemotron-3-ultra-550b-a55b` is never used. */
-export const DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free";
+/** DeepSeek V4.1 Flash. Paid, but the cheap tier; not a :free model. */
+export const DEFAULT_MODEL = "deepseek/deepseek-v4.1-flash";
 export const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 
 export interface OpenRouterConfig {
@@ -21,7 +21,7 @@ export function openRouterConfig(
     apiKey: env.OPENROUTER_API_KEY?.trim() || undefined,
     baseUrl: (env.OPENROUTER_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, ""),
     model: env.SHOLAM_MODEL || DEFAULT_MODEL,
-    maxTokens: 700,
+    maxTokens: 900,
     maxSteps: 3,
   };
 }

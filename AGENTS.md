@@ -43,7 +43,7 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 - Components that call `usePathname`/`useSearchParams` must sit under `<Suspense>` (see `ModeToggle`), or `next build` fails on `/c/[chatId]`. `next dev` does not catch this; run `npm run build` before pushing UI changes.
 - Scripts load `.env.local` through `scripts/_env.ts`; the app uses `DATABASE_URL` (transaction pooler), scripts and drizzle-kit use `DIRECT_URL` (session pooler).
 - Deploys: Vercel's Git integration builds `main` to production and PRs to previews. Never add secrets to the repo; env vars live in Vercel and `.env.local`.
-- Model route: `src/lib/agent/openrouter.ts` calls OpenRouter chat completions (`OPENROUTER_API_KEY`, default model `nvidia/nemotron-3-ultra-550b-a55b:free`). Check a deployment with `/api/health` and a key with `npm run model:smoke`.
+- Model route: `src/lib/agent/openrouter.ts` calls OpenRouter chat completions (`OPENROUTER_API_KEY`, default model `deepseek/deepseek-v4.1-flash`). Check a deployment with `/api/health` and a key with `npm run model:smoke`.
 - Several people work in parallel (docs/TEAM.md). Merge `origin/main` into your branch before a PR, don't push to someone else's branch, and run `npm run build` before pushing: Vercel previews build with `DATABASE_URL` set.
 
 ## Non-negotiable product rules

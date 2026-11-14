@@ -62,7 +62,7 @@ describe("tools", () => {
 describe("request", () => {
   it("defaults to ERNIE flash via OpenRouter", () => {
     const cfg = agentConfig({});
-    expect(cfg.model).toBe("nvidia/nemotron-3-ultra-550b-a55b:free");
+    expect(cfg.model).toBe("deepseek/deepseek-v4.1-flash");
     expect(cfg.maxSteps).toBe(3);
   });
 
@@ -74,7 +74,7 @@ describe("request", () => {
     });
     expect(messages[0]).toEqual({ role: "system", content: SYSTEM_PROMPT });
     expect(messages.at(-1)?.content).toContain("Why did Judas betray him?");
-    expect(messages.at(-1)?.content).toContain("Earlier questions");
+    expect(messages.at(-1)?.content).toContain("Already discussed");
     expect(JSON.stringify(messages)).not.toMatch(/OPENROUTER_API_KEY|sk-/i);
   });
 
@@ -143,6 +143,12 @@ describe("flashcard ranking", () => {
     expect(miss).toHaveLength(0);
 
     expect(rankFlashcards(SEED_FLASHCARDS, "Who is Jesus?")).toHaveLength(0);
+    expect(
+      rankFlashcards(
+        SEED_FLASHCARDS,
+        "why does God allow so many problems to people who dont deserve it? like newborns",
+      ),
+    ).toHaveLength(0);
   });
 });
 

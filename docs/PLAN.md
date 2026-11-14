@@ -18,7 +18,8 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Chats are per user and private; all flashcards are public | User decision |
 | 2026-11-14 | Claude via `@anthropic-ai/sdk`, default `claude-opus-5-5`, effort `medium`, model and base URL from env | Superseded the same day by OpenRouter (row below) |
 | 2026-11-14 | OpenRouter chat completions, default `baidu/ernie-5.5-flash-preview:free`, model and base URL from env (`OPENROUTER_API_KEY`, `SHOLAM_MODEL`) | Superseded the same day by Nemotron (row below) |
-| 2026-11-14 | Default model `nvidia/nemotron-3-ultra-550b-a55b:free` only; reasoning off; no paid fallback | Free ERNIE quota was exhausted. The paid Nemotron id is never called |
+| 2026-11-14 | Default model `nvidia/nemotron-3-ultra-550b-a55b:free` only; reasoning off; no paid fallback | Superseded the same day by DeepSeek (row below) |
+| 2026-11-14 | Default model `deepseek/deepseek-v4.1-flash`; reasoning off; providers sorted by price | User asked to leave the free-model quota. This id is paid and cheap |
 | 2026-11-14 | Manual streaming tool loop over OpenAI-compatible tool calls | The browser needs typed custom events (verse chips, card hits, proposals) |
 | 2026-11-14 | Verse text from fetched BSB (helloao cache today; Postgres `verses` when imported), never model memory; uncited/unfetched verses shown as unverified | Citations have to be checkable |
 | 2026-11-14 | Chat continuity via sessionStorage until Supabase chat persistence lands | No DATABASE_URL yet; Anthropic-shaped `messages.content` is not replayed for OpenRouter |

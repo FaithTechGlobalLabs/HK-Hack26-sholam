@@ -14,7 +14,7 @@ Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) a
 | Code | [github.com/FaithTechGlobalLabs/HK-Hack26-sholam](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam) (public) |
 | CI | GitHub Actions: lint, typecheck, tests, seed validation, build |
 | Hosting | [sholam.vercel.app](https://sholam.vercel.app) (Vercel project `owenisas-projects/sholam`); `main` → production, pull requests → previews. [`/api/health`](https://sholam.vercel.app/api/health) shows the model route, agent mode and database status without secrets |
-| Model | OpenRouter chat completions, `nvidia/nemotron-3-ultra-550b-a55b:free` by default (key set in Vercel env) |
+| Model | OpenRouter chat completions, `deepseek/deepseek-v4.1-flash` by default (key set in Vercel env) |
 | Database and auth | Supabase project `sholam` (`cpeuhxozfhrldfbjbiwt`), Singapore, free plan |
 
 ## Run locally
@@ -32,7 +32,7 @@ It runs with no environment variables: flashcards come from `data/flashcards.see
 |---|---|
 | `OPENROUTER_API_KEY` | Server-only OpenRouter key (required for live Shalom Guide) |
 | `OPENROUTER_BASE_URL` | Optional; default `https://openrouter.ai/api/v1` |
-| `SHOLAM_MODEL` | Default `nvidia/nemotron-3-ultra-550b-a55b:free` (the free endpoint only). Free models are about 20 requests/minute and 50/day until the OpenRouter account has purchased credits. |
+| `SHOLAM_MODEL` | Default `deepseek/deepseek-v4.1-flash` (paid, low price). Ids ending in `:free` are about 20 requests/minute and 50/day. |
 | `SHOLAM_AGENT` | Unset = live when a key is present; `demo` forces the scripted stream; `live` forces live (errors if the key is missing) |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project (auth, browser access under RLS) |
 | `DATABASE_URL` | Postgres via the transaction pooler (port 6543), used by the app |
