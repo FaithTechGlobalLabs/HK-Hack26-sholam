@@ -54,6 +54,10 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Flashcards are glass cards in a 3D carousel: neighbours turn toward the centre card; the front is clear glass with the question and a visible **Show answer** (**Where to start** on discover cards); it turns over to a milky-glass back with the answer, **Next card** and **Ask Shalom**. The centred card tilts toward the pointer on desktop. The sky-art block, the bubble bridge and the hold-to-ask gesture are gone | Owner: the art block had no purpose and nobody knew to tap the card; a plain card then "lost its design taste"; "use glass UI, 3d". The glass shows the live sky, so the per-card WebGL is gone too (`GradientASCII.tsx` is no longer used) |
 | 2026-11-14 | A launch screen plays once per browser session: the cross-cloud mark builds, the wordmark gets a light sweep, "Ask. Learn. Abide.", then it fades (about 2 s; 1.45 s with reduced motion). It hides itself in CSS even if JavaScript never runs, and an inline script skips it before first paint once seen | Owner asked to merge Jeff's launch screen from `jeffs-uis` with the correct logo |
 | 2026-11-14 | Write only the unprefixed `backdrop-filter` in hand-written CSS | The CSS pipeline (Lightning CSS) collapsed `backdrop-filter` + `-webkit-backdrop-filter` into the prefixed one alone, which Chrome ignores, so `.glass` and the glass buttons never blurred in Chrome. It adds the prefix itself where needed |
+| 2026-11-14 | Sign-in and sign-up are one email flow: the email carries an 8-digit code and a link. The code is typed where you asked (works across devices); the link opens a confirm page whose button signs in that browser (token_hash, no PKCE). New accounts pick a display name | Owner report: the email link "not working really well". The PKCE link only worked in the browser that asked, mail scanners could spend it, and the UI never showed you were signed in |
+| 2026-11-14 | Signed in, the account sits at the bottom of the desktop sidebar (menu with Sign out) and top-right on phones (Jeff's chip); sign-out clears the tab's chat history | ChatGPT's placement on desktop; Jeff's design (jeffs-uis `30df585`) on phones. Clearing protects shared devices |
+| 2026-11-14 | Signed-in chats are saved per account in Postgres and listed newest first; `/c/[chatId]` opens a saved chat only for its owner (others get not-found). Signed-out chats stay in the tab; on sign-in the tab's chats can be kept | Product rule 4 (chats are private). The server bypasses RLS, so the store filters every query by user id |
+| 2026-11-14 | `messages.content` v1: user rows `{ v, text }`; assistant rows keep the OpenRouter turn's messages verbatim plus the shown text and the verse records fetched that turn | Rule 7 (append-only, verbatim) for an OpenAI-format provider; rule 1 needs the turn's verses to re-render citations honestly |
 
 ## In flight
 
@@ -76,10 +80,10 @@ Project structure, docs, `AGENTS.md` + `CLAUDE.md` symlink, app shell with Chat 
 ### Phase 2: chat
 The OpenRouter streaming loop is in `harness.ts` (Postgres verse text, keyword card ranking, browser history). Still open:
 
-- Magic-link sign-in; protect chat history routes in `src/proxy.ts`.
+- Accounts (branch `accounts`): code + link sign-in, account menu, sign-out, per-account chat store and lists, owner-only `/c/[chatId]`. Answered turns are saved and saved chats reopen. Left: owner decisions on the email templates and SMTP (ARCHITECTURE.md, Auth), then a real signed-in test.
 - Search per SEARCH.md §8: `verses.pos`, a `sections` table from the importer, `search_bible` (verses + headings + any-term fallback), `read_passage`, `lookup_verses` on `parseReference`, the search policy in the prompt, and the eval on the real loop.
 - `search_flashcards` and `propose_flashcard` on the database; discover cards open in chat with their starting points.
-- The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, history and search. The desktop sidebar and the phone Chats panel both read `useLocalChats()`; point it at the database when chats are stored.
+- The streaming loop in `harness.ts` (see ARCHITECTURE.md), message persistence, chat titles, history and search. The desktop sidebar and the phone Chats panel read `useChatList()` (account chats when signed in).
 - Review of the OpenRouter loop (2026-11-14): all items fixed on branch `chat-harness-fixes` (citation check, usage limits, history trimming, Stop/abort, verses from Postgres, context limits, tool calls written as text). See the decisions above and TEAM.md. Until migration `0003_usage_counters` is applied the limits hold per serverless instance only (memory fallback).
 - Refusal and `max_tokens` handling (a cut-off answer is shown as it is).
 - Still slow when tools run (production 2026-11-14: 23–44 s to first text; most of it is the free model's own latency). The crisis reply lists US hotlines although most users are in Hong Kong. Off-topic requests (it wrote Python) still spend free quota.
@@ -99,7 +103,7 @@ The OpenRouter streaming loop is in `harness.ts` (Postgres verse text, keyword c
 - Topical index (OpenBible topics) and typo-tolerant name search.
 
 ### Phase 5: ship
-Vercel + Supabase production, a citation-accuracy eval set (does every quoted verse match the database, are cites well-formed), cost and usage dashboard, abuse limits.
+Vercel + Supabase production, custom SMTP for sign-in emails (the built-in mailer sends 2 an hour, to team addresses only), a citation-accuracy eval set (does every quoted verse match the database, are cites well-formed), cost and usage dashboard, abuse limits.
 
 ## Open questions
 

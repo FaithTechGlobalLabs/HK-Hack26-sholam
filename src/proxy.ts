@@ -4,10 +4,21 @@ import { supabaseEnv } from "@/lib/supabase/config";
 
 /**
  * Refreshes the Supabase session cookie on every page request. Inert until
- * Supabase env vars are set. Route protection (sending signed-out users to
- * /login for chat history) is Phase 2.
+ * Supabase env vars are set. Pages that need the account check it
+ * themselves (`/c/[chatId]` is owner-only); there is no blanket protection.
+ *
+ * A sign-in link that lands anywhere but /auth/confirm (Supabase falls back
+ * to the site URL when the requested redirect is not on its allow list) is
+ * forwarded there with its parameters.
  */
 export async function proxy(request: NextRequest) {
+  const { pathname, searchParams } = request.nextUrl;
+  if (searchParams.has("token_hash") && pathname !== "/auth/confirm") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/confirm";
+    return NextResponse.redirect(url);
+  }
+
   const env = supabaseEnv();
   if (!env) return NextResponse.next();
 

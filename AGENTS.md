@@ -76,6 +76,8 @@ src/components/shell/nav.ts, SectionTransition.tsx  view-transition types and th
 src/components/shell/CloudSky.tsx  animated sky behind the app (sky.css holds the glass styles)
 src/components/brand/Logo.tsx  the cross-cloud mark + wordmark (same geometry as app/icon.svg, public/brand/)
 src/lib/chat/handoff.ts  one-shot hand-off of a question from another view to chat (never a URL "send" flag)
+src/lib/auth/, src/lib/account/  sign-in flow (email code + /auth/confirm link), account API helpers and the useAccount() store
+src/lib/chat/store.ts  per-account chats in Postgres (every query filters by user id); stored-content.ts is the messages.content shape
 src/components/shell/ChatHistoryPanel.tsx  recent chats on phones, opened from the dock's Chats item (desktop lists them in the sidebar)
 src/lib/brand.ts  BRAND_NAME, the product name shown in the UI
 src/components/flashcards/  FlashcardsView, SwipeDeck (glass 3D carousel + SwipeDeckPlaceholder; styles in app/sky.css), FlashcardCard, StudyMode, NewCardDialog, FlashcardProposal
