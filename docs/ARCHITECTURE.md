@@ -98,6 +98,18 @@ Supabase magic link. `src/proxy.ts` refreshes the session on page requests (`aut
 
 Supabase Auth settings (set 2026-11-14 through the Management API): site URL `https://sholam.vercel.app`; redirect allow-list `https://sholam.vercel.app/**`, `https://sholam-*-owenisas-projects.vercel.app/**` (previews) and `http://localhost:5310/**`. The magic link returns to `/auth/callback`. Supabase's built-in mailer is rate-limited on the free plan; a custom SMTP sender is a Phase 5 item.
 
+Status (2026-11-14):
+
+| Piece | State |
+|---|---|
+| Supabase Auth: email provider on, sign-ups open, email confirmation required, site URL + redirect list | Done (read back from the Auth settings API) |
+| `profiles` row per new user (`on_auth_user_created` trigger) | Done, migration `0001` applied |
+| `/login` magic-link form, `/auth/callback` code exchange, `src/proxy.ts` session refresh, `currentUserId()` | Written; **not yet tested end to end** (no real sign-in has been done) |
+| Built-in Supabase mailer | Works but limited to **2 emails per hour** for the whole project; enough to test, not to launch. Custom SMTP (e.g. Resend) before real users |
+| Signed-in state in the UI (dock still always says "Sign in"; no account menu or sign-out) | Not started (Phase 2) |
+| Chats saved per user, history list, protected routes | Not started (Phase 2, with the agent loop) |
+| Google sign-in | Not configured (needs a Google OAuth client) |
+
 ## Bible references (`src/lib/bible/`)
 
 `books.ts` holds the 66-book canon with USFM codes, names, chapter counts and aliases (`findBook` handles "1 Cor", "I John", "First John", "Ps"). Verse ids are `BOOK.chapter.verse`. `refs.ts` handles verse ids and passage refs (`MAT.18.21-MAT.18.35`, `DAN.4`, `GEN.1-GEN.2`), labels them ("Matthew 18:21–35"), and `parseReference` turns human references ("John 3:16-18", "1 Cor 13:4, 7", "Daniel 4", "John 12:1–8; Mark 14:3–9") into passage refs. Verse bounds are checked against `verses`, not in code.

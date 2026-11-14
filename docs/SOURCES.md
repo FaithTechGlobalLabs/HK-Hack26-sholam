@@ -22,6 +22,13 @@ Only data listed here as **in use** or **approved** may ship. Researched 2026-11
 
 Result: 305 of 306 randomly sampled verses match helloao exactly; the remaining one differs only in `…` vs `...`.
 
+### Code and assets
+
+| Item | Licence | Notes |
+|---|---|---|
+| `src/components/ui/dock.tsx`, `src/components/flashcards/GradientASCII.tsx` | MIT + Commons Clause, Copyright (c) 2026 David Haz ([React Bits LICENSE](https://github.com/DavidHDev/react-bits/blob/main/LICENSE.md), checked 2026-11-14) | Use inside an app is allowed; the notice must stay in the file headers; do not sell or redistribute the components on their own |
+| sholam logo (cross-cloud mark): `src/components/brand/Logo.tsx`, `src/app/icon.svg`, `src/app/favicon.ico`, `src/app/apple-icon.png`, `public/brand/` | Drawn for sholam (2026-11-14) | One geometry in all files; the mark echoes the cross-shaped cloud in `CloudSky.tsx` |
+
 ## Approved for later phases
 
 | Data | Licence | Notes |

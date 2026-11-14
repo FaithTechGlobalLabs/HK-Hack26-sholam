@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { VerseRecord } from "@/lib/agent/events";
+import { takeChatQuestion } from "@/lib/chat/handoff";
 import { Composer } from "./Composer";
 import { MessageList } from "./MessageList";
 import { SourcesPanel } from "./SourcesPanel";
@@ -19,11 +20,19 @@ export function ChatView({
   const [draft, setDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // "Ask about this in chat" from the flashcards view arrives as ?q=.
+  // A held flashcard queues its question in sessionStorage (one-shot,
+  // same-origin; see lib/chat/handoff.ts) and it is sent here. Next keeps
+  // this page alive while hidden and re-runs effects when it is shown, so
+  // this also fires when chat comes back into view. `?q=` only pre-fills.
   useEffect(() => {
+    const queued = takeChatQuestion();
+    if (queued) {
+      send(queued);
+      return;
+    }
     const q = new URLSearchParams(window.location.search).get("q");
     if (q) setDraft(q);
-  }, []);
+  }, [send]);
 
   useEffect(() => {
     if (messages.length) bottomRef.current?.scrollIntoView({ block: "end" });
@@ -36,7 +45,7 @@ export function ChatView({
       <div className="flex min-w-0 flex-1 flex-col">
         {empty ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
-            <h1 className="text-center font-medium text-2xl">
+            <h1 className="text-center font-medium text-2xl drop-shadow-[0_2px_10px_rgb(25_60_120/0.35)]">
               Ask about the Bible, or test what you know.
             </h1>
             <div className="w-full max-w-2xl">
@@ -55,7 +64,7 @@ export function ChatView({
                     <button
                       type="button"
                       onClick={() => send(s)}
-                      className="rounded-full border px-3 py-1.5 text-muted-foreground text-sm hover:bg-muted"
+                      className="glass-btn rounded-full bg-[rgb(30_70_150/0.35)] px-3.5 py-1.5 text-sm"
                     >
                       {s}
                     </button>
@@ -80,7 +89,7 @@ export function ChatView({
                 onStop={stop}
                 busy={busy}
               />
-              <p className="mt-2 text-center text-muted-foreground text-xs">
+              <p className="mt-2 text-center text-[13px] text-white/90">
                 Verse text is from the Berean Standard Bible. sholam can still
                 make mistakes; check what matters.
               </p>

@@ -26,7 +26,7 @@ export function FlashcardCard({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-2xl border bg-card",
+        "glass flex flex-col rounded-2xl transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-xl",
         large ? "min-h-80" : "min-h-56",
       )}
     >

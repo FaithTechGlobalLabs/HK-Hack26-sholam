@@ -71,7 +71,7 @@ function AssistantMessage({
         </p>
       ))}
 
-      <div className="prose-sm leading-7 [&_ol]:list-decimal [&_ol]:pl-6 [&_p+p]:mt-3 [&_ul]:list-disc [&_ul]:pl-6">
+      <div className="prose-sm rounded-3xl bg-[rgb(20_52_115/0.5)] px-5 py-4 leading-7 backdrop-blur-xl [&_ol]:list-decimal [&_ol]:pl-6 [&_p+p]:mt-3 [&_ul]:list-disc [&_ul]:pl-6">
         <Markdown
           remarkPlugins={[remarkGfm]}
           urlTransform={urlTransform}

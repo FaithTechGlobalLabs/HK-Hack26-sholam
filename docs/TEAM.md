@@ -8,11 +8,11 @@ How the people (and their coding agents) working on sholam split the work and ke
 
 | Area | Who | Where it lives |
 |---|---|---|
-| Visual theme: cloud sky, blue glass UI | Jeff ([`jeffleunglife`](https://github.com/jeffleunglife)) | branch `jeffs-uis`, PR #1 |
-| Flashcard UI/UX: one card at a time, swipe deck, hand a card to chat, bottom dock navigation | Ricky ([`RedTotally`](https://github.com/RedTotally)) | branch `ricky-prs` (no PR yet) |
+| Visual theme: cloud sky, blue glass UI | Jeff ([`jeffleunglife`](https://github.com/jeffleunglife)) | `src/components/shell/CloudSky.tsx`, `src/app/sky.css`; merged through PR #2 |
+| Flashcard UI/UX: one card at a time, swipe deck, hand a card to chat, bottom dock navigation | Ricky ([`RedTotally`](https://github.com/RedTotally)) | `src/components/flashcards/SwipeDeck.tsx`, `src/components/ui/dock.tsx`; PR #2 merged 2026-11-14 |
 | Data (Bible import, decks, FaithMap), search, agent harness, model route, Supabase/Vercel/CI, docs | owenisas ([`owenisas`](https://github.com/owenisas)) with coding agents | `main` |
 
-Overlap to watch: Jeff's commit is also inside `ricky-prs`, and both branches touch `src/components/shell/*` and `src/components/flashcards/*`. Agree on the merge order (suggested: Jeff's PR first, then Ricky's branch rebuilt on top of `main`).
+Both now build on `main`. New work starts from the latest `main` on a fresh branch.
 
 ## How changes land
 
@@ -23,18 +23,23 @@ Overlap to watch: Jeff's commit is also inside `ricky-prs`, and both branches to
 5. A change to a product decision (navigation, card kinds, tone) gets a row in PLAN.md's decisions table in the same PR. Keep one canonical doc per topic (AGENTS.md lists them).
 6. Coding agents read `AGENTS.md` (`CLAUDE.md` is a symlink to it). Its product rules apply to every branch.
 
-## Branch status (2026-11-14)
+## Merge log
 
-Both teammate branches start from the first skeleton commit (`6cc9295`). Since then `main` gained the real database, 31,086 BSB verses, discover cards and docs.
+### PR #2 (Ricky, includes Jeff's PR #1 commit), merged 2026-11-14
 
-**Why the Vercel previews fail:** on `6cc9295`, `listFlashcards` throws "not implemented" whenever `DATABASE_URL` is set. Vercel preview builds have that variable (the Supabase project), so prerendering `/flashcards` fails. Merging `main` fixes it.
+Both branches had started from the first skeleton commit, so their Vercel previews failed (on that commit `listFlashcards` threw whenever `DATABASE_URL` was set). PR #2 was merged into `main` with these changes on top, so it builds and handles today's data:
 
-Conflicts when merging `origin/main` into each branch (checked with `git merge-tree`, nothing pushed):
-
-| Branch | Conflicting files | How to resolve |
-|---|---|---|
-| `jeffs-uis` | `src/components/flashcards/FlashcardsView.tsx`, `src/components/shell/ModeToggle.tsx` | Keep `main`'s logic (kind and topic filters, discover cards; the `<Suspense>` around the pathname read) and re-apply the glass classes on top |
-| `ricky-prs` | `FlashcardsView.tsx`, `docs/PLAN.md`, `ModeToggle.tsx` (deleted on the branch, changed on `main`) | Keep the dock if that is the decision, but any component calling `usePathname()` must sit under `<Suspense>` or `next build` fails on `/c/[chatId]` (see `main`'s `ModeToggle.tsx` for the pattern). Make `SwipeDeck` handle both card kinds (below). In PLAN.md keep both sets of rows |
+- **Conflicts resolved:** `ModeToggle.tsx` stays deleted (the dock replaces it); PLAN.md keeps both sides' decision rows; `FlashcardsView` keeps Ricky's one-card layout and adds an All / Quick facts / Discover switch.
+- **Build fix:** `AppShell` read `usePathname()` at the top of the layout, which fails `next build` on `/c/[chatId]` under Cache Components. The dock moved into `ShellDock.tsx` inside `<Suspense>` (the fallback shows the dock with nothing highlighted).
+- **Discover cards in the swipe deck:** `SwipeDeck` reveals a discover card's starting points (no answer) and labels passages with `passageLabel`; a hold sends "help me explore…" instead of "explain…".
+- **Reviewed by two agents** (design against deslop-law/hallmark; engineering) and fixed in the merge:
+  - Swipe deck: visible **Next** and **Ask in chat** buttons, a card counter, arrow keys, a first-use hint, a hold-progress bar, `aria-live` on the card; it resets its gesture state when Next 16 brings the page back (it froze after Back); primary-button-only gestures, cancel never advances, `touch-pan-y`; the card fits above the dock on phones; a colour fallback when WebGL is missing; reduced motion skips the fly-out; the revealed fact card leads with the answer.
+  - "Hold to ask" now hands the question to chat through one-shot `sessionStorage` (`src/lib/chat/handoff.ts`), not `?send=1`, which let any link or hidden iframe fire a paid model call. Every page sends `frame-ancestors 'none'` / `X-Frame-Options: DENY`.
+  - Contrast: the selected filter chip, assistant answers (now on a deep-blue glass panel), verse chips, footnote, sources text, suggestion chips, deck buttons. Hover "jump" transforms removed from glass buttons. Dock: active page gets a solid blue tile and `aria-current` instead of a faint dot; routes prefetched. `/login`'s button was white on white.
+  - Sky capped at 30 fps (halves per-frame work on phones). `dock.tsx` and `GradientASCII.tsx` are React Bits copies: their MIT + Commons Clause notice is now in the file headers (keep it; never publish them as standalone components).
+- **Left for the owners (not changed):** card palettes are Tailwind indigo/purple/fuchsia/orange under a dark scrim, which deslop flags and which clash a little with the day sky (Ricky); small captions under dock icons on touch screens (Ricky); `CloudSky` keeps a "hole" where a finger last touched and rebuilds clouds on every resize, e.g. when the Android keyboard opens (Jeff); unused `DockMenu` in `dock.tsx`; "New chat" can show the previous conversation because Next keeps `/` alive; a rate limit on `/api/chat` before the agent goes live (Phase 2).
+- Jeff's PR #1 commit is part of this merge, so PR #1 closes as merged.
+- `StudyMode.tsx` and the grid `FlashcardCard.tsx` are no longer used by any page; Ricky decides whether to delete them.
 
 ## Contract for flashcard UI work
 

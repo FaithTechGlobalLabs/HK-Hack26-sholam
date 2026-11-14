@@ -33,7 +33,7 @@ export function StudyMode({
       role="dialog"
       aria-modal="true"
       aria-label="Study"
-      className="fixed inset-0 z-50 flex flex-col bg-background"
+      className="fixed inset-0 z-50 flex flex-col bg-background backdrop-blur-2xl"
     >
       <div className="flex h-12 items-center justify-between px-4">
         <span className="text-muted-foreground text-sm">

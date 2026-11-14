@@ -19,7 +19,7 @@ export function VerseChip({
         title="This citation was not checked against the Bible text."
       >
         {label}
-        <sup className="ml-0.5 text-[10px] uppercase tracking-wide">
+        <sup className="ml-0.5 text-[11px] text-white/90 uppercase tracking-wide">
           unverified
         </sup>
       </span>
@@ -28,7 +28,7 @@ export function VerseChip({
   return (
     <span className="group relative inline-block">
       <span
-        className="cursor-help rounded-full bg-muted px-2 py-0.5 font-medium text-xs align-middle"
+        className="cursor-help rounded-full bg-white/85 px-2 py-0.5 font-medium text-[#1f4f9e] text-xs align-middle [text-shadow:none]"
         title={`${verse.label} (${verse.translation}): ${verse.text}`}
       >
         {label}

@@ -40,10 +40,12 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 - Drizzle uses `casing: "snake_case"` in both `drizzle.config.ts` and `src/db/index.ts`; keep them in step. The server connects as the DB owner and **bypasses RLS**: every chat/message query must filter by the signed-in user.
 - shadcn `base-nova` style on Base UI; `cn` comes from the `cn` package (shadcn's own), re-exported by `src/lib/utils.ts`.
 - Everything must run with no env vars set: Supabase helpers return null, flashcards fall back to `data/flashcards.seed.json`, `/api/chat` streams the scripted demo unless `SHOLAM_AGENT=live`. CI builds this way on purpose.
-- Components that call `usePathname`/`useSearchParams` must sit under `<Suspense>` (see `ModeToggle`), or `next build` fails on `/c/[chatId]`. `next dev` does not catch this; run `npm run build` before pushing UI changes.
+- Components that call `usePathname`/`useSearchParams` must sit under `<Suspense>` (see `ShellDock`), or `next build` fails on `/c/[chatId]`. `next dev` does not catch this; run `npm run build` before pushing UI changes.
 - Scripts load `.env.local` through `scripts/_env.ts`; the app uses `DATABASE_URL` (transaction pooler), scripts and drizzle-kit use `DIRECT_URL` (session pooler).
 - Deploys: Vercel's Git integration builds `main` to production and PRs to previews. Never add secrets to the repo; env vars live in Vercel and `.env.local`.
 - Model route: `src/lib/agent/client.ts`. `OPENROUTER_API_KEY` → OpenRouter's Anthropic-compatible endpoint (bearer auth, model ids like `anthropic/claude-opus-5.5`); otherwise `ANTHROPIC_*` env. Always the Anthropic SDK, never an OpenAI-compatible shim. Check a deployment with `/api/health`, a key with `npm run model:smoke`.
+- Never trigger a model call from URL parameters (`?q=` may only pre-fill). Use `src/lib/chat/handoff.ts`. The app must not be frameable (`frame-ancestors 'none'` in `next.config.ts`).
+- `src/components/ui/dock.tsx` and `src/components/flashcards/GradientASCII.tsx` are React Bits code under MIT + Commons Clause: keep their licence headers.
 - Several people work in parallel (docs/TEAM.md). Merge `origin/main` into your branch before a PR, don't push to someone else's branch, and run `npm run build` before pushing: Vercel previews build with `DATABASE_URL` set.
 
 ## Non-negotiable product rules
@@ -65,8 +67,12 @@ Before you call work done: typecheck, lint and tests pass, and UI changes are ch
 ```
 src/app/(shell)/        Chat (/ and /c/[chatId]) and Flashcards (/flashcards) inside the app shell
 src/app/api/            chat (SSE), flashcards (GET list, POST create)
-src/components/shell/   AppShell, Sidebar, ModeToggle, ChatView, Composer, MessageList, VerseChip, SourcesPanel
-src/components/flashcards/  FlashcardsView, FlashcardCard, StudyMode, NewCardDialog, FlashcardProposal
+src/components/shell/   AppShell, ChatView, Composer, MessageList, VerseChip, SourcesPanel
+src/components/ui/dock.tsx  React Bits dock (replaces the sidebar), wired in shell/ShellDock.tsx
+src/components/shell/CloudSky.tsx  animated sky behind the app (sky.css holds the glass styles)
+src/components/brand/Logo.tsx  the cross-cloud mark + wordmark (same geometry as app/icon.svg, public/brand/)
+src/lib/chat/handoff.ts  one-shot hand-off of a question from another view to chat (never a URL "send" flag)
+src/components/flashcards/  FlashcardsView, SwipeDeck (+ GradientASCII), FlashcardCard, StudyMode, NewCardDialog, FlashcardProposal
 src/lib/agent/          harness (loop), events (SSE protocol), citations, system-prompt, tools/, demo
 src/lib/bible/          books (canon table), refs (verse ids, reference parser)
 src/lib/flashcards/     types (zod schema), repo (DB or seed)
