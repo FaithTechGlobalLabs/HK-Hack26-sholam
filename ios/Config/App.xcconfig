@@ -1,0 +1,14 @@
+// Public app configuration. Never put provider, database or service-role keys here.
+// The slash variable avoids xcconfig treating https:// as a comment.
+SLASH = /
+SHOLAM_API_BASE_URL = https:$(SLASH)$(SLASH)sholam.vercel.app
+SHOLAM_SUPABASE_URL =
+SHOLAM_SUPABASE_PUBLISHABLE_KEY =
+// Current production mail is link-only, and no native callback is allowed yet.
+// Enable only after the matching Supabase configuration has been approved/tested.
+SHOLAM_NATIVE_SIGN_IN_MODE = disabled
+// This source build is entirely free. No products, paywall or purchase traffic.
+SHOLAM_BILLING_ENABLED = NO
+SHOLAM_PRODUCT_IDS =
+// Optional local public configuration; the file is ignored by git.
+#include? "Local.xcconfig"

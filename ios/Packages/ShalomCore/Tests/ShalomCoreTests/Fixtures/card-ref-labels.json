@@ -1,0 +1,1562 @@
+[
+  {
+    "ref": "1CH.10.13-1CH.10.14",
+    "label": "1 Chronicles 10:13–14"
+  },
+  {
+    "ref": "1CH.15.11-1CH.15.15",
+    "label": "1 Chronicles 15:11–15"
+  },
+  {
+    "ref": "1CO.1.10-1CO.1.13",
+    "label": "1 Corinthians 1:10–13"
+  },
+  {
+    "ref": "1CO.1.27-1CO.1.29",
+    "label": "1 Corinthians 1:27–29"
+  },
+  {
+    "ref": "1CO.10.1-1CO.10.2",
+    "label": "1 Corinthians 10:1–2"
+  },
+  {
+    "ref": "1CO.11.23-1CO.11.26",
+    "label": "1 Corinthians 11:23–26"
+  },
+  {
+    "ref": "1CO.12.12-1CO.12.27",
+    "label": "1 Corinthians 12:12–27"
+  },
+  {
+    "ref": "1CO.13.1-1CO.13.3",
+    "label": "1 Corinthians 13:1–3"
+  },
+  {
+    "ref": "1CO.13.13",
+    "label": "1 Corinthians 13:13"
+  },
+  {
+    "ref": "1CO.15.12-1CO.15.26",
+    "label": "1 Corinthians 15:12–26"
+  },
+  {
+    "ref": "1CO.15.3-1CO.15.4",
+    "label": "1 Corinthians 15:3–4"
+  },
+  {
+    "ref": "1CO.15.3-1CO.15.8",
+    "label": "1 Corinthians 15:3–8"
+  },
+  {
+    "ref": "1CO.15.33",
+    "label": "1 Corinthians 15:33"
+  },
+  {
+    "ref": "1CO.15.42-1CO.15.54",
+    "label": "1 Corinthians 15:42–54"
+  },
+  {
+    "ref": "1JN.1.8-1JN.1.9",
+    "label": "1 John 1:8–9"
+  },
+  {
+    "ref": "1JN.4.1",
+    "label": "1 John 4:1"
+  },
+  {
+    "ref": "1JN.4.1-1JN.4.3",
+    "label": "1 John 4:1–3"
+  },
+  {
+    "ref": "1KI.17.1",
+    "label": "1 Kings 17:1"
+  },
+  {
+    "ref": "1KI.18.20-1KI.18.39",
+    "label": "1 Kings 18:20–39"
+  },
+  {
+    "ref": "1KI.3.12",
+    "label": "1 Kings 3:12"
+  },
+  {
+    "ref": "1KI.3.5",
+    "label": "1 Kings 3:5"
+  },
+  {
+    "ref": "1KI.3.9",
+    "label": "1 Kings 3:9"
+  },
+  {
+    "ref": "1PE.3.18",
+    "label": "1 Peter 3:18"
+  },
+  {
+    "ref": "1PE.3.20",
+    "label": "1 Peter 3:20"
+  },
+  {
+    "ref": "1SA.1.20",
+    "label": "1 Samuel 1:20"
+  },
+  {
+    "ref": "1SA.10.21",
+    "label": "1 Samuel 10:21"
+  },
+  {
+    "ref": "1SA.11.15",
+    "label": "1 Samuel 11:15"
+  },
+  {
+    "ref": "1SA.16.7",
+    "label": "1 Samuel 16:7"
+  },
+  {
+    "ref": "1SA.16.7-1SA.16.13",
+    "label": "1 Samuel 16:7–13"
+  },
+  {
+    "ref": "1SA.17.32-1SA.17.50",
+    "label": "1 Samuel 17:32–50"
+  },
+  {
+    "ref": "1SA.17.40",
+    "label": "1 Samuel 17:40"
+  },
+  {
+    "ref": "1SA.28.3-1SA.28.25",
+    "label": "1 Samuel 28:3–25"
+  },
+  {
+    "ref": "1SA.3.1-1SA.3.10",
+    "label": "1 Samuel 3:1–10"
+  },
+  {
+    "ref": "1TH.5.19-1TH.5.22",
+    "label": "1 Thessalonians 5:19–22"
+  },
+  {
+    "ref": "1TH.5.21",
+    "label": "1 Thessalonians 5:21"
+  },
+  {
+    "ref": "1TI.6.9-1TI.6.10",
+    "label": "1 Timothy 6:9–10"
+  },
+  {
+    "ref": "2CH.28.15",
+    "label": "2 Chronicles 28:15"
+  },
+  {
+    "ref": "2CO.13.14",
+    "label": "2 Corinthians 13:14"
+  },
+  {
+    "ref": "2CO.9.6-2CO.9.8",
+    "label": "2 Corinthians 9:6–8"
+  },
+  {
+    "ref": "2KI.13.20-2KI.13.21",
+    "label": "2 Kings 13:20–21"
+  },
+  {
+    "ref": "2KI.17.24-2KI.17.34",
+    "label": "2 Kings 17:24–34"
+  },
+  {
+    "ref": "2KI.2.11",
+    "label": "2 Kings 2:11"
+  },
+  {
+    "ref": "2KI.2.19-2KI.2.22",
+    "label": "2 Kings 2:19–22"
+  },
+  {
+    "ref": "2KI.2.23-2KI.2.25",
+    "label": "2 Kings 2:23–25"
+  },
+  {
+    "ref": "2KI.2.9-2KI.2.14",
+    "label": "2 Kings 2:9–14"
+  },
+  {
+    "ref": "2KI.4.1-2KI.4.7",
+    "label": "2 Kings 4:1–7"
+  },
+  {
+    "ref": "2KI.6.1-2KI.6.7",
+    "label": "2 Kings 6:1–7"
+  },
+  {
+    "ref": "2PE.2.15-2PE.2.16",
+    "label": "2 Peter 2:15–16"
+  },
+  {
+    "ref": "2PE.3.15-2PE.3.16",
+    "label": "2 Peter 3:15–16"
+  },
+  {
+    "ref": "2SA.6.1-2SA.6.8",
+    "label": "2 Samuel 6:1–8"
+  },
+  {
+    "ref": "2TI.3.14-2TI.3.17",
+    "label": "2 Timothy 3:14–17"
+  },
+  {
+    "ref": "ACT.1.8",
+    "label": "Acts 1:8"
+  },
+  {
+    "ref": "ACT.10.9-ACT.10.16",
+    "label": "Acts 10:9–16"
+  },
+  {
+    "ref": "ACT.12.1-ACT.12.11",
+    "label": "Acts 12:1–11"
+  },
+  {
+    "ref": "ACT.12.12-ACT.12.17",
+    "label": "Acts 12:12–17"
+  },
+  {
+    "ref": "ACT.13.1-ACT.13.3",
+    "label": "Acts 13:1–3"
+  },
+  {
+    "ref": "ACT.13.22",
+    "label": "Acts 13:22"
+  },
+  {
+    "ref": "ACT.17.10-ACT.17.12",
+    "label": "Acts 17:10–12"
+  },
+  {
+    "ref": "ACT.17.22-ACT.17.31",
+    "label": "Acts 17:22–31"
+  },
+  {
+    "ref": "ACT.18.1-ACT.18.3",
+    "label": "Acts 18:1–3"
+  },
+  {
+    "ref": "ACT.2.1",
+    "label": "Acts 2:1"
+  },
+  {
+    "ref": "ACT.2.1-ACT.2.12",
+    "label": "Acts 2:1–12"
+  },
+  {
+    "ref": "ACT.2.22-ACT.2.24",
+    "label": "Acts 2:22–24"
+  },
+  {
+    "ref": "ACT.2.37-ACT.2.41",
+    "label": "Acts 2:37–41"
+  },
+  {
+    "ref": "ACT.2.4",
+    "label": "Acts 2:4"
+  },
+  {
+    "ref": "ACT.2.42-ACT.2.47",
+    "label": "Acts 2:42–47"
+  },
+  {
+    "ref": "ACT.20.13-ACT.20.16",
+    "label": "Acts 20:13–16"
+  },
+  {
+    "ref": "ACT.20.7-ACT.20.12",
+    "label": "Acts 20:7–12"
+  },
+  {
+    "ref": "ACT.27.1-ACT.27.6",
+    "label": "Acts 27:1–6"
+  },
+  {
+    "ref": "ACT.28.1-ACT.28.6",
+    "label": "Acts 28:1–6"
+  },
+  {
+    "ref": "ACT.4.32-ACT.4.37",
+    "label": "Acts 4:32–37"
+  },
+  {
+    "ref": "ACT.5.1-ACT.5.11",
+    "label": "Acts 5:1–11"
+  },
+  {
+    "ref": "ACT.5.17-ACT.5.21",
+    "label": "Acts 5:17–21"
+  },
+  {
+    "ref": "ACT.7.30-ACT.7.35",
+    "label": "Acts 7:30–35"
+  },
+  {
+    "ref": "ACT.8.26-ACT.8.35",
+    "label": "Acts 8:26–35"
+  },
+  {
+    "ref": "ACT.9.3",
+    "label": "Acts 9:3"
+  },
+  {
+    "ref": "AMO.5.21-AMO.5.24",
+    "label": "Amos 5:21–24"
+  },
+  {
+    "ref": "COL.1.15-COL.1.17",
+    "label": "Colossians 1:15–17"
+  },
+  {
+    "ref": "COL.3.17",
+    "label": "Colossians 3:17"
+  },
+  {
+    "ref": "DAN.3.16-DAN.3.27",
+    "label": "Daniel 3:16–27"
+  },
+  {
+    "ref": "DAN.3.23",
+    "label": "Daniel 3:23"
+  },
+  {
+    "ref": "DAN.3.25",
+    "label": "Daniel 3:25"
+  },
+  {
+    "ref": "DAN.4.28-DAN.4.37",
+    "label": "Daniel 4:28–37"
+  },
+  {
+    "ref": "DAN.5.1-DAN.5.31",
+    "label": "Daniel 5:1–31"
+  },
+  {
+    "ref": "DAN.5.18-DAN.5.23",
+    "label": "Daniel 5:18–23"
+  },
+  {
+    "ref": "DAN.6.16",
+    "label": "Daniel 6:16"
+  },
+  {
+    "ref": "DAN.6.22",
+    "label": "Daniel 6:22"
+  },
+  {
+    "ref": "DEU.15.7-DEU.15.11",
+    "label": "Deuteronomy 15:7–11"
+  },
+  {
+    "ref": "DEU.30.15-DEU.30.20",
+    "label": "Deuteronomy 30:15–20"
+  },
+  {
+    "ref": "DEU.6.4-DEU.6.5",
+    "label": "Deuteronomy 6:4–5"
+  },
+  {
+    "ref": "DEU.6.6-DEU.6.9",
+    "label": "Deuteronomy 6:6–9"
+  },
+  {
+    "ref": "DEU.8.2-DEU.8.3",
+    "label": "Deuteronomy 8:2–3"
+  },
+  {
+    "ref": "EPH.2.10",
+    "label": "Ephesians 2:10"
+  },
+  {
+    "ref": "EPH.2.8-EPH.2.10",
+    "label": "Ephesians 2:8–10"
+  },
+  {
+    "ref": "EPH.4.1-EPH.4.6",
+    "label": "Ephesians 4:1–6"
+  },
+  {
+    "ref": "EPH.4.25",
+    "label": "Ephesians 4:25"
+  },
+  {
+    "ref": "EPH.4.29",
+    "label": "Ephesians 4:29"
+  },
+  {
+    "ref": "EST.4.12-EST.4.16",
+    "label": "Esther 4:12–16"
+  },
+  {
+    "ref": "EST.4.16",
+    "label": "Esther 4:16"
+  },
+  {
+    "ref": "EXO.14.10-EXO.14.31",
+    "label": "Exodus 14:10–31"
+  },
+  {
+    "ref": "EXO.15.1-EXO.15.18",
+    "label": "Exodus 15:1–18"
+  },
+  {
+    "ref": "EXO.16.31",
+    "label": "Exodus 16:31"
+  },
+  {
+    "ref": "EXO.3.1-EXO.3.15",
+    "label": "Exodus 3:1–15"
+  },
+  {
+    "ref": "EXO.3.13-EXO.3.15",
+    "label": "Exodus 3:13–15"
+  },
+  {
+    "ref": "EXO.30.11-EXO.30.16",
+    "label": "Exodus 30:11–16"
+  },
+  {
+    "ref": "EXO.31.18",
+    "label": "Exodus 31:18"
+  },
+  {
+    "ref": "EXO.4.1-EXO.4.17",
+    "label": "Exodus 4:1–17"
+  },
+  {
+    "ref": "EXO.4.1-EXO.4.5",
+    "label": "Exodus 4:1–5"
+  },
+  {
+    "ref": "EXO.7.20",
+    "label": "Exodus 7:20"
+  },
+  {
+    "ref": "EXO.7.8-EXO.7.13",
+    "label": "Exodus 7:8–13"
+  },
+  {
+    "ref": "EZK.1.4-EZK.1.14",
+    "label": "Ezekiel 1:4–14"
+  },
+  {
+    "ref": "EZK.12.1-EZK.12.7",
+    "label": "Ezekiel 12:1–7"
+  },
+  {
+    "ref": "EZK.4.1-EZK.4.8",
+    "label": "Ezekiel 4:1–8"
+  },
+  {
+    "ref": "EZK.5.1-EZK.5.4",
+    "label": "Ezekiel 5:1–4"
+  },
+  {
+    "ref": "GAL.1.10",
+    "label": "Galatians 1:10"
+  },
+  {
+    "ref": "GAL.1.19",
+    "label": "Galatians 1:19"
+  },
+  {
+    "ref": "GAL.5.16-GAL.5.17",
+    "label": "Galatians 5:16–17"
+  },
+  {
+    "ref": "GAL.5.22",
+    "label": "Galatians 5:22"
+  },
+  {
+    "ref": "GAL.5.22-GAL.5.23",
+    "label": "Galatians 5:22–23"
+  },
+  {
+    "ref": "GAL.5.23",
+    "label": "Galatians 5:23"
+  },
+  {
+    "ref": "GAL.6.1",
+    "label": "Galatians 6:1"
+  },
+  {
+    "ref": "GAL.6.4-GAL.6.5",
+    "label": "Galatians 6:4–5"
+  },
+  {
+    "ref": "GEN.1.1-GEN.2.3",
+    "label": "Genesis 1:1–2:3"
+  },
+  {
+    "ref": "GEN.1.20-GEN.1.25",
+    "label": "Genesis 1:20–25"
+  },
+  {
+    "ref": "GEN.1.26-GEN.1.28",
+    "label": "Genesis 1:26–28"
+  },
+  {
+    "ref": "GEN.1.3",
+    "label": "Genesis 1:3"
+  },
+  {
+    "ref": "GEN.1.5",
+    "label": "Genesis 1:5"
+  },
+  {
+    "ref": "GEN.18.1-GEN.18.15",
+    "label": "Genesis 18:1–15"
+  },
+  {
+    "ref": "GEN.18.10",
+    "label": "Genesis 18:10"
+  },
+  {
+    "ref": "GEN.18.12",
+    "label": "Genesis 18:12"
+  },
+  {
+    "ref": "GEN.18.16-GEN.18.33",
+    "label": "Genesis 18:16–33"
+  },
+  {
+    "ref": "GEN.18.20-GEN.18.33",
+    "label": "Genesis 18:20–33"
+  },
+  {
+    "ref": "GEN.19.15-GEN.19.26",
+    "label": "Genesis 19:15–26"
+  },
+  {
+    "ref": "GEN.2.15",
+    "label": "Genesis 2:15"
+  },
+  {
+    "ref": "GEN.21.5",
+    "label": "Genesis 21:5"
+  },
+  {
+    "ref": "GEN.3.14-GEN.3.19",
+    "label": "Genesis 3:14–19"
+  },
+  {
+    "ref": "GEN.3.9",
+    "label": "Genesis 3:9"
+  },
+  {
+    "ref": "GEN.32.22-GEN.32.32",
+    "label": "Genesis 32:22–32"
+  },
+  {
+    "ref": "GEN.35.22",
+    "label": "Genesis 35:22"
+  },
+  {
+    "ref": "GEN.35.9-GEN.35.12",
+    "label": "Genesis 35:9–12"
+  },
+  {
+    "ref": "GEN.41.16",
+    "label": "Genesis 41:16"
+  },
+  {
+    "ref": "GEN.41.25",
+    "label": "Genesis 41:25"
+  },
+  {
+    "ref": "GEN.5.27",
+    "label": "Genesis 5:27"
+  },
+  {
+    "ref": "GEN.7.12",
+    "label": "Genesis 7:12"
+  },
+  {
+    "ref": "HAB.3.11",
+    "label": "Habakkuk 3:11"
+  },
+  {
+    "ref": "HEB.10.24-HEB.10.25",
+    "label": "Hebrews 10:24–25"
+  },
+  {
+    "ref": "HEB.11.30",
+    "label": "Hebrews 11:30"
+  },
+  {
+    "ref": "HEB.11.32-HEB.11.34",
+    "label": "Hebrews 11:32–34"
+  },
+  {
+    "ref": "HEB.13.2",
+    "label": "Hebrews 13:2"
+  },
+  {
+    "ref": "HOS.1.2-HOS.1.3",
+    "label": "Hosea 1:2–3"
+  },
+  {
+    "ref": "HOS.12.3-HOS.12.5",
+    "label": "Hosea 12:3–5"
+  },
+  {
+    "ref": "HOS.2.14-HOS.2.23",
+    "label": "Hosea 2:14–23"
+  },
+  {
+    "ref": "HOS.3.1-HOS.3.5",
+    "label": "Hosea 3:1–5"
+  },
+  {
+    "ref": "ISA.40.22",
+    "label": "Isaiah 40:22"
+  },
+  {
+    "ref": "ISA.40.8",
+    "label": "Isaiah 40:8"
+  },
+  {
+    "ref": "ISA.43.1-ISA.43.2",
+    "label": "Isaiah 43:1–2"
+  },
+  {
+    "ref": "ISA.43.25",
+    "label": "Isaiah 43:25"
+  },
+  {
+    "ref": "ISA.52.13-ISA.53.12",
+    "label": "Isaiah 52:13–53:12"
+  },
+  {
+    "ref": "ISA.56.7",
+    "label": "Isaiah 56:7"
+  },
+  {
+    "ref": "ISA.6.1-ISA.6.7",
+    "label": "Isaiah 6:1–7"
+  },
+  {
+    "ref": "JAS.2.14-JAS.2.17",
+    "label": "James 2:14–17"
+  },
+  {
+    "ref": "JAS.3.13-JAS.3.18",
+    "label": "James 3:13–18"
+  },
+  {
+    "ref": "JAS.4.1-JAS.4.3",
+    "label": "James 4:1–3"
+  },
+  {
+    "ref": "JAS.4.17",
+    "label": "James 4:17"
+  },
+  {
+    "ref": "JAS.5.13-JAS.5.18",
+    "label": "James 5:13–18"
+  },
+  {
+    "ref": "JAS.5.16",
+    "label": "James 5:16"
+  },
+  {
+    "ref": "JDG.13.24-JDG.13.25",
+    "label": "Judges 13:24–25"
+  },
+  {
+    "ref": "JDG.14.19",
+    "label": "Judges 14:19"
+  },
+  {
+    "ref": "JDG.15.1-JDG.15.5",
+    "label": "Judges 15:1–5"
+  },
+  {
+    "ref": "JDG.16.1-JDG.16.3",
+    "label": "Judges 16:1–3"
+  },
+  {
+    "ref": "JDG.16.17",
+    "label": "Judges 16:17"
+  },
+  {
+    "ref": "JDG.16.4-JDG.16.21",
+    "label": "Judges 16:4–21"
+  },
+  {
+    "ref": "JDG.2.11-JDG.2.19",
+    "label": "Judges 2:11–19"
+  },
+  {
+    "ref": "JDG.3.12-JDG.3.30",
+    "label": "Judges 3:12–30"
+  },
+  {
+    "ref": "JDG.3.15",
+    "label": "Judges 3:15"
+  },
+  {
+    "ref": "JDG.3.21",
+    "label": "Judges 3:21"
+  },
+  {
+    "ref": "JDG.4.1-JDG.4.16",
+    "label": "Judges 4:1–16"
+  },
+  {
+    "ref": "JDG.4.17-JDG.4.22",
+    "label": "Judges 4:17–22"
+  },
+  {
+    "ref": "JDG.5.24-JDG.5.27",
+    "label": "Judges 5:24–27"
+  },
+  {
+    "ref": "JDG.6.11-JDG.6.16",
+    "label": "Judges 6:11–16"
+  },
+  {
+    "ref": "JDG.7.1-JDG.7.8",
+    "label": "Judges 7:1–8"
+  },
+  {
+    "ref": "JDG.7.15-JDG.7.22",
+    "label": "Judges 7:15–22"
+  },
+  {
+    "ref": "JDG.7.19-JDG.7.22",
+    "label": "Judges 7:19–22"
+  },
+  {
+    "ref": "JER.3.1-JER.3.10",
+    "label": "Jeremiah 3:1–10"
+  },
+  {
+    "ref": "JER.7.8-JER.7.11",
+    "label": "Jeremiah 7:8–11"
+  },
+  {
+    "ref": "JER.7.9-JER.7.11",
+    "label": "Jeremiah 7:9–11"
+  },
+  {
+    "ref": "JHN.1.1-JHN.1.3",
+    "label": "John 1:1–3"
+  },
+  {
+    "ref": "JHN.10.1-JHN.10.18",
+    "label": "John 10:1–18"
+  },
+  {
+    "ref": "JHN.11.1-JHN.11.44",
+    "label": "John 11:1–44"
+  },
+  {
+    "ref": "JHN.11.25-JHN.11.26",
+    "label": "John 11:25–26"
+  },
+  {
+    "ref": "JHN.11.32-JHN.11.36",
+    "label": "John 11:32–36"
+  },
+  {
+    "ref": "JHN.11.35",
+    "label": "John 11:35"
+  },
+  {
+    "ref": "JHN.11.38-JHN.11.44",
+    "label": "John 11:38–44"
+  },
+  {
+    "ref": "JHN.11.39",
+    "label": "John 11:39"
+  },
+  {
+    "ref": "JHN.11.44",
+    "label": "John 11:44"
+  },
+  {
+    "ref": "JHN.12.1-JHN.12.8",
+    "label": "John 12:1–8"
+  },
+  {
+    "ref": "JHN.12.42-JHN.12.43",
+    "label": "John 12:42–43"
+  },
+  {
+    "ref": "JHN.12.43",
+    "label": "John 12:43"
+  },
+  {
+    "ref": "JHN.13.1-JHN.13.17",
+    "label": "John 13:1–17"
+  },
+  {
+    "ref": "JHN.14.1-JHN.14.3",
+    "label": "John 14:1–3"
+  },
+  {
+    "ref": "JHN.14.6",
+    "label": "John 14:6"
+  },
+  {
+    "ref": "JHN.17.20-JHN.17.23",
+    "label": "John 17:20–23"
+  },
+  {
+    "ref": "JHN.19.1-JHN.19.37",
+    "label": "John 19:1–37"
+  },
+  {
+    "ref": "JHN.2.1-JHN.2.11",
+    "label": "John 2:1–11"
+  },
+  {
+    "ref": "JHN.2.11",
+    "label": "John 2:11"
+  },
+  {
+    "ref": "JHN.2.9",
+    "label": "John 2:9"
+  },
+  {
+    "ref": "JHN.20.19-JHN.20.29",
+    "label": "John 20:19–29"
+  },
+  {
+    "ref": "JHN.20.24-JHN.20.29",
+    "label": "John 20:24–29"
+  },
+  {
+    "ref": "JHN.20.25",
+    "label": "John 20:25"
+  },
+  {
+    "ref": "JHN.20.28",
+    "label": "John 20:28"
+  },
+  {
+    "ref": "JHN.20.30-JHN.20.31",
+    "label": "John 20:30–31"
+  },
+  {
+    "ref": "JHN.21.1-JHN.21.14",
+    "label": "John 21:1–14"
+  },
+  {
+    "ref": "JHN.21.24-JHN.21.25",
+    "label": "John 21:24–25"
+  },
+  {
+    "ref": "JHN.21.9-JHN.21.13",
+    "label": "John 21:9–13"
+  },
+  {
+    "ref": "JHN.3.29",
+    "label": "John 3:29"
+  },
+  {
+    "ref": "JHN.4.1-JHN.4.42",
+    "label": "John 4:1–42"
+  },
+  {
+    "ref": "JHN.4.46-JHN.4.54",
+    "label": "John 4:46–54"
+  },
+  {
+    "ref": "JHN.4.7-JHN.4.26",
+    "label": "John 4:7–26"
+  },
+  {
+    "ref": "JHN.5.6-JHN.5.9",
+    "label": "John 5:6–9"
+  },
+  {
+    "ref": "JHN.6.51-JHN.6.58",
+    "label": "John 6:51–58"
+  },
+  {
+    "ref": "JHN.9.1-JHN.9.3",
+    "label": "John 9:1–3"
+  },
+  {
+    "ref": "JOB.26.7",
+    "label": "Job 26:7"
+  },
+  {
+    "ref": "JON.1.17",
+    "label": "Jonah 1:17"
+  },
+  {
+    "ref": "JON.1.17-JON.2.10",
+    "label": "Jonah 1:17–2:10"
+  },
+  {
+    "ref": "JON.3.1-JON.3.10",
+    "label": "Jonah 3:1–10"
+  },
+  {
+    "ref": "JOS.10.12-JOS.10.14",
+    "label": "Joshua 10:12–14"
+  },
+  {
+    "ref": "JOS.5.13-JOS.5.15",
+    "label": "Joshua 5:13–15"
+  },
+  {
+    "ref": "JOS.6.1-JOS.6.20",
+    "label": "Joshua 6:1–20"
+  },
+  {
+    "ref": "JOS.6.15",
+    "label": "Joshua 6:15"
+  },
+  {
+    "ref": "JOS.6.20",
+    "label": "Joshua 6:20"
+  },
+  {
+    "ref": "JUD.1.11",
+    "label": "Jude 1:11"
+  },
+  {
+    "ref": "JUD.1.5-JUD.1.11",
+    "label": "Jude 1:5–11"
+  },
+  {
+    "ref": "LEV.19.31",
+    "label": "Leviticus 19:31"
+  },
+  {
+    "ref": "LEV.25.23",
+    "label": "Leviticus 25:23"
+  },
+  {
+    "ref": "LUK.1.1-LUK.1.4",
+    "label": "Luke 1:1–4"
+  },
+  {
+    "ref": "LUK.1.26-LUK.1.38",
+    "label": "Luke 1:26–38"
+  },
+  {
+    "ref": "LUK.10.19",
+    "label": "Luke 10:19"
+  },
+  {
+    "ref": "LUK.10.25-LUK.10.37",
+    "label": "Luke 10:25–37"
+  },
+  {
+    "ref": "LUK.10.30-LUK.10.37",
+    "label": "Luke 10:30–37"
+  },
+  {
+    "ref": "LUK.10.31",
+    "label": "Luke 10:31"
+  },
+  {
+    "ref": "LUK.10.32",
+    "label": "Luke 10:32"
+  },
+  {
+    "ref": "LUK.10.33",
+    "label": "Luke 10:33"
+  },
+  {
+    "ref": "LUK.11.1-LUK.11.13",
+    "label": "Luke 11:1–13"
+  },
+  {
+    "ref": "LUK.12.6-LUK.12.7",
+    "label": "Luke 12:6–7"
+  },
+  {
+    "ref": "LUK.13.34",
+    "label": "Luke 13:34"
+  },
+  {
+    "ref": "LUK.14.7-LUK.14.11",
+    "label": "Luke 14:7–11"
+  },
+  {
+    "ref": "LUK.15.11-LUK.15.32",
+    "label": "Luke 15:11–32"
+  },
+  {
+    "ref": "LUK.17.15",
+    "label": "Luke 17:15"
+  },
+  {
+    "ref": "LUK.17.16",
+    "label": "Luke 17:16"
+  },
+  {
+    "ref": "LUK.17.17",
+    "label": "Luke 17:17"
+  },
+  {
+    "ref": "LUK.17.28-LUK.17.33",
+    "label": "Luke 17:28–33"
+  },
+  {
+    "ref": "LUK.17.3-LUK.17.4",
+    "label": "Luke 17:3–4"
+  },
+  {
+    "ref": "LUK.18.1-LUK.18.8",
+    "label": "Luke 18:1–8"
+  },
+  {
+    "ref": "LUK.18.9-LUK.18.14",
+    "label": "Luke 18:9–14"
+  },
+  {
+    "ref": "LUK.19.1-LUK.19.10",
+    "label": "Luke 19:1–10"
+  },
+  {
+    "ref": "LUK.19.4",
+    "label": "Luke 19:4"
+  },
+  {
+    "ref": "LUK.19.41-LUK.19.44",
+    "label": "Luke 19:41–44"
+  },
+  {
+    "ref": "LUK.2.41-LUK.2.52",
+    "label": "Luke 2:41–52"
+  },
+  {
+    "ref": "LUK.2.42",
+    "label": "Luke 2:42"
+  },
+  {
+    "ref": "LUK.2.49",
+    "label": "Luke 2:49"
+  },
+  {
+    "ref": "LUK.2.7",
+    "label": "Luke 2:7"
+  },
+  {
+    "ref": "LUK.2.8-LUK.2.20",
+    "label": "Luke 2:8–20"
+  },
+  {
+    "ref": "LUK.22.14-LUK.22.20",
+    "label": "Luke 22:14–20"
+  },
+  {
+    "ref": "LUK.24.1-LUK.24.12",
+    "label": "Luke 24:1–12"
+  },
+  {
+    "ref": "LUK.24.36-LUK.24.43",
+    "label": "Luke 24:36–43"
+  },
+  {
+    "ref": "LUK.3.23",
+    "label": "Luke 3:23"
+  },
+  {
+    "ref": "LUK.4.16-LUK.4.21",
+    "label": "Luke 4:16–21"
+  },
+  {
+    "ref": "LUK.5.1-LUK.5.11",
+    "label": "Luke 5:1–11"
+  },
+  {
+    "ref": "LUK.5.17-LUK.5.26",
+    "label": "Luke 5:17–26"
+  },
+  {
+    "ref": "LUK.5.27-LUK.5.32",
+    "label": "Luke 5:27–32"
+  },
+  {
+    "ref": "LUK.6.27-LUK.6.36",
+    "label": "Luke 6:27–36"
+  },
+  {
+    "ref": "LUK.7.36-LUK.7.50",
+    "label": "Luke 7:36–50"
+  },
+  {
+    "ref": "LUK.8.40-LUK.8.56",
+    "label": "Luke 8:40–56"
+  },
+  {
+    "ref": "LUK.9.51-LUK.9.56",
+    "label": "Luke 9:51–56"
+  },
+  {
+    "ref": "MAT.1.23",
+    "label": "Matthew 1:23"
+  },
+  {
+    "ref": "MAT.12.36",
+    "label": "Matthew 12:36"
+  },
+  {
+    "ref": "MAT.12.38-MAT.12.41",
+    "label": "Matthew 12:38–41"
+  },
+  {
+    "ref": "MAT.13.55-MAT.13.56",
+    "label": "Matthew 13:55–56"
+  },
+  {
+    "ref": "MAT.14.13-MAT.14.21",
+    "label": "Matthew 14:13–21"
+  },
+  {
+    "ref": "MAT.14.21",
+    "label": "Matthew 14:21"
+  },
+  {
+    "ref": "MAT.14.22-MAT.14.33",
+    "label": "Matthew 14:22–33"
+  },
+  {
+    "ref": "MAT.14.29",
+    "label": "Matthew 14:29"
+  },
+  {
+    "ref": "MAT.17.24-MAT.17.27",
+    "label": "Matthew 17:24–27"
+  },
+  {
+    "ref": "MAT.18.15-MAT.18.17",
+    "label": "Matthew 18:15–17"
+  },
+  {
+    "ref": "MAT.2.1",
+    "label": "Matthew 2:1"
+  },
+  {
+    "ref": "MAT.20.1-MAT.20.16",
+    "label": "Matthew 20:1–16"
+  },
+  {
+    "ref": "MAT.20.29",
+    "label": "Matthew 20:29"
+  },
+  {
+    "ref": "MAT.22.15-MAT.22.22",
+    "label": "Matthew 22:15–22"
+  },
+  {
+    "ref": "MAT.22.37",
+    "label": "Matthew 22:37"
+  },
+  {
+    "ref": "MAT.22.38",
+    "label": "Matthew 22:38"
+  },
+  {
+    "ref": "MAT.22.39",
+    "label": "Matthew 22:39"
+  },
+  {
+    "ref": "MAT.23.23-MAT.23.28",
+    "label": "Matthew 23:23–28"
+  },
+  {
+    "ref": "MAT.25.1-MAT.25.13",
+    "label": "Matthew 25:1–13"
+  },
+  {
+    "ref": "MAT.26.36-MAT.26.46",
+    "label": "Matthew 26:36–46"
+  },
+  {
+    "ref": "MAT.26.6-MAT.26.13",
+    "label": "Matthew 26:6–13"
+  },
+  {
+    "ref": "MAT.26.75",
+    "label": "Matthew 26:75"
+  },
+  {
+    "ref": "MAT.27.32",
+    "label": "Matthew 27:32"
+  },
+  {
+    "ref": "MAT.28.18-MAT.28.20",
+    "label": "Matthew 28:18–20"
+  },
+  {
+    "ref": "MAT.28.19",
+    "label": "Matthew 28:19"
+  },
+  {
+    "ref": "MAT.3.13",
+    "label": "Matthew 3:13"
+  },
+  {
+    "ref": "MAT.4.1-MAT.4.11",
+    "label": "Matthew 4:1–11"
+  },
+  {
+    "ref": "MAT.4.18-MAT.4.22",
+    "label": "Matthew 4:18–22"
+  },
+  {
+    "ref": "MAT.4.2",
+    "label": "Matthew 4:2"
+  },
+  {
+    "ref": "MAT.5.13-MAT.5.16",
+    "label": "Matthew 5:13–16"
+  },
+  {
+    "ref": "MAT.5.14-MAT.5.16",
+    "label": "Matthew 5:14–16"
+  },
+  {
+    "ref": "MAT.5.23-MAT.5.24",
+    "label": "Matthew 5:23–24"
+  },
+  {
+    "ref": "MAT.5.43-MAT.5.48",
+    "label": "Matthew 5:43–48"
+  },
+  {
+    "ref": "MAT.5.9",
+    "label": "Matthew 5:9"
+  },
+  {
+    "ref": "MAT.6.1-MAT.6.4",
+    "label": "Matthew 6:1–4"
+  },
+  {
+    "ref": "MAT.6.1-MAT.6.6",
+    "label": "Matthew 6:1–6"
+  },
+  {
+    "ref": "MAT.6.5-MAT.6.13",
+    "label": "Matthew 6:5–13"
+  },
+  {
+    "ref": "MAT.6.9-MAT.6.13",
+    "label": "Matthew 6:9–13"
+  },
+  {
+    "ref": "MAT.7.1-MAT.7.5",
+    "label": "Matthew 7:1–5"
+  },
+  {
+    "ref": "MAT.8.23-MAT.8.27",
+    "label": "Matthew 8:23–27"
+  },
+  {
+    "ref": "MAT.9.18-MAT.9.26",
+    "label": "Matthew 9:18–26"
+  },
+  {
+    "ref": "MAT.9.9",
+    "label": "Matthew 9:9"
+  },
+  {
+    "ref": "MAT.9.9-MAT.9.13",
+    "label": "Matthew 9:9–13"
+  },
+  {
+    "ref": "MIC.6.8",
+    "label": "Micah 6:8"
+  },
+  {
+    "ref": "MRK.1.12-MRK.1.13",
+    "label": "Mark 1:12–13"
+  },
+  {
+    "ref": "MRK.1.35-MRK.1.39",
+    "label": "Mark 1:35–39"
+  },
+  {
+    "ref": "MRK.1.40-MRK.1.42",
+    "label": "Mark 1:40–42"
+  },
+  {
+    "ref": "MRK.1.40-MRK.1.45",
+    "label": "Mark 1:40–45"
+  },
+  {
+    "ref": "MRK.10.42-MRK.10.45",
+    "label": "Mark 10:42–45"
+  },
+  {
+    "ref": "MRK.10.45",
+    "label": "Mark 10:45"
+  },
+  {
+    "ref": "MRK.10.51",
+    "label": "Mark 10:51"
+  },
+  {
+    "ref": "MRK.11.12-MRK.11.25",
+    "label": "Mark 11:12–25"
+  },
+  {
+    "ref": "MRK.11.15-MRK.11.18",
+    "label": "Mark 11:15–18"
+  },
+  {
+    "ref": "MRK.14.3-MRK.14.9",
+    "label": "Mark 14:3–9"
+  },
+  {
+    "ref": "MRK.15.15-MRK.15.39",
+    "label": "Mark 15:15–39"
+  },
+  {
+    "ref": "MRK.16.17-MRK.16.18",
+    "label": "Mark 16:17–18"
+  },
+  {
+    "ref": "MRK.2.1-MRK.2.12",
+    "label": "Mark 2:1–12"
+  },
+  {
+    "ref": "MRK.2.15-MRK.2.17",
+    "label": "Mark 2:15–17"
+  },
+  {
+    "ref": "MRK.3.13-MRK.3.19",
+    "label": "Mark 3:13–19"
+  },
+  {
+    "ref": "MRK.5.18-MRK.5.20",
+    "label": "Mark 5:18–20"
+  },
+  {
+    "ref": "MRK.5.21-MRK.5.43",
+    "label": "Mark 5:21–43"
+  },
+  {
+    "ref": "MRK.6.3",
+    "label": "Mark 6:3"
+  },
+  {
+    "ref": "MRK.6.30-MRK.6.44",
+    "label": "Mark 6:30–44"
+  },
+  {
+    "ref": "MRK.6.45-MRK.6.52",
+    "label": "Mark 6:45–52"
+  },
+  {
+    "ref": "MRK.7.31-MRK.7.37",
+    "label": "Mark 7:31–37"
+  },
+  {
+    "ref": "MRK.8.14-MRK.8.21",
+    "label": "Mark 8:14–21"
+  },
+  {
+    "ref": "MRK.8.27-MRK.8.30",
+    "label": "Mark 8:27–30"
+  },
+  {
+    "ref": "MRK.8.34-MRK.8.36",
+    "label": "Mark 8:34–36"
+  },
+  {
+    "ref": "MRK.9.14-MRK.9.29",
+    "label": "Mark 9:14–29"
+  },
+  {
+    "ref": "MRK.9.19-MRK.9.29",
+    "label": "Mark 9:19–29"
+  },
+  {
+    "ref": "NUM.16.1-NUM.16.35",
+    "label": "Numbers 16:1–35"
+  },
+  {
+    "ref": "NUM.16.36-NUM.16.40",
+    "label": "Numbers 16:36–40"
+  },
+  {
+    "ref": "NUM.22.21-NUM.22.35",
+    "label": "Numbers 22:21–35"
+  },
+  {
+    "ref": "NUM.22.28",
+    "label": "Numbers 22:28"
+  },
+  {
+    "ref": "NUM.4.15",
+    "label": "Numbers 4:15"
+  },
+  {
+    "ref": "PHP.1.6",
+    "label": "Philippians 1:6"
+  },
+  {
+    "ref": "PHP.2.3-PHP.2.8",
+    "label": "Philippians 2:3–8"
+  },
+  {
+    "ref": "PHP.2.5-PHP.2.11",
+    "label": "Philippians 2:5–11"
+  },
+  {
+    "ref": "PHP.2.5-PHP.2.8",
+    "label": "Philippians 2:5–8"
+  },
+  {
+    "ref": "PHP.3.12-PHP.3.14",
+    "label": "Philippians 3:12–14"
+  },
+  {
+    "ref": "PHP.4.11-PHP.4.13",
+    "label": "Philippians 4:11–13"
+  },
+  {
+    "ref": "PRO.1.8-PRO.1.9",
+    "label": "Proverbs 1:8–9"
+  },
+  {
+    "ref": "PRO.16.18",
+    "label": "Proverbs 16:18"
+  },
+  {
+    "ref": "PRO.16.9",
+    "label": "Proverbs 16:9"
+  },
+  {
+    "ref": "PRO.18.13",
+    "label": "Proverbs 18:13"
+  },
+  {
+    "ref": "PRO.18.17",
+    "label": "Proverbs 18:17"
+  },
+  {
+    "ref": "PRO.26.18-PRO.26.19",
+    "label": "Proverbs 26:18–19"
+  },
+  {
+    "ref": "PRO.29.25",
+    "label": "Proverbs 29:25"
+  },
+  {
+    "ref": "PRO.31.8-PRO.31.9",
+    "label": "Proverbs 31:8–9"
+  },
+  {
+    "ref": "PSA.104.1-PSA.104.5",
+    "label": "Psalms 104:1–5"
+  },
+  {
+    "ref": "PSA.119.89",
+    "label": "Psalms 119:89"
+  },
+  {
+    "ref": "PSA.13",
+    "label": "Psalms 13"
+  },
+  {
+    "ref": "PSA.139.13-PSA.139.16",
+    "label": "Psalms 139:13–16"
+  },
+  {
+    "ref": "PSA.19.1-PSA.19.4",
+    "label": "Psalms 19:1–4"
+  },
+  {
+    "ref": "PSA.19.1-PSA.19.6",
+    "label": "Psalms 19:1–6"
+  },
+  {
+    "ref": "PSA.20.7",
+    "label": "Psalms 20:7"
+  },
+  {
+    "ref": "PSA.23",
+    "label": "Psalms 23"
+  },
+  {
+    "ref": "PSA.23.1",
+    "label": "Psalms 23:1"
+  },
+  {
+    "ref": "PSA.24.1",
+    "label": "Psalms 24:1"
+  },
+  {
+    "ref": "PSA.42.5-PSA.42.11",
+    "label": "Psalms 42:5–11"
+  },
+  {
+    "ref": "PSA.8.3-PSA.8.8",
+    "label": "Psalms 8:3–8"
+  },
+  {
+    "ref": "PSA.90.1-PSA.90.2",
+    "label": "Psalms 90:1–2"
+  },
+  {
+    "ref": "REV.21.1-REV.21.5",
+    "label": "Revelation 21:1–5"
+  },
+  {
+    "ref": "ROM.1.19-ROM.1.20",
+    "label": "Romans 1:19–20"
+  },
+  {
+    "ref": "ROM.1.19-ROM.1.23",
+    "label": "Romans 1:19–23"
+  },
+  {
+    "ref": "ROM.10.9-ROM.10.13",
+    "label": "Romans 10:9–13"
+  },
+  {
+    "ref": "ROM.12.17-ROM.12.21",
+    "label": "Romans 12:17–21"
+  },
+  {
+    "ref": "ROM.12.18",
+    "label": "Romans 12:18"
+  },
+  {
+    "ref": "ROM.12.3",
+    "label": "Romans 12:3"
+  },
+  {
+    "ref": "ROM.12.9-ROM.12.18",
+    "label": "Romans 12:9–18"
+  },
+  {
+    "ref": "ROM.2.12-ROM.2.16",
+    "label": "Romans 2:12–16"
+  },
+  {
+    "ref": "ROM.3.23-ROM.3.26",
+    "label": "Romans 3:23–26"
+  },
+  {
+    "ref": "ROM.6.3-ROM.6.4",
+    "label": "Romans 6:3–4"
+  },
+  {
+    "ref": "ROM.7.15-ROM.7.25",
+    "label": "Romans 7:15–25"
+  },
+  {
+    "ref": "ROM.8.18-ROM.8.25",
+    "label": "Romans 8:18–25"
+  },
+  {
+    "ref": "ROM.8.26-ROM.8.27",
+    "label": "Romans 8:26–27"
+  }
+]

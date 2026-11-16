@@ -3,6 +3,7 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import { getDb, isDatabaseConfigured } from "@/db";
 import { profiles } from "@/db/schema";
+import type { RequestIdentity } from "@/lib/supabase/request-auth";
 import { createClient } from "@/lib/supabase/server";
 import type { Account } from "./types";
 
@@ -26,6 +27,21 @@ export async function getAccount(): Promise<SignedInAccount | null> {
     id: claims.sub,
     email,
     displayName: await displayNameFor(claims.sub),
+  };
+}
+
+/**
+ * The account behind a verified request identity (native Bearer or web
+ * cookie, see `resolveRequestIdentity`). Null for guests and invalid ones.
+ */
+export async function accountForIdentity(
+  identity: RequestIdentity,
+): Promise<SignedInAccount | null> {
+  if (identity.kind !== "authenticated") return null;
+  return {
+    id: identity.userId,
+    email: identity.email,
+    displayName: await displayNameFor(identity.userId),
   };
 }
 

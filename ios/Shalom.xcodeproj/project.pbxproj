@@ -1,0 +1,832 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		043D54FD23CE8BC553C3291F /* AccountPolicies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B30F7673EDD2AF3AD3FBE3B /* AccountPolicies.swift */; };
+		071BBB0D73CF57FF01372CF6 /* FlashcardFaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D4491B212678D9CD18BA7D9 /* FlashcardFaces.swift */; };
+		07BC2FE8E0C078FC277EAB2E /* ShalomCore in Frameworks */ = {isa = PBXBuildFile; productRef = 75B1768569A2D6A778772E91 /* ShalomCore */; };
+		09D54D2D91CC2169D7DB08D3 /* BillingEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD418A64EA8380708DB6CF4C /* BillingEnvironment.swift */; };
+		153961E73DB5FB6EA6DEF403 /* BackgroundWriteLease.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAA9504E61A70BE35A25F44 /* BackgroundWriteLease.swift */; };
+		17F56BD20FAE394B97611A96 /* DeckSwipeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9BCCBFA16F65BFEEB7FF89 /* DeckSwipeTests.swift */; };
+		1ABCE76FF756BE7AE1E435F8 /* ThirdPartyNotices.txt in Resources */ = {isa = PBXBuildFile; fileRef = F3B21B73B5EB77CDBB83B34B /* ThirdPartyNotices.txt */; };
+		1C24CAF1F74FECEE7EDBBA6E /* BrandLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCF64541003D2D69CD2A9E4 /* BrandLogo.swift */; };
+		1F8BCB8A2FE31B498F9D3E39 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE6CB661A065B41C0C68BA1C /* RootView.swift */; };
+		213D4FA0DCC70DAD0D5280EF /* StoreKitStoreClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BD191AEA578915DB94CA49 /* StoreKitStoreClient.swift */; };
+		2340987AE547A381766A7F9F /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF092AD9CACCAE67D34C02B6 /* SidebarView.swift */; };
+		2F422AF86A7141ADFA321A9A /* ChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 594E013F2507C2A23415742C /* ChatScreen.swift */; };
+		37C2C54AD291A7DC12156AEC /* ApplicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBFCF48BF343157B4DBC44E /* ApplicationModel.swift */; };
+		4619EE23CC350C97416AC9EA /* NativeConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D6C927A9ACE932C1DB86B3C /* NativeConfiguration.swift */; };
+		48187B54CEDB0FEAF6152176 /* ConversationScrollStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4604628163488DBB55838B79 /* ConversationScrollStateTests.swift */; };
+		641EF5FE61EDD3F0814AA769 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E24B327CA0EEA4CEC56BF584 /* PrivacyInfo.xcprivacy */; };
+		6EEF332D8DCB1E7F7FA3356A /* ThirdPartyNotices.sources.json in Resources */ = {isa = PBXBuildFile; fileRef = 8AAA99EEF85D4F55B9D79755 /* ThirdPartyNotices.sources.json */; };
+		73BC7C51C68739A8204138C6 /* SignInFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5144E104468F243FC566872A /* SignInFlowView.swift */; };
+		82B4D8A55660B739ADC484D7 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9990B52865678D0D827704A6 /* PaywallView.swift */; };
+		863D26B913A0E0A1BF6B2224 /* ShalomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9B894F0059AECEAFC0300C /* ShalomTheme.swift */; };
+		8A533F53212E68831612E613 /* GuestImportLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6F0B77D6EFDBAE588EA41 /* GuestImportLedger.swift */; };
+		902D37B6498704882DF8BC16 /* GuestImportLedgerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE840EDE6FF956F1CDF51050 /* GuestImportLedgerTests.swift */; };
+		91A401E39C35A25BF8DB5111 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DD7D1F1749897095498FEA97 /* LaunchScreen.storyboard */; };
+		91D7B4961E90E3A2A1136C38 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0EB81945625A6837E85755E0 /* Assets.xcassets */; };
+		93C287D0E71D43128EC5C1BB /* ShalomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F6BA0EDC07D7305617DBCF /* ShalomApp.swift */; };
+		944DBF411E871CE1FC60059F /* FlashcardDeckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203DA7AF990409EE3CADAA06 /* FlashcardDeckTests.swift */; };
+		9A50969B7B782ED2C128CFFF /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6BE53D862D1967B7D181ECA /* AuthStore.swift */; };
+		9D7DAE6A7BA28E3245F2B01A /* BundledDeck.json in Resources */ = {isa = PBXBuildFile; fileRef = 84FDC9A0C89EA11CD926689E /* BundledDeck.json */; };
+		A008AE8CC208A0CB9760DDF1 /* ConversationScrollState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2AEC091F3289C04D8F7ABE /* ConversationScrollState.swift */; };
+		A1B3FC6CBA81B7A6F3637A3E /* DeckSwipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25D6A0AE15742A18398B2D9 /* DeckSwipe.swift */; };
+		ACAE92170543D8EA7CEF4ECE /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 701575316514FA6FF68639F2 /* Supabase */; };
+		AD8CAF288AF546F1054BF71A /* AccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F506743FE3DD9E6704542695 /* AccountScreen.swift */; };
+		AFE1D412FA25AA87D3334107 /* AuthCallbackPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5E93C645C3A77FE35294BA /* AuthCallbackPolicyTests.swift */; };
+		B491C11D90DA8D8A48B4CA84 /* ShalomCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7A05D689B95CD155914B9F11 /* ShalomCore */; };
+		B5CD539B528CD75A0B584689 /* FlashcardCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 926A624F9A259A373674C511 /* FlashcardCarousel.swift */; };
+		BB9373E5F5B2FC0D6D38424A /* ConversationFrameKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268E841ABDEB5A6845CE7468 /* ConversationFrameKey.swift */; };
+		C4D7BC6BB35B17A640865BAC /* ShalomUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A96DDC89B9549F7D36089AB /* ShalomUITests.swift */; };
+		C909C806E22DD72B000B6079 /* SkyBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07921B9C48959E2F514ECCF /* SkyBackground.swift */; };
+		CB0430A2591074A409E8DFCB /* HistoryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298C10E3650DF79CE6ADBF33 /* HistoryScreen.swift */; };
+		CD44C29D88B428F90667CDBB /* UITestChatAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D162DF42FB0809D45D66709 /* UITestChatAPI.swift */; };
+		D5409DF0DBB65F27CD5BBDAB /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6020E528CFC6E9170B990CF6 /* ChatViewModel.swift */; };
+		E0FC3C3ADF00FE033C54EB18 /* AuthProblem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA692FBF336C7E5806AEC8B7 /* AuthProblem.swift */; };
+		E52901809CC5C59981BACEB9 /* AccountPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4769EFB5AA680AF3B0AA5E51 /* AccountPolicyTests.swift */; };
+		EA590559DCFFFBBD30FC2AE5 /* FlashcardsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D14F86E9C10DC9008CCE33C /* FlashcardsScreen.swift */; };
+		F14F111EE6896F5E5080AA58 /* AccountRequestIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC138A0D589A9180DF21A2E /* AccountRequestIdentity.swift */; };
+		F66D19C43154F5EFE1796FA9 /* ChatViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1646C0D45203CD78B8C4572C /* ChatViewModelTests.swift */; };
+		F8DDF46E9FD2708362287912 /* FlashcardDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74E8419162BDC3B3587E549B /* FlashcardDeck.swift */; };
+		FAA52D6B83D7D5ACBB929D54 /* AnswerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3883B019E8A662978BE740FB /* AnswerView.swift */; };
+		FD20F6B39EC4B868A66545A4 /* GlassBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA82FF2B1D99A5EE6DB92D2 /* GlassBackground.swift */; };
+		FD73EC74978EDED251E8EA2E /* DeckProvenance.json in Resources */ = {isa = PBXBuildFile; fileRef = 968FAD8CBD1C366C7CC3D575 /* DeckProvenance.json */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		75DFE899AF06636E48F35631 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0580A692FC38561EA6D4DC8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC538FB10FB64CDC06D1866E;
+			remoteInfo = Shalom;
+		};
+		92A852BEFFBC76A0E765AD90 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0580A692FC38561EA6D4DC8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC538FB10FB64CDC06D1866E;
+			remoteInfo = Shalom;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		04F6F0B77D6EFDBAE588EA41 /* GuestImportLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuestImportLedger.swift; sourceTree = "<group>"; };
+		0C9BCCBFA16F65BFEEB7FF89 /* DeckSwipeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckSwipeTests.swift; sourceTree = "<group>"; };
+		0D14F86E9C10DC9008CCE33C /* FlashcardsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardsScreen.swift; sourceTree = "<group>"; };
+		0EB81945625A6837E85755E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		15BD191AEA578915DB94CA49 /* StoreKitStoreClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitStoreClient.swift; sourceTree = "<group>"; };
+		1646C0D45203CD78B8C4572C /* ChatViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModelTests.swift; sourceTree = "<group>"; };
+		203DA7AF990409EE3CADAA06 /* FlashcardDeckTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardDeckTests.swift; sourceTree = "<group>"; };
+		268E841ABDEB5A6845CE7468 /* ConversationFrameKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationFrameKey.swift; sourceTree = "<group>"; };
+		298C10E3650DF79CE6ADBF33 /* HistoryScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryScreen.swift; sourceTree = "<group>"; };
+		2CBFCF48BF343157B4DBC44E /* ApplicationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationModel.swift; sourceTree = "<group>"; };
+		3883B019E8A662978BE740FB /* AnswerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerView.swift; sourceTree = "<group>"; };
+		38EF4F4D5D7B11478060B937 /* ShalomCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ShalomCore; path = Packages/ShalomCore; sourceTree = SOURCE_ROOT; };
+		4604628163488DBB55838B79 /* ConversationScrollStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationScrollStateTests.swift; sourceTree = "<group>"; };
+		4769EFB5AA680AF3B0AA5E51 /* AccountPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPolicyTests.swift; sourceTree = "<group>"; };
+		4E5E93C645C3A77FE35294BA /* AuthCallbackPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCallbackPolicyTests.swift; sourceTree = "<group>"; };
+		5144E104468F243FC566872A /* SignInFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInFlowView.swift; sourceTree = "<group>"; };
+		594E013F2507C2A23415742C /* ChatScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatScreen.swift; sourceTree = "<group>"; };
+		5A96DDC89B9549F7D36089AB /* ShalomUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShalomUITests.swift; sourceTree = "<group>"; };
+		5D162DF42FB0809D45D66709 /* UITestChatAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestChatAPI.swift; sourceTree = "<group>"; };
+		5F2AEC091F3289C04D8F7ABE /* ConversationScrollState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationScrollState.swift; sourceTree = "<group>"; };
+		6020E528CFC6E9170B990CF6 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		6B30F7673EDD2AF3AD3FBE3B /* AccountPolicies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountPolicies.swift; sourceTree = "<group>"; };
+		6D6C927A9ACE932C1DB86B3C /* NativeConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeConfiguration.swift; sourceTree = "<group>"; };
+		744C09F3A0F5B7D11D89B128 /* ShalomUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ShalomUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		74E8419162BDC3B3587E549B /* FlashcardDeck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardDeck.swift; sourceTree = "<group>"; };
+		75F6BA0EDC07D7305617DBCF /* ShalomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShalomApp.swift; sourceTree = "<group>"; };
+		7D4491B212678D9CD18BA7D9 /* FlashcardFaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardFaces.swift; sourceTree = "<group>"; };
+		84FDC9A0C89EA11CD926689E /* BundledDeck.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BundledDeck.json; sourceTree = "<group>"; };
+		8AAA99EEF85D4F55B9D79755 /* ThirdPartyNotices.sources.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ThirdPartyNotices.sources.json; sourceTree = "<group>"; };
+		8BC138A0D589A9180DF21A2E /* AccountRequestIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRequestIdentity.swift; sourceTree = "<group>"; };
+		8F21F549C9151AD34D865AF0 /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
+		926A624F9A259A373674C511 /* FlashcardCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardCarousel.swift; sourceTree = "<group>"; };
+		968FAD8CBD1C366C7CC3D575 /* DeckProvenance.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = DeckProvenance.json; sourceTree = "<group>"; };
+		9990B52865678D0D827704A6 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		AB9B29265B11F4D45EF5299E /* ShalomTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ShalomTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE6CB661A065B41C0C68BA1C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		AF092AD9CACCAE67D34C02B6 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		BCA82FF2B1D99A5EE6DB92D2 /* GlassBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassBackground.swift; sourceTree = "<group>"; };
+		C25D6A0AE15742A18398B2D9 /* DeckSwipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckSwipe.swift; sourceTree = "<group>"; };
+		C491CDC9B221650CC2C911C4 /* Shalom.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Shalom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA692FBF336C7E5806AEC8B7 /* AuthProblem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProblem.swift; sourceTree = "<group>"; };
+		CE840EDE6FF956F1CDF51050 /* GuestImportLedgerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuestImportLedgerTests.swift; sourceTree = "<group>"; };
+		CEAA9504E61A70BE35A25F44 /* BackgroundWriteLease.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundWriteLease.swift; sourceTree = "<group>"; };
+		CFCF64541003D2D69CD2A9E4 /* BrandLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandLogo.swift; sourceTree = "<group>"; };
+		D07921B9C48959E2F514ECCF /* SkyBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkyBackground.swift; sourceTree = "<group>"; };
+		DB9B894F0059AECEAFC0300C /* ShalomTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShalomTheme.swift; sourceTree = "<group>"; };
+		DD7D1F1749897095498FEA97 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		E24B327CA0EEA4CEC56BF584 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		E6BE53D862D1967B7D181ECA /* AuthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStore.swift; sourceTree = "<group>"; };
+		F3B21B73B5EB77CDBB83B34B /* ThirdPartyNotices.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ThirdPartyNotices.txt; sourceTree = "<group>"; };
+		F506743FE3DD9E6704542695 /* AccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountScreen.swift; sourceTree = "<group>"; };
+		FD418A64EA8380708DB6CF4C /* BillingEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingEnvironment.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1EA700AD39F771730DA8CF6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B491C11D90DA8D8A48B4CA84 /* ShalomCore in Frameworks */,
+				ACAE92170543D8EA7CEF4ECE /* Supabase in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2467C3A09BD7552BC6AB1968 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07BC2FE8E0C078FC277EAB2E /* ShalomCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0C8058A01F7CC0B0DCD9BC2A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0EB81945625A6837E85755E0 /* Assets.xcassets */,
+				84FDC9A0C89EA11CD926689E /* BundledDeck.json */,
+				968FAD8CBD1C366C7CC3D575 /* DeckProvenance.json */,
+				DD7D1F1749897095498FEA97 /* LaunchScreen.storyboard */,
+				E24B327CA0EEA4CEC56BF584 /* PrivacyInfo.xcprivacy */,
+				8AAA99EEF85D4F55B9D79755 /* ThirdPartyNotices.sources.json */,
+				F3B21B73B5EB77CDBB83B34B /* ThirdPartyNotices.txt */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		19209A28695A9F70902172B2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C491CDC9B221650CC2C911C4 /* Shalom.app */,
+				AB9B29265B11F4D45EF5299E /* ShalomTests.xctest */,
+				744C09F3A0F5B7D11D89B128 /* ShalomUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		334393439BE2101DD42FE455 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				04F6F0B77D6EFDBAE588EA41 /* GuestImportLedger.swift */,
+				298C10E3650DF79CE6ADBF33 /* HistoryScreen.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		3A4FD8D58413C75D13E3357F /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				8F21F549C9151AD34D865AF0 /* App.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		716EADFCB5565B537B9B34BA /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				3883B019E8A662978BE740FB /* AnswerView.swift */,
+				CEAA9504E61A70BE35A25F44 /* BackgroundWriteLease.swift */,
+				594E013F2507C2A23415742C /* ChatScreen.swift */,
+				6020E528CFC6E9170B990CF6 /* ChatViewModel.swift */,
+				268E841ABDEB5A6845CE7468 /* ConversationFrameKey.swift */,
+				5F2AEC091F3289C04D8F7ABE /* ConversationScrollState.swift */,
+				5D162DF42FB0809D45D66709 /* UITestChatAPI.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		84E0ADF4DA890D51BC8EB563 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				38EF4F4D5D7B11478060B937 /* ShalomCore */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		8922301B0430C1E065CA1200 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				CFCF64541003D2D69CD2A9E4 /* BrandLogo.swift */,
+				BCA82FF2B1D99A5EE6DB92D2 /* GlassBackground.swift */,
+				DB9B894F0059AECEAFC0300C /* ShalomTheme.swift */,
+				D07921B9C48959E2F514ECCF /* SkyBackground.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		A2E1EE84BE9CD3C06485F0B3 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				DA79DC147530550AF6EB1053 /* ShalomTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		A96BC169B64C40CC59DC5346 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				6B30F7673EDD2AF3AD3FBE3B /* AccountPolicies.swift */,
+				8BC138A0D589A9180DF21A2E /* AccountRequestIdentity.swift */,
+				F506743FE3DD9E6704542695 /* AccountScreen.swift */,
+				CA692FBF336C7E5806AEC8B7 /* AuthProblem.swift */,
+				E6BE53D862D1967B7D181ECA /* AuthStore.swift */,
+				5144E104468F243FC566872A /* SignInFlowView.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		B7E9CDC30D1FBC000F8336A7 = {
+			isa = PBXGroup;
+			children = (
+				E90226101FEEFF546C309649 /* App */,
+				3A4FD8D58413C75D13E3357F /* Config */,
+				84E0ADF4DA890D51BC8EB563 /* Packages */,
+				A2E1EE84BE9CD3C06485F0B3 /* Tests */,
+				EA6D4B02220C49F1B93A9324 /* UITests */,
+				19209A28695A9F70902172B2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DA79DC147530550AF6EB1053 /* ShalomTests */ = {
+			isa = PBXGroup;
+			children = (
+				4769EFB5AA680AF3B0AA5E51 /* AccountPolicyTests.swift */,
+				4E5E93C645C3A77FE35294BA /* AuthCallbackPolicyTests.swift */,
+				1646C0D45203CD78B8C4572C /* ChatViewModelTests.swift */,
+				4604628163488DBB55838B79 /* ConversationScrollStateTests.swift */,
+				0C9BCCBFA16F65BFEEB7FF89 /* DeckSwipeTests.swift */,
+				203DA7AF990409EE3CADAA06 /* FlashcardDeckTests.swift */,
+				CE840EDE6FF956F1CDF51050 /* GuestImportLedgerTests.swift */,
+			);
+			path = ShalomTests;
+			sourceTree = "<group>";
+		};
+		E90226101FEEFF546C309649 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A96BC169B64C40CC59DC5346 /* Account */,
+				FACD86224C042D37BE4B3C0B /* Billing */,
+				716EADFCB5565B537B9B34BA /* Chat */,
+				FD7F43007CC57E299612D8A0 /* Flashcards */,
+				334393439BE2101DD42FE455 /* History */,
+				0C8058A01F7CC0B0DCD9BC2A /* Resources */,
+				8922301B0430C1E065CA1200 /* Theme */,
+				2CBFCF48BF343157B4DBC44E /* ApplicationModel.swift */,
+				6D6C927A9ACE932C1DB86B3C /* NativeConfiguration.swift */,
+				AE6CB661A065B41C0C68BA1C /* RootView.swift */,
+				75F6BA0EDC07D7305617DBCF /* ShalomApp.swift */,
+				AF092AD9CACCAE67D34C02B6 /* SidebarView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		EA6D4B02220C49F1B93A9324 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				5A96DDC89B9549F7D36089AB /* ShalomUITests.swift */,
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
+		FACD86224C042D37BE4B3C0B /* Billing */ = {
+			isa = PBXGroup;
+			children = (
+				FD418A64EA8380708DB6CF4C /* BillingEnvironment.swift */,
+				9990B52865678D0D827704A6 /* PaywallView.swift */,
+				15BD191AEA578915DB94CA49 /* StoreKitStoreClient.swift */,
+			);
+			path = Billing;
+			sourceTree = "<group>";
+		};
+		FD7F43007CC57E299612D8A0 /* Flashcards */ = {
+			isa = PBXGroup;
+			children = (
+				C25D6A0AE15742A18398B2D9 /* DeckSwipe.swift */,
+				926A624F9A259A373674C511 /* FlashcardCarousel.swift */,
+				74E8419162BDC3B3587E549B /* FlashcardDeck.swift */,
+				7D4491B212678D9CD18BA7D9 /* FlashcardFaces.swift */,
+				0D14F86E9C10DC9008CCE33C /* FlashcardsScreen.swift */,
+			);
+			path = Flashcards;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6746DC798516D8409B45C493 /* ShalomUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9500E15A8AAC37AADAE46A81 /* Build configuration list for PBXNativeTarget "ShalomUITests" */;
+			buildPhases = (
+				AA518979E80E35E91A87C4DF /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EC39FBDDB05CD0706488574E /* PBXTargetDependency */,
+			);
+			name = ShalomUITests;
+			packageProductDependencies = (
+			);
+			productName = ShalomUITests;
+			productReference = 744C09F3A0F5B7D11D89B128 /* ShalomUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		91B36A13FBAD94C5D3359922 /* ShalomTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4C68D2486C8127E0A5A360AE /* Build configuration list for PBXNativeTarget "ShalomTests" */;
+			buildPhases = (
+				49D2C4F30DB05EA049AA452A /* Sources */,
+				2467C3A09BD7552BC6AB1968 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				36A44598F3471D12F08D535D /* PBXTargetDependency */,
+			);
+			name = ShalomTests;
+			packageProductDependencies = (
+				75B1768569A2D6A778772E91 /* ShalomCore */,
+			);
+			productName = ShalomTests;
+			productReference = AB9B29265B11F4D45EF5299E /* ShalomTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BC538FB10FB64CDC06D1866E /* Shalom */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7EA10B53884790CE3AE233AD /* Build configuration list for PBXNativeTarget "Shalom" */;
+			buildPhases = (
+				3C46593927972E2E07815BDE /* Sources */,
+				39BCF441A05917AB5F916B65 /* Resources */,
+				1EA700AD39F771730DA8CF6E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Shalom;
+			packageProductDependencies = (
+				7A05D689B95CD155914B9F11 /* ShalomCore */,
+				701575316514FA6FF68639F2 /* Supabase */,
+			);
+			productName = Shalom;
+			productReference = C491CDC9B221650CC2C911C4 /* Shalom.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A0580A692FC38561EA6D4DC8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					6746DC798516D8409B45C493 = {
+						TestTargetID = BC538FB10FB64CDC06D1866E;
+					};
+				};
+			};
+			buildConfigurationList = 5BF667CD7714F1DA8B583AE6 /* Build configuration list for PBXProject "Shalom" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = B7E9CDC30D1FBC000F8336A7;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C294FCA027150A2266046A47 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				54B79420539AF19E53DE4B0E /* XCLocalSwiftPackageReference "Packages/ShalomCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BC538FB10FB64CDC06D1866E /* Shalom */,
+				91B36A13FBAD94C5D3359922 /* ShalomTests */,
+				6746DC798516D8409B45C493 /* ShalomUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		39BCF441A05917AB5F916B65 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91D7B4961E90E3A2A1136C38 /* Assets.xcassets in Resources */,
+				9D7DAE6A7BA28E3245F2B01A /* BundledDeck.json in Resources */,
+				FD73EC74978EDED251E8EA2E /* DeckProvenance.json in Resources */,
+				91A401E39C35A25BF8DB5111 /* LaunchScreen.storyboard in Resources */,
+				641EF5FE61EDD3F0814AA769 /* PrivacyInfo.xcprivacy in Resources */,
+				6EEF332D8DCB1E7F7FA3356A /* ThirdPartyNotices.sources.json in Resources */,
+				1ABCE76FF756BE7AE1E435F8 /* ThirdPartyNotices.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3C46593927972E2E07815BDE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				043D54FD23CE8BC553C3291F /* AccountPolicies.swift in Sources */,
+				F14F111EE6896F5E5080AA58 /* AccountRequestIdentity.swift in Sources */,
+				AD8CAF288AF546F1054BF71A /* AccountScreen.swift in Sources */,
+				FAA52D6B83D7D5ACBB929D54 /* AnswerView.swift in Sources */,
+				37C2C54AD291A7DC12156AEC /* ApplicationModel.swift in Sources */,
+				E0FC3C3ADF00FE033C54EB18 /* AuthProblem.swift in Sources */,
+				9A50969B7B782ED2C128CFFF /* AuthStore.swift in Sources */,
+				153961E73DB5FB6EA6DEF403 /* BackgroundWriteLease.swift in Sources */,
+				09D54D2D91CC2169D7DB08D3 /* BillingEnvironment.swift in Sources */,
+				1C24CAF1F74FECEE7EDBBA6E /* BrandLogo.swift in Sources */,
+				2F422AF86A7141ADFA321A9A /* ChatScreen.swift in Sources */,
+				D5409DF0DBB65F27CD5BBDAB /* ChatViewModel.swift in Sources */,
+				BB9373E5F5B2FC0D6D38424A /* ConversationFrameKey.swift in Sources */,
+				A008AE8CC208A0CB9760DDF1 /* ConversationScrollState.swift in Sources */,
+				A1B3FC6CBA81B7A6F3637A3E /* DeckSwipe.swift in Sources */,
+				B5CD539B528CD75A0B584689 /* FlashcardCarousel.swift in Sources */,
+				F8DDF46E9FD2708362287912 /* FlashcardDeck.swift in Sources */,
+				071BBB0D73CF57FF01372CF6 /* FlashcardFaces.swift in Sources */,
+				EA590559DCFFFBBD30FC2AE5 /* FlashcardsScreen.swift in Sources */,
+				FD20F6B39EC4B868A66545A4 /* GlassBackground.swift in Sources */,
+				8A533F53212E68831612E613 /* GuestImportLedger.swift in Sources */,
+				CB0430A2591074A409E8DFCB /* HistoryScreen.swift in Sources */,
+				4619EE23CC350C97416AC9EA /* NativeConfiguration.swift in Sources */,
+				82B4D8A55660B739ADC484D7 /* PaywallView.swift in Sources */,
+				1F8BCB8A2FE31B498F9D3E39 /* RootView.swift in Sources */,
+				93C287D0E71D43128EC5C1BB /* ShalomApp.swift in Sources */,
+				863D26B913A0E0A1BF6B2224 /* ShalomTheme.swift in Sources */,
+				2340987AE547A381766A7F9F /* SidebarView.swift in Sources */,
+				73BC7C51C68739A8204138C6 /* SignInFlowView.swift in Sources */,
+				C909C806E22DD72B000B6079 /* SkyBackground.swift in Sources */,
+				213D4FA0DCC70DAD0D5280EF /* StoreKitStoreClient.swift in Sources */,
+				CD44C29D88B428F90667CDBB /* UITestChatAPI.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		49D2C4F30DB05EA049AA452A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E52901809CC5C59981BACEB9 /* AccountPolicyTests.swift in Sources */,
+				AFE1D412FA25AA87D3334107 /* AuthCallbackPolicyTests.swift in Sources */,
+				F66D19C43154F5EFE1796FA9 /* ChatViewModelTests.swift in Sources */,
+				48187B54CEDB0FEAF6152176 /* ConversationScrollStateTests.swift in Sources */,
+				17F56BD20FAE394B97611A96 /* DeckSwipeTests.swift in Sources */,
+				944DBF411E871CE1FC60059F /* FlashcardDeckTests.swift in Sources */,
+				902D37B6498704882DF8BC16 /* GuestImportLedgerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA518979E80E35E91A87C4DF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4D7BC6BB35B17A640865BAC /* ShalomUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		36A44598F3471D12F08D535D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC538FB10FB64CDC06D1866E /* Shalom */;
+			targetProxy = 92A852BEFFBC76A0E765AD90 /* PBXContainerItemProxy */;
+		};
+		EC39FBDDB05CD0706488574E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC538FB10FB64CDC06D1866E /* Shalom */;
+			targetProxy = 75DFE899AF06636E48F35631 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1588286B7220483C229F0451 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.owenisas.ShalomTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Shalom.app/Shalom";
+			};
+			name = Debug;
+		};
+		397BF87F8B07DC92BEDD2350 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.owenisas.ShalomUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Shalom;
+			};
+			name = Release;
+		};
+		491FF03009AC12D34B20131F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.owenisas.ShalomTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Shalom.app/Shalom";
+			};
+			name = Release;
+		};
+		49BD7F5CF6D07AE3692601B1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.owenisas.ShalomUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Shalom;
+			};
+			name = Debug;
+		};
+		8C4C27CFE0CD90915BB802B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8F21F549C9151AD34D865AF0 /* App.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		ABBD6071238A24C881A2F8FE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGN_IDENTITY = "Apple Distribution: Tsz To Suen (3LHSL95J9H)";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 3LHSL95J9H;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.owenisas.shalom;
+				PRODUCT_NAME = Shalom;
+				PROVISIONING_PROFILE_SPECIFIER = "Shalom AppStore";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		C7CF18A7EB9D1F69787B824A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8F21F549C9151AD34D865AF0 /* App.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E6F5379CD239D6C1BDF84AF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.owenisas.shalom;
+				PRODUCT_NAME = Shalom;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4C68D2486C8127E0A5A360AE /* Build configuration list for PBXNativeTarget "ShalomTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1588286B7220483C229F0451 /* Debug */,
+				491FF03009AC12D34B20131F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5BF667CD7714F1DA8B583AE6 /* Build configuration list for PBXProject "Shalom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7CF18A7EB9D1F69787B824A /* Debug */,
+				8C4C27CFE0CD90915BB802B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7EA10B53884790CE3AE233AD /* Build configuration list for PBXNativeTarget "Shalom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E6F5379CD239D6C1BDF84AF9 /* Debug */,
+				ABBD6071238A24C881A2F8FE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9500E15A8AAC37AADAE46A81 /* Build configuration list for PBXNativeTarget "ShalomUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49BD7F5CF6D07AE3692601B1 /* Debug */,
+				397BF87F8B07DC92BEDD2350 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		54B79420539AF19E53DE4B0E /* XCLocalSwiftPackageReference "Packages/ShalomCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/ShalomCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C294FCA027150A2266046A47 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.55.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		701575316514FA6FF68639F2 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C294FCA027150A2266046A47 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		75B1768569A2D6A778772E91 /* ShalomCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ShalomCore;
+		};
+		7A05D689B95CD155914B9F11 /* ShalomCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ShalomCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = A0580A692FC38561EA6D4DC8 /* Project object */;
+}

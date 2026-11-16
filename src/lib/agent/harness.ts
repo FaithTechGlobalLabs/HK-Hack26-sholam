@@ -20,7 +20,12 @@ import {
   passageToVerseRanges,
   type VerseRange,
 } from "@/lib/bible/refs";
-import { type AnswerCheck, type CitationIssue, checkAnswer } from "./citations";
+import {
+  type AnswerCheck,
+  type CitationIssue,
+  checkAnswer,
+  finalizeAnswer,
+} from "./citations";
 import {
   assemblePrompt,
   buildPromptParts,
@@ -88,7 +93,11 @@ export interface FinishedTurn {
   /** What the model produced this turn, verbatim and in order: assistant
    * `tool_calls`, `tool` results, any rewrite exchange, the final answer. */
   messages: ChatMessage[];
-  /** Verse records tools returned this turn. */
+  /**
+   * Verse records the shown answer was judged against: those returned this
+   * turn before it was written (for a restored draft, the evidence before
+   * the correction fetch; `messages` still hold every tool result).
+   */
   verses: VerseRecord[];
   /** The final citation check (same as the `citations` event). */
   citations: { unverified: CitationIssue[]; quoteWarnings: string[] };
@@ -148,22 +157,35 @@ export async function* runAgentTurn(
   let toolRounds = 0;
   /** The next model call was already counted (the rewrite reserves early). */
   let reserved = false;
-  /** Set while the one corrective rewrite runs. */
-  let correction: { draft: string; check: AnswerCheck } | null = null;
+  /**
+   * Set while the one corrective rewrite runs. `seenAtDraft` is the evidence
+   * the draft was written with, copied before the correction fetch, so a
+   * restored draft is never upgraded by verses fetched after it.
+   */
+  let correction: {
+    draft: string;
+    seenAtDraft: ReadonlyMap<string, VerseRecord>;
+  } | null = null;
 
   /**
    * The one place a turn ends with an answer. Here the final text, its
    * citation check, the verses fetched this turn (`versesSeen`) and
    * `input.userId` / `input.chatId` are all known: a step that saves the
    * turn belongs here. Error endings (`error` event) do not come here.
+   *
+   * `raw` is the model's answer as written; it stays in the model history
+   * verbatim. The person sees (and `onFinish.text` stores) the display text
+   * with plain references linked, judged against `seen`.
    */
   async function* finishTurn(
-    text: string,
-    check: AnswerCheck,
+    raw: string,
+    seen: ReadonlyMap<string, VerseRecord>,
     stopReason: string,
     restored = false,
   ): AsyncGenerator<AgentEvent> {
+    const { text, check } = finalizeAnswer(raw, seen);
     if (restored) yield { type: "reset", reason: "restore", text };
+    else if (text !== raw) yield { type: "reset", reason: "verse_links", text };
     const citations = citationsEvent(check);
     yield citations;
     if (input.onFinish) {
@@ -172,8 +194,8 @@ export async function* runAgentTurn(
           text,
           model: config.model,
           stopReason,
-          messages: [...parts.tail, { role: "assistant", content: text }],
-          verses: [...versesSeen.values()],
+          messages: [...parts.tail, { role: "assistant", content: raw }],
+          verses: [...seen.values()],
           citations: {
             unverified: citations.unverified,
             quoteWarnings: citations.quoteWarnings,
@@ -193,7 +215,12 @@ export async function* runAgentTurn(
   /** Ends the turn with the draft and its flags when the rewrite fails. */
   async function* restoreDraft(): AsyncGenerator<AgentEvent> {
     if (!correction) return;
-    yield* finishTurn(correction.draft, correction.check, "end_turn", true);
+    yield* finishTurn(
+      correction.draft,
+      correction.seenAtDraft,
+      "end_turn",
+      true,
+    );
   }
 
   try {
@@ -285,6 +312,8 @@ export async function* runAgentTurn(
         (!input.reserveModelCall || (await input.reserveModelCall()))
       ) {
         reserved = true;
+        // The draft's evidence, before the correction fetch adds to it.
+        const seenAtDraft = new Map(versesSeen);
         const plan = correctionPlan(check);
         let ids: string[] = [];
         if (plan.ranges.length) {
@@ -298,7 +327,7 @@ export async function* runAgentTurn(
           yield* drain();
         }
         if (ids.length) {
-          correction = { draft: text, check };
+          correction = { draft: text, seenAtDraft };
           yield { type: "reset", reason: "verse_check" };
           parts.tail.push({ role: "assistant", content: text });
           parts.tail.push({
@@ -309,7 +338,7 @@ export async function* runAgentTurn(
         }
       }
 
-      yield* finishTurn(text, check, finishReason || "end_turn");
+      yield* finishTurn(text, versesSeen, finishReason || "end_turn");
       return;
     }
 

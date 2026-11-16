@@ -91,9 +91,17 @@ data/                   flashcards.seed.json, faithmap.cards.json (generated), s
 drizzle/                generated migrations (do not hand-edit)
 ```
 
+## Native app (`ios/`)
+
+- Native SwiftUI iPhone/iPad source, iOS 17 minimum, with an XcodeGen project and a dependency-free `ShalomCore` package. See `ios/README.md` for source interfaces, checks and release gates.
+- All features remain free. Billing is hard-OFF in the generated Info.plist and off in every xcconfig; product IDs are empty. Disabled code must not fetch products, buy, restore/sync, listen for transactions, upload receipts or present a paywall. Do not activate it as a side effect of future work.
+- Public API URL and Supabase publishable config only in the app; provider/database/service-role credentials stay server-only. Native API identity comes from verified Bearer sessions, never a user id in the body; preserve web cookie/CSRF behavior.
+- The owner initially chose source-only work below 100 GiB, then explicitly approved a bounded native test run on 2026-11-15: reuse simulators, serial tests, one shared DerivedData location, at most 10 GiB of generated artifacts, hard stop at 40 GiB free, and remove only this run's artifacts. This one-run exception is not a general relaxation of disk hygiene. Source checks alone never prove a compiled/running app.
+- Never edit the bundled teaching text. Regenerate `ios/App/Resources/BundledDeck.json` from the canonical data files and update `DeckProvenance.json` with their hashes.
+
 ## UI work
 
-Before designing or restyling any screen, load the `deslop-law` and `hallmark` skills and check the result against them. The current UI is a neutral skeleton, not a design.
+Before designing or restyling any screen, load the `deslop-law` and `hallmark` skills and check the result against them. Preserve the established sky/cross-cloud identity and ChatGPT-style layout. Native iPhone uses a leading drawer and iPad uses a persistent sidebar, with unboxed answers and a quiet composer; do not restore oversized welcome cards or bottom tabs without a product decision.
 
 ## Docs
 

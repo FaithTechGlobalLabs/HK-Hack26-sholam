@@ -1,6 +1,6 @@
 # sholam plan
 
-Last updated: 2026-11-14
+Last updated: 2026-11-16
 
 ## Goal
 
@@ -60,6 +60,22 @@ A ChatGPT-style web app for the Bible and the Christian faith. ChatGPT's web app
 | 2026-11-14 | Signed-in chats are saved per account in Postgres and listed newest first; `/c/[chatId]` opens a saved chat only for its owner (others get not-found). Signed-out chats stay in the tab; on sign-in the tab's chats can be kept | Product rule 4 (chats are private). The server bypasses RLS, so the store filters every query by user id |
 | 2026-11-14 | `messages.content` v1: user rows `{ v, text }`; assistant rows keep the OpenRouter turn's messages verbatim plus the shown text and the verse records fetched that turn | Rule 7 (append-only, verbatim) for an OpenAI-format provider; rule 1 needs the turn's verses to re-render citations honestly |
 | 2026-11-14 | Discover cards now carry the team's written answer, "why this passage matters" and a one-line takeaway (FaithMap teaching notes); a revealed discover card shows takeaway, answer, refs and why the passage matters; the agent gets the answer and why. New nullable `flashcards.takeaway` column | Owner decision, replacing the "no answers on discover cards" part of the two-kinds row: the team wrote the answers themselves, so nothing is invented. The source asks for disputed or sensitive lessons to be reviewed before publication |
+
+## Native application track
+
+The owner requested a native Swift application for **iPhone and iPad**, not a WebView, and approved the plan in `ios/README.md`'s implementation direction. Source lives under `ios/`; the website stays intact. It targets iOS/iPadOS 17+, with modern native glass where available, adaptive iPad navigation, the same sky/cross-cloud identity, native streaming chat and citation sheets, and the real deck available offline.
+
+All features stay free. StoreKit/paywall infrastructure is dormant: billing defaults OFF, product ids are empty, and off-mode policy grants access without product/purchase/restore/transaction/receipt traffic. Activation, prices, products and App Store distribution need a separate decision.
+
+Native account integration needs verified Bearer tokens in the existing API while browser cookies and CSRF checks remain unchanged. Current email templates are link-only and no native callback is configured, so native sign-in stays disabled until a supported setup is approved. Card publishing still returns 501; the native UI must not fake a successful save. Public distribution also needs account deletion and privacy/release review.
+
+**Native layout, 2026-11-15:** after inspecting the first build, the owner requested the website/ChatGPT layout rather than oversized native welcome cards. iPhone uses a leading drawer with no bottom tab bar; iPad keeps a persistent sidebar and Chat / Flashcards switch. Chat has a quiet empty state, pale composer, right-aligned user bubbles and unboxed assistant replies. Shalom's sky, cross-cloud mark, 3D flashcards and passage sheets remain.
+
+**Verification, 2026-11-15:** the owner initially chose source-only work, then explicitly approved one bounded native verification run below 100 GiB: at most 10 GiB of generated artifacts, serial tests, reused simulators, one shared DerivedData path and a hard stop at 40 GiB free. The app now resolves its pinned dependencies, compiles and runs on iPhone and iPad simulators. Core/app unit tests and both UI suites passed; exact results and screenshots are in [ios/README.md](../ios/README.md#verification-results-2026-11-15-released-source-010-1). UI chat uses labelled synthetic, network-free fixtures. Real native sign-in/model traffic, physical devices, older OS fallbacks and the full accessibility matrix remain unverified. This exception does not relax the gate for future runs. No production deploy or external auth/payment changes occurred.
+
+**TestFlight, 2026-11-15:** the owner authorized a bounded release job below 100 GiB (5 GiB of new artifacts, 40 GiB hard stop), then explicitly requested external testing. Native 0.1.0 (1) was signed on the verified owner team, Apple-validated, uploaded and processed. External Beta App Review is WAITING_FOR_REVIEW; the share link has a 100-tester cap and is not accepting external testers before approval. All features stay free, native sign-in stays disabled, and no public App Store release or individual external invitations occurred. Canonical account/build receipts and the link are in [ios/README.md](../ios/README.md#testflight-release-010-1).
+
+**Calm-reading pass, 2026-11-16:** the owner approved applying the Opus UI audit ([NATIVE-UI-REVIEW.md](NATIVE-UI-REVIEW.md)). Fixes (static sky, one-card carousel, one Sources/Copy/status section, 640pt measure, list parsing, geometry-driven streaming follow, legacy plain references shown unchecked, server display-only reference normalization, accessibility-size composer/home/sidebar layout) are in the **uncommitted, unpushed** source only. This is not a TestFlight resubmission: released 0.1.0 (1) does not contain them, its external review was last checked WAITING_FOR_REVIEW on 2026-11-16 (not re-checked), and no commit, push, deployment, Apple contact, auth or billing change occurred. Local simulator results: full iPhone 65 passed / 1 skipped, full iPad UI 16 passed, focused re-runs after the last footer change passed, core 184 and backend 380 passed / 4 skipped; an independent visual review passed. Evidence is in `ios/Verification/calm-ui/`. Remaining verification limits: motion stills-only beyond two earlier recordings, no iPhone keyboard-up matrix, no full VoiceOver audit or accessibility certification, no physical device, native sign-in or pre-iOS-26 check. Next step is an owner decision on committing, deploying the backend change and any new TestFlight build.
 
 ## In flight
 

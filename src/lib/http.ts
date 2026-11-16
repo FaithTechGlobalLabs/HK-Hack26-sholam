@@ -21,6 +21,19 @@ export function isSameOrigin(request: Request): boolean {
   return site === "same-origin" || site === "none";
 }
 
+/**
+ * May this state-changing request proceed? A verified native Bearer token
+ * is not ambient (a cross-site page cannot attach it), so it needs no
+ * Origin. Everything else, including cookie sessions, must be same-origin.
+ * Pass `bearerVerified` only from `isBearerIdentity(...)`.
+ */
+export function isTrustedMutation(
+  request: Request,
+  bearerVerified: boolean,
+): boolean {
+  return bearerVerified || isSameOrigin(request);
+}
+
 export function isJson(request: Request): boolean {
   return (request.headers.get("content-type") ?? "")
     .toLowerCase()

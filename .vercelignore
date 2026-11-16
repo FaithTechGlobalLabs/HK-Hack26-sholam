@@ -1,0 +1,10 @@
+# Deploy only web build inputs, never local agent tools, native caches or proof.
+/*
+!package.json
+!package-lock.json
+!next.config.ts
+!tsconfig.json
+!vercel.json
+!src
+!public
+!data

@@ -1,11 +1,19 @@
 # Shalom
 
+Last updated: 2026-11-15
+
 A ChatGPT-style web app for exploring the Bible and the Christian faith. Two modes sit at the top of the page:
 
 - **Chat (Shalom Guide)**: ask anything. An OpenRouter-backed guide answers clearly for young people, cites Bible verses it looked up (Berean Standard Bible), never from memory, and links into the flashcard deck when a real card matches.
 - **Flashcards**: a public deck with two kinds of card. **Quick facts** are fun or surprising questions with answers and verses. **Discover** cards are open questions for young people (the FaithMap set) with Scripture starting points to explore in chat. Browse, filter by kind and topic, study one card at a time, or add your own.
 
 Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) and a deck of 179 cards (50 quick facts, 129 FaithMap discover questions) live in Supabase Postgres, and the app deploys to Vercel from `main`. Chat runs Shalom Guide live when `OPENROUTER_API_KEY` is set; otherwise it streams a scripted demo. See [docs/PLAN.md](docs/PLAN.md).
+
+## Native iPhone and iPad app
+
+The native SwiftUI port lives in [`ios/`](ios/README.md), alongside this website. It targets iOS/iPadOS 17+, keeps the sky/glass identity and uses the same backend. The public deck is bundled for offline reading. Every feature is free; paywalls and purchasing are disabled.
+
+The app was compiled, installed and tested on iPhone and iPad simulators on 2026-11-15. Its native shell follows ChatGPT's layout: a leading drawer on iPhone, persistent sidebar on iPad, unboxed answers and a pale composer. **TestFlight 0.1.0 (1)** is uploaded and processed; external Beta App Review is pending. The [external invitation](https://testflight.apple.com/join/urQsNaGH) is capped at 100 testers and will accept external testers after Apple approval. See [`ios/README.md`](ios/README.md#testflight-release-010-1) for release receipts, tests and screenshots. Native sign-in stays disabled and physical-device runtime remains unverified; a live native-format guest API smoke passed. Source changes remain uncommitted/unpushed, and backend native-auth adaptations are not deployed.
 
 ## Where things run
 
@@ -16,6 +24,8 @@ Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) a
 | Hosting | [sholam.vercel.app](https://sholam.vercel.app) (Vercel project `owenisas-projects/sholam`); `main` → production, pull requests → previews. [`/api/health`](https://sholam.vercel.app/api/health) shows the model route, agent mode and database status without secrets |
 | Model | OpenRouter chat completions, free models only, `nvidia/nemotron-3-ultra-550b-a55b:free` by default (key set in Vercel env) |
 | Database and auth | Supabase project `sholam` (`cpeuhxozfhrldfbjbiwt`), Singapore, free plan |
+
+Vercel's upload allowlist is in `.vercelignore`: only the web package/configuration and `src/`, `public/`, and `data/` are deployment inputs. Native builds, local agent tools, environment files and operator verification artifacts stay off Vercel.
 
 ## Run locally
 

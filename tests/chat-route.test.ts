@@ -38,7 +38,10 @@ vi.mock("@/lib/agent/usage-limit", async (importOriginal) => {
 vi.mock("@/lib/flashcards/repo", () => ({
   listFlashcards: vi.fn(async () => []),
 }));
-vi.mock("@/lib/supabase/server", () => ({ currentUserId: async () => null }));
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: async () => null,
+  currentUserId: async () => null,
+}));
 
 const { POST } = await import("@/app/api/chat/route");
 const { LIMITS } = await import("@/lib/agent/limits");

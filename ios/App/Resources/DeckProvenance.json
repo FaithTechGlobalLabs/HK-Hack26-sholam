@@ -1,0 +1,15 @@
+{
+  "generatedFrom": [
+    "data/flashcards.seed.json",
+    "data/faithmap.cards.json"
+  ],
+  "counts": {
+    "fact": 50,
+    "discover": 129
+  },
+  "sources": {
+    "data/flashcards.seed.json": "43da8821f7d8b14f662e2ceea69ea6d5c3110c0e6f8a1d8bd7c3424f29d2a618",
+    "data/faithmap.cards.json": "6f4abf16f8c190ad798c1c4202d3ef8e56b9fd94b08e050b9dbaef7c1bb06d7b"
+  },
+  "content": "Copied from the canonical sources without generating or editing teaching text. See docs/SOURCES.md."
+}

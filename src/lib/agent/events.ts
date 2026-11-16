@@ -31,12 +31,14 @@ export type AgentEvent =
   | { type: "flashcard_proposal"; draft: FlashcardDraft }
   /**
    * Replace the answer text streamed so far with `text` (default empty):
-   * a preamble before a tool call, a draft before its corrected rewrite, or
-   * the draft restored when the rewrite failed.
+   * a preamble before a tool call, a draft before its corrected rewrite,
+   * the draft restored when the rewrite failed, or the final answer with
+   * its plain references linked by the server (`verse_links`, sent just
+   * before `citations`).
    */
   | {
       type: "reset";
-      reason: "tool_call" | "verse_check" | "restore";
+      reason: "tool_call" | "verse_check" | "restore" | "verse_links";
       text?: string;
     }
   /**

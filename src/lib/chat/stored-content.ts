@@ -127,6 +127,8 @@ export interface StoredChatMessage {
   unverified: Record<string, IssueReason>;
   /** Plain references whose quoted words were not checked. */
   quoteWarnings: string[];
+  /** Explicit final-check provenance for clients; absent on legacy payloads. */
+  checked?: boolean;
   cards: FlashcardSummary[];
   proposal?: FlashcardDraft;
   error?: string;
@@ -159,6 +161,7 @@ export function toChatMessages(
           verses: {},
           unverified: {},
           quoteWarnings: [],
+          checked: false,
           cards: [],
         });
       continue;
@@ -175,6 +178,7 @@ export function toChatMessages(
         (c.citations?.unverified ?? []).map((u) => [u.verseId, u.reason]),
       ),
       quoteWarnings: c.citations?.quoteWarnings ?? [],
+      checked: c.citations !== undefined && c.error === undefined,
       cards: (c.cards ?? []) as FlashcardSummary[],
       proposal: c.proposal as FlashcardDraft | undefined,
       error: c.error,

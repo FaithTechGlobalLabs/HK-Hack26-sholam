@@ -1,0 +1,30 @@
+event: flashcards
+data: {"cards":[{"id":"synthetic-card-1","kind":"fact","question":"Synthetic question?","answer":"Synthetic answer.","refs":["JHN.3.16"],"category":"jesus"}]}
+
+event: tool_start
+data: {"id":"call_1","name":"get_passage","input":{"reference":"John 3:16-17"}}
+
+event: tool_result
+data: {"id":"call_1","name":"get_passage","ok":true,"summary":"John 3:16–17 (2 verses)"}
+
+event: verses
+data: {"verses":[{"id":"JHN.3.16","label":"John 3:16","text":"For God so loved the world that He gave His one and only Son, that everyone who believes in Him shall not perish but have eternal life.","translation":"BSB"},{"id":"JHN.3.17","label":"John 3:17","text":"For God did not send His Son into the world to condemn the world, but to save the world through Him.","translation":"BSB"}]}
+
+event: text_delta
+data: {"text":"Draft with “quotes” 🙏 "}
+
+event: reset
+data: {"reason":"verse_check"}
+
+event: text_delta
+data: {"text":"God’s love — see [John 3:16–17](verse:JHN.3.16) "}
+
+event: text_delta
+data: {"text":"and [Romans 8:28](verse:ROM.8.28). 🕊️"}
+
+event: citations
+data: {"unverified":[{"verseId":"ROM.8.28","label":"Romans 8:28","reason":"not_fetched"}],"quoteWarnings":[]}
+
+event: done
+data: {"stopReason":"end_turn","messageId":"00000000-0000-4000-8000-000000000001","saved":true}
+

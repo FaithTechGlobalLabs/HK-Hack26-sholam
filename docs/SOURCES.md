@@ -1,6 +1,6 @@
 # sholam data sources and licences
 
-Last updated: 2026-11-14
+Last updated: 2026-11-15
 
 Only data listed here as **in use** or **approved** may ship. Researched 2026-11-14 through the research pool; "checked" means the primary page was read.
 
@@ -28,6 +28,12 @@ Result: 305 of 306 randomly sampled verses match helloao exactly; the remaining 
 |---|---|---|
 | `src/components/ui/dock.tsx`, `src/components/flashcards/GradientASCII.tsx` | MIT + Commons Clause, Copyright (c) 2026 David Haz ([React Bits LICENSE](https://github.com/DavidHDev/react-bits/blob/main/LICENSE.md), checked 2026-11-14) | Use inside an app is allowed; the notice must stay in the file headers; do not sell or redistribute the components on their own |
 | sholam logo (cross-cloud mark): `src/components/brand/Logo.tsx`, `src/app/icon.svg`, `src/app/favicon.ico`, `src/app/apple-icon.png`, `public/brand/` | Drawn for sholam (2026-11-14) | One geometry in all files; the mark echoes the cross-shaped cloud in `CloudSky.tsx` |
+
+### Native bundle (`ios/App/Resources`)
+
+`BundledDeck.json` is a packaging copy of the two canonical decks above: 50 fact cards plus 129 FaithMap discover cards, with the original questions, answers, explanations, takeaways and source fields unchanged. `DeckProvenance.json` records SHA-256 hashes of both inputs. The offline bundle is not an independent editable source, and cached text must never upgrade a chat citation's per-turn verification status.
+
+The native app icon and `BrandLogo` use the same cross-cloud geometry drawn for this project. Native clouds and materials are SwiftUI code, not copied React Bits components. `supabase-swift` is pinned to 2.55.6. The native app bundles verbatim root LICENSE and NOTICE files for all eight resolved Swift dependencies in `ThirdPartyNotices.txt`; versions, revisions and source hashes are recorded in `ThirdPartyNotices.sources.json`. Rebuild both with `python3 -I ios/scripts/sync-notices.py` after resolving changed dependencies, then regenerate the Xcode project. These files accompany the binary; do not rewrite the licence text. No public App Store release has occurred.
 
 ## Approved for later phases
 

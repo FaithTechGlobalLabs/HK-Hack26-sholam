@@ -28,7 +28,11 @@ import {
 } from "@/lib/flashcards/rank";
 import { listFlashcards } from "@/lib/flashcards/repo";
 import type { FlashcardDraft, FlashcardSummary } from "@/lib/flashcards/types";
-import { currentUserId } from "@/lib/supabase/server";
+import {
+  identityRefusal,
+  identityUserId,
+  resolveRequestIdentity,
+} from "@/lib/supabase/request-auth";
 
 const historyTurnSchema = z.strictObject({
   role: z.enum(["user", "assistant"]),
@@ -61,6 +65,18 @@ const SSE_HEADERS = {
  * are not.
  */
 export async function POST(request: Request) {
+  // Before any demo/live branch: a rejected Authorization header is a 401
+  // (503 if it can't be checked right now), never a guest turn. Without a
+  // header the cookie session is read only when a live turn will use it;
+  // demo and misconfigured-live turns are never saved.
+  const mode = shouldUseLiveAgent();
+  const identity = await resolveRequestIdentity(request, {
+    cookie: mode.live && !mode.reason,
+  });
+  const refused = identityRefusal(identity);
+  if (refused) return refused;
+  const userId = identityUserId(identity);
+
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return Response.json(
@@ -76,7 +92,6 @@ export async function POST(request: Request) {
       content: clip(t.content.trim(), LIMITS.model.historyTurnChars),
     }))
     .filter((t) => t.content.length > 0);
-  const mode = shouldUseLiveAgent();
 
   if (mode.live && mode.reason) {
     const reason = mode.reason;
@@ -96,7 +111,6 @@ export async function POST(request: Request) {
     });
   }
 
-  const userId = await currentUserId();
   const store = usageStore();
   const allowance = await admitTurn(
     store,

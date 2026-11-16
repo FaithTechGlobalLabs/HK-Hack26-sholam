@@ -1,6 +1,6 @@
 # sholam architecture
 
-Last updated: 2026-11-14
+Last updated: 2026-11-16
 
 ## Shape
 
@@ -19,6 +19,20 @@ src/proxy.ts refreshes the Supabase session cookie on page requests.
 ```
 
 Without env vars the app still runs: `/api/chat` streams `lib/agent/demo.ts`, and flashcards come from `data/flashcards.seed.json`. With `OPENROUTER_API_KEY` set (and `SHOLAM_AGENT` not `demo`), Chat runs Shalom Guide live.
+
+## Native SwiftUI client (`ios/`)
+
+The iPhone/iPad application is a separate native client of the same backend, not a WebView. `ios/project.yml` generates a universal iOS 17+ Xcode project; `ShalomCore` is a Foundation-only package for Codable API models, SSE transport/reduction, history bounds, citation ranges, cache isolation and free-access policy. The app target adds SwiftUI, Keychain-backed Supabase auth and an isolated, dormant StoreKit adapter. Pinned packages were resolved and the native app compiled and exercised on both simulator form factors on 2026-11-15.
+
+- **Shell:** ChatGPT-style leading drawer on iPhone, persistent split-view sidebar on iPad, no bottom tab bar. A compact header, readable-width unboxed answers and pale composer retain the established sky and cross-cloud branding. Native 3D cards and evidence-bound passage sheets remain separate task-specific surfaces.
+
+- **Transport:** URLSession POST/SSE handles the existing event names, `reset`, the final `citations` result and incomplete EOF. Stop cancels the stream; chat requests are not automatically retried after an uncertain failure. Outgoing history follows the existing limits. The native renderer opens passage sheets using only that message's evidence; interrupted/provisional text does not silently become verified.
+- **Request identity:** API handlers accept either the existing browser cookies or an explicitly supplied, verified Supabase Bearer session via `src/lib/supabase/request-auth.ts`. A present invalid Authorization header is rejected instead of falling back to cookies or guest model usage. Valid native identities may omit browser origin headers on account/import mutations; cookie requests keep the existing CSRF checks. No CORS relaxation and no client-supplied user id.
+- **Storage:** the public deck is bundled from the canonical data and refreshed from `/api/flashcards`; its source hashes are in `DeckProvenance.json`. Public deck caches are separated by API environment. Guest/account chat caches are versioned and account/environment-scoped, protected on device and excluded from backup; old tasks are cancelled before private state changes. Offline saved chats keep their original citation evidence. New model answers require a connection.
+- **Accounts:** the native adapter prepares code/link authentication and explicit local-scope sign-out, profile editing and account chat APIs. Default native sign-in is disabled: current email templates are link-only, and the Supabase redirect list has no native callback. Enabling it requires an approved callback or code-email setup and real end-to-end verification. Public account creation/distribution also needs account deletion and release/privacy review.
+- **Calm-reading client (2026-11-16, local source only):** the released 0.1.0 (1) predates these changes. The sky is a static `Canvas`; chat answers are capped at 640pt; Sources, Copy and status share one action section with collapsed sources and full passage sheets; the flashcard carousel moves one card per short non-bouncy swipe and hides neighbor text. `MarkdownBlockParser` handles ordered, nested and `+` lists with safe streaming tails, and chat following is scroll-geometry driven so browsing is preserved. `sources(in:)` and `ReferenceScanner` expose legacy plain references as always unchecked while wire/cache enums are unchanged. At accessibility text sizes the composer keeps its height, home prompts hide while it is focused and the sidebar (with its footer) scrolls as one list. Verified in simulator only; details and evidence: [NATIVE-UI-REVIEW.md](NATIVE-UI-REVIEW.md#local-fixes-applied-2026-11-16).
+- **Money:** all app features are free. Billing is hard-OFF in generated Info.plist/config and product identifiers are empty. Off mode grants access but never fetches StoreKit products, purchases/restores, starts transaction observers, submits receipts or presents a paywall. Future StoreKit/paywall code is isolated and testable through a mock; products, pricing and activation are separate release decisions. Model/abuse quotas remain safety limits without an upgrade CTA.
+- **Verification and beta release:** core/app unit tests and both simulator UI suites passed; DEBUG fixtures are not production-model proof. A separate live native-format guest request completed against the production API. Device Release 0.1.0 (1) was signed for verified team `3LHSL95J9H`, validated by Apple and processed VALID. The external TestFlight group and capped invitation link are configured; Beta App Review is pending. Signing/profile settings belong only on the app's Release target, not global package build flags. Native sign-in stays off, backend Bearer adaptations are not deployed, and source remains uncommitted/unpushed. See [ios/README.md](../ios/README.md#testflight-release-010-1) for canonical release receipts, budget and verification gaps.
 
 ## Agent harness (`src/lib/agent/`)
 
@@ -93,6 +107,10 @@ One frame per event: `event: <type>\ndata: <json>\n\n`. The browser uses fetch +
 ## Citations (`citations.ts`)
 
 The model cites as markdown links: `[John 3:16](verse:JHN.3.16)`. A citation is **verified** only when a tool returned that verse during the turn *before the answer was written*, and any words quoted for it match the returned BSB text. `checkAnswer` finds quotations (“…”, "…", `>` blocks; Latin script only, code ignored) and the reference right next to them (a `verse:` link or a plain "Romans 8:28"), then compares words, ignoring case, punctuation and apostrophe style, with `…` allowed between parts. Not fetched → `not_fetched`; fetched but different words → `quote_mismatch`. Quotes with no reference beside them, and non-English quotations, are not judged. The server sends the result as `citations`; `MessageList` renders `verse:` links with `VerseChip`: a chip with the verse text on hover when verified, otherwise the label marked "unverified" with the reason on hover, and a note under the answer for plain references whose quotes were not checked.
+
+**Display normalization (2026-11-16, local, not deployed).** `finalizeAnswer` turns supported English plain references (for example "Matthew 12:39–41") into `verse:` links in the text shown, so every client gets the same source controls. This is display-only: the raw model text and the stored `messages.content` blocks stay verbatim. Linking never upgrades coverage. A reference not fetched before the answer stays `not_fetched`, quote checks cover the full range and are strict, a corrected-draft snapshot keeps its flags, and nothing is fetched after the answer to upgrade a citation. Tested in `tests/citations.test.ts` and `tests/harness-loop.test.ts`; a local replay (HTTP 200, four normalized links, all `not_fetched`, no provider/database/auth calls) is saved in `ios/Verification/calm-ui/local-harness-replay.json`.
+
+**Complete reference identity.** Verification removes inline emphasis before parsing a complete canonical book/chapter/verse label. Ordinal and Roman book numbers stay attached to the whole name; unsupported numbered names must not expose a Gospel-of-John suffix. A specific numeric label that cannot be parsed in full, including an unknown translation or annotation, remains unchecked even when its chapter/verse numbers match fetched data. Opaque labels without reference numbers retain target-only lookup semantics. The native resolver applies the same conservative rule; wire/cache issue types do not change.
 
 ## Data model (`src/db/schema.ts`, migrations in `drizzle/`)
 

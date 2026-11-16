@@ -1,0 +1,3 @@
+# License text and SSE wire fixtures must retain their exact source bytes.
+ios/App/Resources/ThirdPartyNotices.txt -text -whitespace
+ios/Packages/ShalomCore/Tests/ShalomCoreTests/Fixtures/*.sse -text -whitespace

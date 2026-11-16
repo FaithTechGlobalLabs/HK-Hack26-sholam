@@ -15,6 +15,9 @@
       "!build",
       "!drizzle",
       "!data/faithmap.cards.json",
+      "!ios/App/Resources/BundledDeck.json",
+      "!ios/App/Resources/DeckProvenance.json",
+      "!ios/Verification",
       "!.agents",
       "!.aider-desk",
       "!skills-lock.json"

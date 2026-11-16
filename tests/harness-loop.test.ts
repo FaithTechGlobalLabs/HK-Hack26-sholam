@@ -278,16 +278,148 @@ describe("runAgentTurn", () => {
       yield { type: "text" as const, text: "And we" };
       throw new OpenRouterError("busy", 429);
     });
-    const events = await collect();
+    const finished: { text: string; messages: ChatMessage[] }[] = [];
+    const events = await collect({
+      onFinish: async (turn) => {
+        finished.push(turn);
+      },
+    });
     expect(types(events)).not.toContain("error");
+    const linkedDraft = NKJV_ROMANS.replace(
+      "(Romans 8:28, BSB)",
+      "([Romans 8:28](verse:ROM.8.28), BSB)",
+    );
     expect(events.filter((e) => e.type === "reset").at(-1)).toMatchObject({
       reason: "restore",
-      text: NKJV_ROMANS,
+      text: linkedDraft,
     });
-    expect(textOf(events)).toBe(NKJV_ROMANS);
-    expect(events.at(-2)).toMatchObject({
+    expect(textOf(events)).toBe(linkedDraft);
+    // Judged against the evidence the draft had: ROM.8.28 was fetched only
+    // for the rewrite, so it stays not_fetched.
+    expect(events.at(-2)).toEqual({
       type: "citations",
+      unverified: [
+        { verseId: "ROM.8.28", label: "Romans 8:28", reason: "not_fetched" },
+      ],
       quoteWarnings: ["Romans 8:28"],
+    });
+    expect(finished[0].text).toBe(linkedDraft);
+    expect(finished[0].messages.at(-1)).toEqual({
+      role: "assistant",
+      content: NKJV_ROMANS,
+    });
+  });
+
+  it("never lets the correction fetch upgrade a restored draft", async () => {
+    // The quoted words are right, but no tool returned them before the
+    // draft; the correction fetch then loads NUM.22.28.
+    const draft =
+      'The donkey asked, "What have I done to you that you have beaten me these three times?" (Numbers 22:28)';
+    h.script.push(say(draft), async function* () {
+      yield* [];
+      throw new OpenRouterError("busy", 429);
+    });
+    const finished: {
+      text: string;
+      messages: ChatMessage[];
+      verses: { id: string }[];
+      citations: { unverified: unknown[] };
+    }[] = [];
+    const events = await collect({
+      onFinish: async (turn) => {
+        finished.push(turn);
+      },
+    });
+    const verses = events.find((e) => e.type === "verses");
+    expect(verses).toMatchObject({ verses: [{ id: "NUM.22.28" }] });
+    // The saved evidence is the draft's (nothing was fetched before it), and
+    // its citation stays unverified...
+    expect(finished[0].verses).toEqual([]);
+    expect(finished[0].citations.unverified).toEqual([
+      { verseId: "NUM.22.28", label: "Numbers 22:28", reason: "not_fetched" },
+    ]);
+    // ...while the raw history keeps every block: the draft, the verse-check
+    // note with the fetched text, and the restored draft, all verbatim.
+    expect(finished[0].messages).toEqual([
+      { role: "assistant", content: draft },
+      {
+        role: "user",
+        content: expect.stringContaining("NUM.22.28 | Then the LORD opened"),
+      },
+      { role: "assistant", content: draft },
+    ]);
+    const restore = events.filter((e) => e.type === "reset").at(-1);
+    expect(restore).toEqual({
+      type: "reset",
+      reason: "restore",
+      text: draft.replace(
+        "(Numbers 22:28)",
+        "([Numbers 22:28](verse:NUM.22.28))",
+      ),
+    });
+    expect(events.at(-2)).toEqual({
+      type: "citations",
+      unverified: [
+        { verseId: "NUM.22.28", label: "Numbers 22:28", reason: "not_fetched" },
+      ],
+      quoteWarnings: ["Numbers 22:28"],
+    });
+    expect(types(events).slice(-3)).toEqual(["reset", "citations", "done"]);
+  });
+
+  it("links plain references in the shown answer and keeps the raw answer for the model", async () => {
+    const raw =
+      "God works for good (Romans 8:28), and even a donkey spoke (Numbers 22:28).";
+    h.script.push(
+      call("lookup_verses", { references: ["Romans 8:28"] }),
+      say(
+        "God works for good (Romans 8:28), ",
+        "and even a donkey spoke (Numbers 22:28).",
+      ),
+    );
+    const finished: {
+      text: string;
+      messages: ChatMessage[];
+      citations: unknown;
+    }[] = [];
+    const events = await collect({
+      onFinish: async (turn) => {
+        finished.push(turn);
+      },
+    });
+    const shown =
+      "God works for good ([Romans 8:28](verse:ROM.8.28)), and even a donkey spoke ([Numbers 22:28](verse:NUM.22.28)).";
+    // The stream itself is the raw text; the swap comes once, at the end.
+    const streamed = events
+      .filter((e) => e.type === "text_delta")
+      .map((e) => (e.type === "text_delta" ? e.text : ""))
+      .join("");
+    expect(streamed).toBe(raw);
+    expect(types(events).slice(-3)).toEqual(["reset", "citations", "done"]);
+    expect(events.at(-3)).toEqual({
+      type: "reset",
+      reason: "verse_links",
+      text: shown,
+    });
+    const citations = {
+      unverified: [
+        { verseId: "NUM.22.28", label: "Numbers 22:28", reason: "not_fetched" },
+      ],
+      quoteWarnings: [],
+    };
+    expect(events.at(-2)).toEqual({ type: "citations", ...citations });
+    expect(textOf(events)).toBe(shown);
+    expect(finished).toHaveLength(1);
+    expect(finished[0].text).toBe(shown);
+    expect(finished[0].citations).toEqual(citations);
+    expect(finished[0].messages.map((m) => m.role)).toEqual([
+      "assistant",
+      "tool",
+      "assistant",
+    ]);
+    expect(finished[0].messages.at(-1)).toEqual({
+      role: "assistant",
+      content: raw,
     });
   });
 
