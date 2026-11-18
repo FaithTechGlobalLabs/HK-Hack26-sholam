@@ -20,6 +20,9 @@ final class ApplicationModel {
     let auth: AuthStore
     let api: ShalomAPIClient
     let chat: ChatViewModel
+    let consent: AIConsentStore
+    private(set) var clearingLocalHistory = false
+    private(set) var localHistoryNotice: String?
     private let cache: ChatCache
     private let importLedger: GuestImportLedger
     private let requestIdentity: AccountRequestIdentity
@@ -93,17 +96,28 @@ final class ApplicationModel {
         let cache = ChatCache(rootDirectory: directory)
         self.cache = cache
         importLedger = GuestImportLedger(directory: directory)
-        chat = ChatViewModel(
-            api: streamingAPI, cache: cache,
-            scope: ChatCacheScope(environment: configuration.environmentID, userID: nil)
-        )
+        let scope = ChatCacheScope(environment: configuration.environmentID, userID: nil)
+        let consent = AIConsentStore(scope: scope, defaults: isUITesting ? nil : .standard)
+        self.consent = consent
+        #if DEBUG
+        if isUITesting, configuration.apiBaseURL.host == "ui-tests.invalid",
+           arguments.contains("--ui-ai-consent-allowed") { consent.grant() }
+        #endif
+        chat = ChatViewModel(api: streamingAPI, cache: cache, scope: scope, consent: consent)
         if let url = Bundle.main.url(forResource: "BundledDeck", withExtension: "json"),
            let data = try? Data(contentsOf: url),
            let bundle = try? JSONDecoder().decode(DeckResponse.self, from: data) {
             cards = bundle.cards
         } else {
-            deckNotice = "The bundled deck could not be opened. Connect and refresh to download it."
+            deckNotice = "The bundled deck could not be opened. Connect to download the cards."
         }
+        #if DEBUG
+        if isUITesting, configuration.apiBaseURL.host == "ui-tests.invalid",
+           let argument = arguments.first(where: { $0.hasPrefix("--ui-card=") }) {
+            let id = String(argument.dropFirst("--ui-card=".count))
+            if cards.contains(where: { $0.id == id }) { focusedCardID = id }
+        }
+        #endif
         // Install this barrier before the SDK can emit a restored session.
         auth.beforeSessionChange = { [weak self] in
             await self?.prepareForSessionChange()
@@ -160,6 +174,7 @@ final class ApplicationModel {
         historyLoading = false
         historyNotice = nil
         importNotice = nil
+        localHistoryNotice = nil
         importBusy = false
         importedGuestCounts = [:]
         currentUserID = newUserID
@@ -187,7 +202,7 @@ final class ApplicationModel {
         defer { deckRefreshing = false }
         if let saved = try? await cache.loadDeck(), !saved.cards.isEmpty {
             cards = saved.cards
-            if !force && Date().timeIntervalSince(saved.fetchedAt) < 3_600 {
+            if !force && deckNotice == nil && (0..<3_600).contains(Date().timeIntervalSince(saved.fetchedAt)) {
                 deckOffline = false; deckNotice = nil
                 return
             }
@@ -196,7 +211,9 @@ final class ApplicationModel {
             let fresh = try await api.fetchDeck()
             guard !fresh.isEmpty else {
                 deckOffline = true
-                deckNotice = "No cards came back. The downloaded deck is still available."
+                deckNotice = cards.isEmpty
+                    ? "No cards came back. Try again later."
+                    : "No cards came back. Your saved cards are still available."
                 return
             }
             cards = fresh; deckOffline = false; deckNotice = nil
@@ -204,12 +221,14 @@ final class ApplicationModel {
         } catch {
             guard !Task.isCancelled else { return }
             deckOffline = true
-            deckNotice = "Showing the downloaded deck. New chat answers need a connection."
+            deckNotice = cards.isEmpty
+                ? "Could not download the cards. Connect and try again."
+                : "Could not update the cards. Showing the saved deck."
         }
     }
 
     func refreshHistory() async {
-        guard accountScopeMatches else { return }
+        guard accountScopeMatches, !clearingLocalHistory else { return }
         let ticket = identityGeneration
         let request = UUID()
         historyRequest = request
@@ -253,8 +272,9 @@ final class ApplicationModel {
         }
     }
 
-    func openChat(id rawID: String) async {
-        guard accountScopeMatches else { return }
+    @discardableResult
+    func openChat(id rawID: String) async -> Bool {
+        guard accountScopeMatches, !clearingLocalHistory else { return false }
         // Choosing another conversation is an explicit navigation action.
         chat.stop()
         let id = ChatID.canonical(rawID)
@@ -272,41 +292,50 @@ final class ApplicationModel {
         if userIsSignedIn && !isUITesting {
             do {
                 let doc = try await api.loadChat(id: id)
-                guard stillCurrent() else { return }
+                guard stillCurrent() else { return false }
                 let value = ChatThread(id: doc.chat.id, title: doc.chat.title, messages: doc.messages)
                 chat.open(value)
                 section = .chat
+                historyNotice = nil
+                let openedInteraction = chat.interactionRevision
                 let targetScope = cacheScope
                 await performCacheOperation { cache in
                     do { try await cache.saveThread(value, scope: targetScope) } catch { /* Server copy remains authoritative. */ }
                 }
-                return
+                return ticket == identityGeneration && section == .chat
+                    && chat.interactionRevision == openedInteraction
             } catch {
-                guard stillCurrent(), !Task.isCancelled else { return }
+                guard stillCurrent(), !Task.isCancelled else { return false }
                 if let problem = error as? ShalomAPIError, problem.statusCode == 404 {
                     // A known remote chat that disappeared is not replaced by
                     // a cache. A never-saved local draft is still usable.
                     if !knownRemoteIDs.contains(id), let local = loadedThreads[id] {
                         chat.open(local)
                         section = .chat
-                    } else {
-                        historyNotice = "That conversation is no longer available to this account."
+                        historyNotice = nil
+                        return true
                     }
-                    return
+                    historyNotice = "That conversation is no longer available to this account."
+                    return false
                 }
                 if let local = loadedThreads[id] {
                     chat.open(local, offline: true)
                     section = .chat
-                    return
+                    historyNotice = nil
+                    return true
                 }
                 historyNotice = "Could not open that conversation. Try again when connected."
-                return
+                return false
             }
         }
         if stillCurrent(), let local = loadedThreads[id] {
             chat.open(local)
             section = .chat
+            historyNotice = nil
+            return true
         }
+        if stillCurrent() { historyNotice = "That conversation is no longer saved on this device." }
+        return false
     }
 
     func importGuestHistory() async {
@@ -353,8 +382,43 @@ final class ApplicationModel {
         }
     }
 
+    func revokeAIConsent() { chat.revokeAISharing() }
+
+    func clearGuestHistory() async {
+        guard accountScopeMatches, !userIsSignedIn, !clearingLocalHistory else { return }
+        clearingLocalHistory = true
+        localHistoryNotice = nil
+        let ticket = identityGeneration
+        historyRequest = UUID()
+        historyLoading = false
+        openRequest = UUID()
+        defer { clearingLocalHistory = false }
+        do {
+            let cleared = try await chat.deleteGuestHistory()
+            guard ticket == identityGeneration, accountScopeMatches, !userIsSignedIn else {
+                localHistoryNotice = cleared
+                    ? "Guest chats were deleted from this device."
+                    : "Guest chats were not deleted. Try again."
+                clearingLocalHistory = false
+                await refreshHistory()
+                return
+            }
+            if cleared {
+                loadedThreads = [:]
+                history = []
+                historyNotice = nil
+                guestImportCount = 0
+                localHistoryNotice = "Local chats and the unsent question were deleted from this device."
+            } else {
+                localHistoryNotice = "Local history was not deleted. Try again."
+            }
+        } catch {
+            localHistoryNotice = "Guest history could not be deleted. Some saved data may remain on this device."
+        }
+    }
+
     func askFromCard(_ question: String) {
-        guard accountScopeMatches else { return }
+        guard accountScopeMatches, !clearingLocalHistory else { return }
         openRequest = UUID()
         chat.newChat()
         section = .chat

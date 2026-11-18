@@ -29,12 +29,15 @@ final class ShalomUITests: XCTestCase {
 
     // MARK: - Launch and orientation
 
-    private func launch(fixture: String? = nil, resetStorage: Bool = true, accessibilitySize: Bool = false) -> XCUIApplication {
+    private func launch(fixture: String? = nil, resetStorage: Bool = true, accessibilitySize: Bool = false,
+                        cardID: String? = nil, consentGranted: Bool = true) -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()
         var arguments = ["--ui-testing"]
         if resetStorage { arguments.append("--ui-reset-storage") }
         if let fixture { arguments.append("--ui-chat-fixture=\(fixture)") }
+        if let cardID { arguments.append("--ui-card=\(cardID)") }
+        if consentGranted { arguments.append("--ui-ai-consent-allowed") }
         if accessibilitySize {
             arguments += ["-UIPreferredContentSizeCategoryName", UIContentSizeCategory.accessibilityExtraExtraExtraLarge.rawValue]
         }
@@ -115,7 +118,8 @@ final class ShalomUITests: XCTestCase {
         if !String(describing: sources.value ?? "").contains("shown") { sources.tap() }
     }
 
-    private func send(_ question: String, in app: XCUIApplication, captureComposer: Bool = false) {
+    private func send(_ question: String, in app: XCUIApplication, captureComposer: Bool = false,
+                      expectingConsent: Bool = false) {
         let composer = app.descendants(matching: .any)["chat-composer"].firstMatch
         XCTAssertTrue(composer.waitForExistence(timeout: timeout), "Composer missing")
         composer.tap()
@@ -131,6 +135,10 @@ final class ShalomUITests: XCTestCase {
             }
         }
         sendButton.tap()
+        if expectingConsent {
+            XCTAssertTrue(app.descendants(matching: .any)["ai-consent"].firstMatch.waitForExistence(timeout: timeout))
+            return
+        }
         let submitted = waitFor(composer, "value != %@", question)
         if !submitted {
             proof("after-send-failure", in: app)
@@ -205,9 +213,11 @@ final class ShalomUITests: XCTestCase {
             proof("sidebar", in: app)
             app.buttons[Nav.close].tap()
         }
-        navigate("Chats", in: app)
-        XCTAssertTrue(app.staticTexts["On this device"].waitForExistence(timeout: timeout))
-        XCTAssertTrue(app.staticTexts["No conversations yet"].waitForExistence(timeout: timeout))
+        if !isPad { openSidebar(in: app) }
+        XCTAssertFalse(navItem("Chats", in: app).exists, "Redundant All chats destination remains")
+        XCTAssertTrue(app.staticTexts["Your conversations appear here."].waitForExistence(timeout: timeout))
+        XCTAssertTrue(app.textFields["sidebar-search"].exists, "Sidebar history search is missing")
+        XCTAssertTrue(app.staticTexts["Guest chat history is saved here."].exists)
         navigate("Chat", in: app)
         XCTAssertTrue(app.descendants(matching: .any)["chat-composer"].firstMatch.waitForExistence(timeout: timeout))
     }
@@ -215,7 +225,7 @@ final class ShalomUITests: XCTestCase {
     func testAccessibilitySidebarKeepsNavigationUsable() throws {
         let app = launch(accessibilitySize: true)
         if !isPad { openSidebar(in: app) }
-        let identifiers = ["sidebar-new-chat", "nav-Chat", "nav-Flashcards", "nav-Chats"]
+        let identifiers = ["sidebar-new-chat", "nav-Chat", "nav-Flashcards"]
         var previousBottom: CGFloat?
         for identifier in identifiers {
             let row = app.buttons[identifier].firstMatch
@@ -266,7 +276,8 @@ final class ShalomUITests: XCTestCase {
             // Native display mode collapsed the column: bring it back once.
             openSidebar(in: app)
         }
-        for destination in ["Chat", "Flashcards", "Chats"] {
+        XCTAssertFalse(navItem("Chats", in: app).exists)
+        for destination in ["Chat", "Flashcards"] {
             XCTAssertTrue(waitFor(navItem(destination, in: app), "exists == true AND isHittable == true"),
                           "Sidebar is missing \(Nav.destination(destination))")
         }
@@ -274,6 +285,33 @@ final class ShalomUITests: XCTestCase {
         XCTAssertTrue(waitFor(app.buttons[Nav.newChat].firstMatch, "exists == true AND isHittable == true"),
                       "Top bar has no reachable new-chat button")
         XCTAssertFalse(app.tabBars.firstMatch.exists, "iPad shell still shows a tab bar")
+    }
+
+    func testIPadModeLabelsHaveRoomAndFitToolbar() throws {
+        guard isPad else { throw XCTSkip("iPad mode-switch geometry test") }
+        let app = launch()
+        let font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .subheadline).pointSize,
+                                     weight: .semibold)
+        var contentInsets: [CGFloat] = []
+        for title in ["Chat", "Flashcards"] {
+            let button = app.buttons["mode-\(title)"]
+            XCTAssertTrue(waitFor(button, "exists == true AND isHittable == true"))
+            let textWidth = (title as NSString).size(withAttributes: [.font: font]).width
+            let combinedInset = button.frame.width - textWidth
+            contentInsets.append(combinedInset)
+            XCTAssertEqual(combinedInset, 32, accuracy: 3, "Cramped label: \(title)")
+            XCTAssertGreaterThanOrEqual(button.frame.height, 44)
+            let toolbar = app.navigationBars.containing(.button, identifier: "mode-\(title)").firstMatch
+            XCTAssertTrue(toolbar.exists, "Mode control has no detail toolbar")
+            XCTAssertTrue(toolbar.frame.contains(button.frame), "Mode control exceeds the toolbar")
+        }
+        XCTAssertEqual(contentInsets[0], contentInsets[1], accuracy: 3)
+        app.buttons["mode-Flashcards"].tap()
+        XCTAssertTrue(app.buttons["card-face-reveal"].waitForExistence(timeout: timeout))
+        XCTAssertTrue(app.buttons["mode-Flashcards"].isSelected)
+        proof("mode-spacing-flashcards", in: app)
+        app.buttons["mode-Chat"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["chat-composer"].firstMatch.waitForExistence(timeout: timeout))
     }
 
     func testAccountHasNoPurchaseUI() throws {
@@ -284,14 +322,159 @@ final class ShalomUITests: XCTestCase {
             openSidebar(in: app)
         }
         XCTAssertTrue(waitFor(account, "exists == true AND isHittable == true"), "No account-button")
-        account.tap()
-        let freeAccess = app.descendants(matching: .any)
+        account.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let accountForm = app.descendants(matching: .any)["account-form"].firstMatch
+        XCTAssertTrue(accountForm.waitForExistence(timeout: timeout), "Account row center did not present settings")
+        let freeAccess = accountForm.descendants(matching: .any)
             .matching(NSPredicate(format: "label CONTAINS %@", "Free access")).firstMatch
         XCTAssertTrue(freeAccess.waitForExistence(timeout: timeout), "Account does not say Free access")
         for purchase in ["Upgrade", "Subscribe", "Restore purchases"] {
             XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", purchase))
                 .firstMatch.exists, "Account shows purchase UI: \(purchase)")
         }
+    }
+
+    // MARK: - Privacy controls
+
+    private func reach(_ button: XCUIElement, in app: XCUIApplication,
+                       containerID: String? = nil, upwards: Bool = true) {
+        let container = containerID.map { app.descendants(matching: .any)[$0].firstMatch } ?? app
+        for _ in 0..<18 {
+            if button.exists && button.isHittable
+                && (button.elementType == .staticText || container.frame.contains(button.frame)) { return }
+            if upwards { container.swipeUp() } else { container.swipeDown() }
+        }
+    }
+
+    func testConsentDeclineKeepsTheDraftAndAllowsOfflinePrivacyReading() throws {
+        let app = launch(fixture: "verified", consentGranted: false)
+        let question = "UI fixture: consent question"
+        send(question, in: app, expectingConsent: true)
+        XCTAssertFalse(userBubbles(question, in: app).firstMatch.exists)
+        let privacy = app.buttons["ai-consent-privacy"]
+        reach(privacy, in: app)
+        privacy.tap()
+        XCTAssertTrue(app.staticTexts["privacy-policy-missing"].waitForExistence(timeout: timeout))
+        let back = app.navigationBars.buttons.firstMatch
+        XCTAssertTrue(back.exists)
+        back.tap()
+        let decline = app.buttons["ai-consent-not-now"]
+        reach(decline, in: app)
+        decline.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["chat-composer"].firstMatch.waitForExistence(timeout: timeout))
+        XCTAssertEqual(app.descendants(matching: .any)["chat-composer"].firstMatch.value as? String, question)
+        XCTAssertFalse(userBubbles(question, in: app).firstMatch.exists)
+        navigate("Flashcards", in: app)
+        XCTAssertTrue(app.buttons["card-face-reveal"].waitForExistence(timeout: timeout))
+    }
+
+    func testAccessibilityConsentActionsRemainReachable() throws {
+        let app = launch(fixture: "verified", accessibilitySize: true, consentGranted: false)
+        let question = "UI fixture: large privacy consent"
+        send(question, in: app, expectingConsent: true)
+        let allow = app.buttons["ai-consent-allow"]
+        let decline = app.buttons["ai-consent-not-now"]
+        reach(allow, in: app)
+        XCTAssertTrue(allow.isHittable)
+        XCTAssertGreaterThanOrEqual(allow.frame.height, 44)
+        reach(decline, in: app)
+        XCTAssertTrue(decline.isHittable)
+        proof("large-ai-consent-actions", in: app)
+        decline.tap()
+        XCTAssertFalse(userBubbles(question, in: app).firstMatch.exists)
+    }
+
+    func testConsentGrantNeedsASecondSendAndCanBeRevoked() throws {
+        let app = launch(fixture: "verified", consentGranted: false)
+        let question = "UI fixture: explicit consent"
+        send(question, in: app, expectingConsent: true)
+        proof("ai-sharing-consent-disclosure", in: app)
+        let allow = app.buttons["ai-consent-allow"]
+        reach(allow, in: app)
+        proof("ai-sharing-consent", in: app)
+        allow.tap()
+        XCTAssertTrue(app.buttons["chat-send"].waitForExistence(timeout: timeout))
+        XCTAssertFalse(userBubbles(question, in: app).firstMatch.exists)
+        app.buttons["chat-send"].tap()
+        waitForTurnToEnd(in: app)
+        XCTAssertTrue(text(containing: Fixture.answerMarker, in: app).exists)
+        if !isPad { openSidebar(in: app) }
+        app.buttons[Nav.account].firstMatch.tap()
+        let revoke = app.buttons["account-ai-revoke"]
+        reach(revoke, in: app, containerID: "account-form")
+        revoke.tap()
+        app.buttons["Turn Off"].firstMatch.tap()
+        XCTAssertTrue(waitFor(app.descendants(matching: .any)["account-ai-state"].firstMatch,
+                              "label CONTAINS 'Not allowed' OR value CONTAINS 'Not allowed'"))
+        proof("ai-sharing-revoked", in: app)
+    }
+
+    func testLocalHistoryDeletionIsConfirmedAndSurvivesRelaunch() throws {
+        var app = launch(fixture: "verified")
+        let question = "UI fixture: delete my local chat"
+        send(question, in: app)
+        waitForTurnToEnd(in: app)
+        if !isPad { openSidebar(in: app) }
+        app.buttons[Nav.account].firstMatch.tap()
+        let delete = app.buttons["account-delete-local-chats"]
+        reach(delete, in: app, containerID: "account-form")
+        delete.tap()
+        app.buttons.matching(NSPredicate(format: "label == 'Delete local chats' AND identifier != 'account-delete-local-chats'")).firstMatch.tap()
+        let notice = app.descendants(matching: .any)["account-local-history-notice"].firstMatch
+        XCTAssertTrue(notice.waitForExistence(timeout: timeout))
+        reach(notice, in: app, containerID: "account-form")
+        proof("local-chats-deleted", in: app)
+        app.terminate()
+        app = launch(fixture: "verified", resetStorage: false)
+        if !isPad { openSidebar(in: app) }
+        XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", question)).firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["Your conversations appear here."].exists)
+    }
+
+    func testReportExcludesTheAnswerUntilExplicitlyIncluded() throws {
+        let app = launch(fixture: "verified")
+        send("UI fixture: report answer", in: app)
+        waitForTurnToEnd(in: app)
+        let report = app.buttons["answer-report"].firstMatch
+        XCTAssertTrue(report.waitForExistence(timeout: timeout))
+        if !report.isHittable { app.scrollViews["chat-conversation"].swipeUp() }
+        report.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["report-support-missing"].firstMatch.waitForExistence(timeout: timeout))
+        let reason = app.descendants(matching: .any)["report-reason"].firstMatch
+        reason.tap()
+        app.buttons["Bible reference or quote problem"].firstMatch.tap()
+        let toggle = app.switches["report-include-answer"]
+        XCTAssertTrue(toggle.exists)
+        XCTAssertEqual(toggle.value as? String, "0")
+        let preview = app.staticTexts["report-preview"]
+        proof("report-before-preview-scroll", in: app)
+        reach(preview, in: app, containerID: "report-form")
+        XCTAssertTrue(preview.waitForExistence(timeout: timeout))
+        XCTAssertFalse(preview.label.contains(Fixture.answerMarker))
+        reach(toggle, in: app, containerID: "report-form", upwards: false)
+        XCTAssertTrue(toggle.isHittable)
+        let nativeSwitch = app.descendants(matching: .any)["report-form"].firstMatch.switches
+            .matching(NSPredicate(format: "identifier == ''")).firstMatch
+        XCTAssertTrue(nativeSwitch.exists, "Native answer-sharing switch missing")
+        nativeSwitch.tap()
+        XCTAssertTrue(waitFor(toggle, "value == '1'"))
+        reach(preview, in: app, containerID: "report-form")
+        proof("report-answer-explicitly-included", in: app)
+        XCTAssertTrue(waitFor(preview, "label CONTAINS %@", Fixture.answerMarker))
+        reach(toggle, in: app, containerID: "report-form", upwards: false)
+        nativeSwitch.tap()
+        XCTAssertTrue(waitFor(toggle, "value == '0'"))
+        reach(preview, in: app, containerID: "report-form")
+        XCTAssertTrue(waitFor(preview, "NOT (label CONTAINS %@)", Fixture.answerMarker))
+        reach(app.buttons["report-copy"], in: app, containerID: "report-form")
+        proof("report-draft-answer-excluded", in: app)
+        app.buttons["report-share"].tap()
+        settle(2)
+        proof("report-system-share-chooser", in: app)
+        let shareTree = XCTAttachment(string: app.debugDescription)
+        shareTree.name = "report-system-share-tree"
+        shareTree.lifetime = .keepAlways
+        add(shareTree)
     }
 
     // MARK: - Chat fixtures
@@ -413,15 +596,33 @@ final class ShalomUITests: XCTestCase {
         waitForTurnToEnd(in: app)
 
         let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", question)).firstMatch
-        navigate("Chats", in: app)
-        XCTAssertTrue(row.waitForExistence(timeout: timeout), "Saved chat not listed")
+        if !isPad { openSidebar(in: app) }
+        XCTAssertTrue(row.waitForExistence(timeout: timeout), "Saved chat not listed in sidebar")
+        let savedID = row.identifier
+        XCTAssertTrue(savedID.hasPrefix("sidebar-chat-"))
 
         // Relaunch WITHOUT reset: the guest copy must come back from disk.
         app.terminate()
         app = launch(fixture: "verified", resetStorage: false)
-        navigate("Chats", in: app)
-        let savedRow = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", question)).firstMatch
-        XCTAssertTrue(savedRow.waitForExistence(timeout: timeout), "Saved chat not listed after relaunch")
+        if !isPad { openSidebar(in: app) }
+        let search = app.textFields["sidebar-search"]
+        XCTAssertTrue(search.waitForExistence(timeout: timeout))
+        search.tap()
+        search.typeText("saved history\n")
+        let savedRow = app.buttons[savedID]
+        proof("saved-history-search", in: app)
+        let searchTree = XCTAttachment(string: app.debugDescription)
+        searchTree.name = "saved-history-search-tree"
+        searchTree.lifetime = .keepAlways
+        add(searchTree)
+        let found = waitFor(savedRow, "exists == true AND isHittable == true")
+        if !found {
+            let finalTree = XCTAttachment(string: app.debugDescription)
+            finalTree.name = "saved-history-final-tree"
+            finalTree.lifetime = .keepAlways
+            add(finalTree)
+        }
+        XCTAssertTrue(found, "Saved chat search id=\(savedID): row exists=\(savedRow.exists), search=\(String(describing: search.value))")
         savedRow.tap()
 
         XCTAssertTrue(userBubbles(question, in: app).firstMatch.waitForExistence(timeout: timeout),
@@ -520,9 +721,57 @@ final class ShalomUITests: XCTestCase {
 
     // MARK: - Flashcards
 
+    func testLongDiscoverAnswerHasHonestOverflowCue() throws {
+        checkLongAnswer(accessibilitySize: false)
+    }
+
+    func testAccessibilityCardKeepsAllContentAndActionsReachable() throws {
+        checkLongAnswer(accessibilitySize: true)
+    }
+
+    private func activeCardScroll(in app: XCUIApplication) -> XCUIElement {
+        app.scrollViews.matching(identifier: "card-reading-scroll").allElementsBoundByIndex.first {
+            app.frame.contains($0.frame) && $0.isHittable
+        } ?? app.scrollViews["card-reading-scroll"].firstMatch
+    }
+
+    private func checkLongAnswer(accessibilitySize: Bool) {
+        let app = launch(accessibilitySize: accessibilitySize,
+                         cardID: "faithmap-what-happened-when-a-man-fell-asleep-during-pauls-very-long")
+        navigate("Flashcards", in: app)
+        let reveal = app.buttons["card-face-reveal"]
+        XCTAssertTrue(reveal.waitForExistence(timeout: timeout))
+        for _ in 0..<8 {
+            if reveal.isHittable { break }
+            activeCardScroll(in: app).swipeUp()
+        }
+        XCTAssertTrue(reveal.isHittable)
+        proof(accessibilitySize ? "large-card-front" : "long-card-front", in: app)
+        reveal.tap()
+        let cue = app.descendants(matching: .any)["card-more-below"].firstMatch
+        let inspected = activeCardScroll(in: app)
+        proof(accessibilitySize ? "large-answer-before-check" : "long-answer-before-check", in: app)
+        XCTAssertTrue(cue.waitForExistence(timeout: timeout), "Long answer has no overflow cue: \(String(describing: inspected.value))")
+        proof(accessibilitySize ? "large-answer-more" : "long-answer-more", in: app)
+        let reading = activeCardScroll(in: app)
+        for _ in 0..<32 {
+            if String(describing: reading.value).contains("more below false") { break }
+            reading.swipeUp()
+        }
+        proof(accessibilitySize ? "large-answer-at-end-check" : "long-answer-at-end-check", in: app)
+        XCTAssertTrue(waitFor(reading, "value CONTAINS 'more below false'"),
+                      "Overflow state remains at the end: \(String(describing: reading.value))")
+        XCTAssertTrue(app.buttons["card-face-next"].isHittable, "Next is unreachable after reading")
+        XCTAssertTrue(app.buttons["card-face-ask"].isHittable, "Ask is unreachable after reading")
+        proof(accessibilitySize ? "large-answer-end" : "long-answer-end", in: app)
+    }
+
     func testDeckHasExplicitRevealAndNextActions() throws {
         let app = launch()
         navigate("Flashcards", in: app)
+        XCTAssertFalse(app.buttons["Refresh cards"].exists, "Permanent refresh toolbar control remains")
+        XCTAssertTrue(app.descendants(matching: .any)["deck-saved-status"].firstMatch.waitForExistence(timeout: timeout))
+        XCTAssertFalse(app.buttons["deck-retry"].exists, "Saved cards alone are not a refresh failure")
         let position = app.staticTexts.matching(NSPredicate(
             format: "label BEGINSWITH 'Card ' AND label CONTAINS ' of '"
         )).firstMatch

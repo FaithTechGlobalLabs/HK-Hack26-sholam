@@ -7,6 +7,7 @@ import SwiftUI
 @MainActor
 struct ChatScreen: View {
     @Bindable var model: ChatViewModel
+    let configuration: NativeConfiguration
     let onCard: (String) -> Void
     @FocusState private var composerFocused: Bool
     @State private var scrollState = ConversationScrollState()
@@ -37,6 +38,15 @@ struct ChatScreen: View {
         .foregroundStyle(ShalomTheme.ink)
         .tint(ShalomTheme.accent)
         .safeAreaInset(edge: .bottom, spacing: 0) { composer }
+        .sheet(isPresented: Binding(
+            get: { model.isConsentPresented },
+            set: { if !$0 { model.dismissConsent() } }
+        )) {
+            AIConsentSheet(consent: model.consent, configuration: configuration,
+                           onAllow: model.allowAISharing, onCancel: model.dismissConsent)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
     }
 
     // MARK: Conversation
@@ -58,7 +68,7 @@ struct ChatScreen: View {
                                 .accessibilityElement(children: .combine)
                                 .accessibilityLabel("You: \(message.text)")
                             } else {
-                                AnswerView(message: message, onCard: onCard)
+                                AnswerView(message: message, configuration: configuration, onCard: onCard)
                             }
                         }
                         if let error = model.errorMessage { errorLabel(error) }
@@ -205,6 +215,7 @@ struct ChatScreen: View {
 
     private func send(_ question: String? = nil) {
         if let question { model.send(question) } else { model.send() }
+        if model.isConsentPresented { composerFocused = false }
         if model.isStreaming {
             composerFocused = false
             scrollState.followLatest()

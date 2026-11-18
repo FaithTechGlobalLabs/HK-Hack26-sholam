@@ -10,5 +10,8 @@ SHOLAM_NATIVE_SIGN_IN_MODE = disabled
 // This source build is entirely free. No products, paywall or purchase traffic.
 SHOLAM_BILLING_ENABLED = NO
 SHOLAM_PRODUCT_IDS =
+SHOLAM_PRIVACY_POLICY_URL = https:$(SLASH)$(SLASH)sholam.vercel.app/privacy
+SHOLAM_SUPPORT_URL = https:$(SLASH)$(SLASH)sholam.vercel.app/support
+SHOLAM_SUPPORT_EMAIL = owenisas@gmail.com
 // Optional local public configuration; the file is ignored by git.
 #include? "Local.xcconfig"

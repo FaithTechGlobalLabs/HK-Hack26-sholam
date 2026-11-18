@@ -12,6 +12,19 @@ struct NativeConfiguration: Sendable {
     let authCallbackURL: URL
     let billingEnabled: Bool
     let productIDs: [String]
+    var privacyPolicyURL: URL? = nil
+    var supportURL: URL? = nil
+    var supportEmail: String? = nil
+
+    var supportContactURL: URL? {
+        if let supportURL { return supportURL }
+        guard let email = Self.supportEmailAddress(supportEmail) else { return nil }
+        var components = URLComponents()
+        components.scheme = "mailto"
+        components.path = email
+        components.queryItems = [URLQueryItem(name: "subject", value: "Shalom support")]
+        return components.url
+    }
 
     var environmentID: String { apiBaseURL.absoluteString }
     var canSignIn: Bool {
@@ -65,7 +78,28 @@ struct NativeConfiguration: Sendable {
             billingEnabled: (bundle.object(forInfoDictionaryKey: "ShalomBillingEnabled") as? Bool) == true,
             productIDs: (value("ShalomProductIDs") ?? "")
                 .split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-                .filter { !$0.isEmpty }
+                .filter { !$0.isEmpty },
+            privacyPolicyURL: Self.publicDocumentURL(value("ShalomPrivacyPolicyURL")),
+            supportURL: Self.publicDocumentURL(value("ShalomSupportURL")),
+            supportEmail: Self.supportEmailAddress(value("ShalomSupportEmail"))
         )
+    }
+
+    static func supportEmailAddress(_ value: String?) -> String? {
+        guard let address = value?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !address.isEmpty, address.utf8.count <= 254,
+              !address.contains(".."), !address.hasPrefix("."),
+              !address.contains(".@"),
+              address.range(of: #"\A[A-Za-z0-9._+-]+@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)+\z"#,
+                            options: .regularExpression) != nil else { return nil }
+        return address
+    }
+
+    static func publicDocumentURL(_ value: String?) -> URL? {
+        guard let value, let url = URL(string: value),
+              url.scheme?.lowercased() == "https", let host = url.host, !host.isEmpty,
+              url.user == nil, url.password == nil,
+              host.lowercased() != "localhost", !host.lowercased().hasSuffix(".localhost") else { return nil }
+        return url
     }
 }

@@ -1,0 +1,136 @@
+{
+  "_status": "DRAFT public App Store preparation; listing/privacy/age declarations not submitted or owner-approved. TestFlight 0.1.3 (4) was separately authorized, uploaded and submitted for external Beta App Review. Support/privacy pages are published and native links active in that candidate. See SUBMISSION.md. Last updated: 2026-11-19",
+  "app": {
+    "appStoreConnectAppId": "6834994638",
+    "bundleId": "com.owenisas.shalom",
+    "sku": "sholam-ios",
+    "teamId": "3LHSL95J9H",
+    "appStoreConnectRecordName": "Shalom: Bible & Flashcards",
+    "primaryLocale": "en-US",
+    "devices": ["iPhone", "iPad"],
+    "minimumOS": "17.0",
+    "candidateBuild": "0.1.3 (4), build 73713b0f-8658-4549-9100-edfb38e9d91a: processed VALID, in External Beta, WAITING_FOR_REVIEW / WAITING_FOR_BETA_REVIEW; not submitted to the App Store"
+  },
+  "listing": {
+    "name": "Shalom: Bible & Flashcards",
+    "subtitle": "Bible questions & flashcards",
+    "promotionalText": "Ask a Bible question and see the passages behind the answer, or flip through 179 flashcards. Free, no sign-in. Answers can contain mistakes, so check the verses.",
+    "description": "Shalom is a free Bible study companion for iPhone and iPad. Ask a question in plain language, read an answer with the Scripture passages it draws on, and learn with flashcards.\n\nASK SHALOM\nType a question about a passage, a theme or a hard topic. Shalom looks up verses in the Berean Standard Bible and writes an answer that points to them. Tap a reference to open the full passage. Each reference is marked as looked up before answering or not checked, so you can inspect the passages yourself.\n\nAI answers can be wrong or incomplete. Shalom is a study aid, not a pastor, a counselor or a replacement for reading Scripture yourself. Please read the passages and check anything that matters to you.\n\nFLASHCARDS\nBrowse 179 flashcards in two sets: 50 quick facts and 129 discover questions with teaching notes. Tap Show answer, read the explanation and move to the next card. Cards work offline, and you can send any card to chat to explore it further.\n\nFREE, WITHOUT AN ACCOUNT\nEvery feature is free. There are no subscriptions, purchases or ads, and you do not need to sign in. Your conversations are kept in a private cache on your device.\n\nPRIVACY\nTo write an answer, your question and recent conversation turns are sent over the internet to Shalom's server and to the AI model service it uses. Please do not include personal information in your questions.\n\nMADE FOR READING\nA calm, quiet layout with a sidebar on iPad and a slide-out drawer on iPhone. Verse text is from the Berean Standard Bible, which is in the public domain.",
+    "keywords": "scripture,verses,study,questions,faith,Christian,devotional,learn,Berean,quiz,passages,reading",
+    "whatsNew": null,
+    "copyright": null,
+    "marketingUrl": null,
+    "supportUrl": "https://sholam.vercel.app/support",
+    "privacyPolicyUrl": "https://sholam.vercel.app/privacy",
+    "privacyChoicesUrl": null,
+    "contactEmail": null
+  },
+  "publicSupport": {
+    "email": "owenisas@gmail.com",
+    "approval": "Owner explicitly approved this public support address on 2026-11-18",
+    "httpsSupportPageUrl": "https://sholam.vercel.app/support",
+    "deliveryVerified": false,
+    "triageVerified": false,
+    "note": "Local preparation data, not an App Store localization field or private App Review contact"
+  },
+  "publicPages": {
+    "status": "Published with owner approval; both canonical production URLs verified on 2026-11-18",
+    "intendedSupportUrl": "https://sholam.vercel.app/support",
+    "intendedPrivacyPolicyUrl": "https://sholam.vercel.app/privacy",
+    "policyUpdated": "2026-11-18",
+    "productionVerified": true,
+    "releaseCommit": "e82dcf80bccb7c4237f45bede32764c962f4b796",
+    "deploymentId": "dpl_AcLbpr1e7PfFjCZLrfrJsegm1epJ",
+    "ciUrl": "https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam/actions/runs/44299669163",
+    "nativeUrlsActivated": true,
+    "legalReviewComplete": false,
+    "verification": "Website checks passed at 320/375/414/768/1280px, with 415 tests passed / 4 skipped and production build successful. The subsequent native Release-simulator check opened both live pages in Safari. Signed-in web menu not live-login tested; no support email sent.",
+    "note": "Verified production URLs are recorded in this local App Store draft and active in uploaded TestFlight 0.1.3 (4). Only TestFlight review/testing metadata was written to Apple; no public App Store listing/labels/age answers were submitted. Operator identity, actual retention settings, final policy review and support delivery/triage remain unresolved.",
+    "nativeUrlsActivatedInBuild": "0.1.3 (4)"
+  },
+  "categories": {
+    "primary": "Reference",
+    "secondary": "Education",
+    "_note": "Proposal only; owner chooses. 'Lifestyle' is another plausible primary. Not verified against live Connect category list."
+  },
+  "pricing": {
+    "model": "free",
+    "inAppPurchases": "none",
+    "_note": "Billing hard-off in this build (SHOLAM_BILLING_ENABLED = NO, SHOLAM_PRODUCT_IDS empty). Do not create IAPs, subscriptions or a paid tier."
+  },
+  "review": {
+    "demoAccountRequired": false,
+    "contactFirstName": null,
+    "contactLastName": null,
+    "contactPhone": null,
+    "contactEmail": null,
+    "notes": "LOCAL APP STORE TEMPLATE, review before use; not entered as public App Store review notes.\n\nReview instructions for Shalom 0.1.3 (4):\n\nShalom opens as a guest. Every feature is free; native sign-in and all purchasing are disabled. No account or demo credentials are needed.\n\n1. Enter a question such as \"What does John 3:16 mean?\" and tap Send. The first attempt opens an AI-sharing disclosure before transmission. Not Now keeps sharing off. Allow AI Answers records permission but does not send: tap Send again deliberately to receive an answer. The disclosure names Shalom, OpenRouter and the routed AI provider, recent-chat context and retention/training uncertainty.\n2. Open Sources below the answer. Each reference is marked looked up before answering or not checked. Tap a reference to read its Bible passage. Answers may contain mistakes; a checked reference is not a guarantee of a correct interpretation.\n3. Open the sidebar/drawer, then Account > Privacy. The app has offline privacy facts, a published policy at https://sholam.vercel.app/privacy and support at https://sholam.vercel.app/support. Account can revoke AI sharing or confirm deletion of local guest chats. Deletion cannot recall provider/server copies.\n4. Open Flashcards from the drawer on iPhone or the Chat / Flashcards switch on iPad. The 179 canonical cards are bundled for offline reading. Show answer, Next and Ask Shalom are explicit actions; asking still follows the permission gate.\n5. Report below a completed answer prepares a draft with answer text excluded by default. Inclusion is opt-in. Copy is local with expiry; Share opens the system recipient chooser. There is no automatic report upload or receipt claim.\n\nThe native Release configuration was checked on a simulator against the live service, including a completed answer and both published links. This is not a claim of physical-device TestFlight installation. Free-model availability and service usage limits can affect response times.",
+    "_noteStatus": "Public support email approved. TestFlight 0.1.3 (4) contains the privacy/readiness fixes and active URLs, is VALID and waiting for external Beta App Review. Existing private beta contact/demo fields were preserved, not copied here. These public App Store contact fields remain locally unconfirmed/null; legal/provider facts and email delivery/triage still require owner review."
+  },
+  "screenshots": {
+    "status": "Six native screenshot candidates prepared locally: three iPhone 1206x2622 portrait and three iPad 13-inch 2752x2064 landscape. See screenshots/*-manifest.json. No uploads. Captured in Debug no-network UI-test mode with real canonical cards and empty home; no synthetic chat replies.",
+    "iphone": {
+      "dynamicIslandLargePortrait": "optional; not supplied",
+      "dynamicIslandMediumPortrait": "1206x2622 (three candidates prepared)"
+    },
+    "ipad": {
+      "13inchLandscape": "2752x2064 (three candidates prepared)"
+    },
+    "format": "Opaque JPEG, three per prepared device class; consistent orientation within each class"
+  },
+  "ageRating": {
+    "status": "NOT ANSWERED. Questionnaire checklist only; see SUBMISSION.md section 7. Owner decides.",
+    "answers": null
+  },
+  "appPrivacy": {
+    "status": "PROPOSAL, UNRESOLVED. Not submitted. See SUBMISSION.md section 6.",
+    "proposedDataTypes": [
+      {
+        "type": "User Content > Other User Content",
+        "detail": "Chat question text and recent history turns are transmitted to the server and the model provider to produce an answer",
+        "collectedDecision": "UNRESOLVED: depends on provider and host retention",
+        "linkedToUser": "OtherUserContent remains conservatively linked in the uploaded 0.1.3 (4) manifest; confirm final App Store classification",
+        "tracking": false
+      },
+      {
+        "type": "Identifiers or Usage Data (rate-limit counter)",
+        "detail": "Server stores an HMAC hash of the request IP in a usage counter table",
+        "collectedDecision": "UNRESOLVED: owner to decide how to classify hashed IP",
+        "tracking": false
+      }
+    ],
+    "tracking": false,
+    "conflictToResolve": "Uploaded TestFlight 0.1.3 (4) removes inactive EmailAddress/UserID declarations and keeps OtherUserContent conservatively linked. Older 0.1.2 (3) is unchanged. Confirm provider/backend retention and rate-limit identifier classification before final public App Store answers."
+  },
+  "exportCompliance": {
+    "ITSAppUsesNonExemptEncryption": false,
+    "_note": "Set in Info.plist (ios/project.yml). Owner to confirm the answer is correct for HTTPS-only networking."
+  },
+  "authorizations": {
+    "submitForReview": false,
+    "acceptAgreements": false,
+    "changeStorefrontOrPricing": false,
+    "enableNativeSignIn": false,
+    "enableBilling": false
+  },
+  "testFlightRelease": {
+    "ownerAuthorized": true,
+    "version": "0.1.3",
+    "build": "4",
+    "appleBuildId": "73713b0f-8658-4549-9100-edfb38e9d91a",
+    "processingState": "VALID",
+    "reviewState": "WAITING_FOR_REVIEW",
+    "externalBuildState": "WAITING_FOR_BETA_REVIEW",
+    "submittedAt": "2026-11-18T14:31:38Z",
+    "externalGroupId": "0ad78ad5-09fc-4e85-8532-ef74cc9ad7b5",
+    "publicLink": "https://testflight.apple.com/join/urQsNaGH",
+    "publicTesterCap": 100,
+    "publicAppStoreSubmitted": false,
+    "privateBetaReviewerContactsUnchanged": true,
+    "sourceCommittedAtUpload": false,
+    "sourcePublicationDate": "2026-11-19",
+    "sourceMatchesFrozenInputs": true,
+    "nativeSourceManifestSHA256": "9dc82e3a9a2df0a0e5c0b387cb28a25d10596d8e341270b9bd160a4c2b601ba5",
+    "lastAppleReadbackAt": "2026-11-18T14:38:57Z"
+  }
+}

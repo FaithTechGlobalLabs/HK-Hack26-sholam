@@ -86,6 +86,11 @@ private struct FixedGenerator: RandomNumberGenerator {
         #expect(FlashcardDeck.revealTitle(card("d3", .discover, answer: "  ")) == "Where to start")
     }
 
+    @Test func askTitlesAreDirectActionsForBothKinds() {
+        #expect(FlashcardDeck.askTitle(card("f1")) == "Ask Shalom")
+        #expect(FlashcardDeck.askTitle(card("d1", .discover)) == "Ask Shalom")
+    }
+
     @Test func sentenceEndings() {
         #expect(FlashcardDeck.sentence("Jesus wept") == "Jesus wept.")
         #expect(FlashcardDeck.sentence("Jesus wept.") == "Jesus wept.")

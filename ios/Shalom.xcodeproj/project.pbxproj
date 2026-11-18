@@ -10,15 +10,18 @@
 		043D54FD23CE8BC553C3291F /* AccountPolicies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B30F7673EDD2AF3AD3FBE3B /* AccountPolicies.swift */; };
 		071BBB0D73CF57FF01372CF6 /* FlashcardFaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D4491B212678D9CD18BA7D9 /* FlashcardFaces.swift */; };
 		07BC2FE8E0C078FC277EAB2E /* ShalomCore in Frameworks */ = {isa = PBXBuildFile; productRef = 75B1768569A2D6A778772E91 /* ShalomCore */; };
+		086AF16A7D497943D49ABC1D /* SupportReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765B89CA125F5307C2CD8C89 /* SupportReportTests.swift */; };
 		09D54D2D91CC2169D7DB08D3 /* BillingEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD418A64EA8380708DB6CF4C /* BillingEnvironment.swift */; };
 		153961E73DB5FB6EA6DEF403 /* BackgroundWriteLease.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAA9504E61A70BE35A25F44 /* BackgroundWriteLease.swift */; };
 		17F56BD20FAE394B97611A96 /* DeckSwipeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9BCCBFA16F65BFEEB7FF89 /* DeckSwipeTests.swift */; };
+		1A9A1D25A5707B2A8A9AA161 /* PrivacyInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898FA3BEA136010E65FEF25C /* PrivacyInfoView.swift */; };
 		1ABCE76FF756BE7AE1E435F8 /* ThirdPartyNotices.txt in Resources */ = {isa = PBXBuildFile; fileRef = F3B21B73B5EB77CDBB83B34B /* ThirdPartyNotices.txt */; };
 		1C24CAF1F74FECEE7EDBBA6E /* BrandLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCF64541003D2D69CD2A9E4 /* BrandLogo.swift */; };
 		1F8BCB8A2FE31B498F9D3E39 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE6CB661A065B41C0C68BA1C /* RootView.swift */; };
 		213D4FA0DCC70DAD0D5280EF /* StoreKitStoreClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BD191AEA578915DB94CA49 /* StoreKitStoreClient.swift */; };
 		2340987AE547A381766A7F9F /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF092AD9CACCAE67D34C02B6 /* SidebarView.swift */; };
 		2F422AF86A7141ADFA321A9A /* ChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 594E013F2507C2A23415742C /* ChatScreen.swift */; };
+		303C14CF48622522646F4C57 /* SupportReportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BC9FEEB219E490F791B940 /* SupportReportSheet.swift */; };
 		37C2C54AD291A7DC12156AEC /* ApplicationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBFCF48BF343157B4DBC44E /* ApplicationModel.swift */; };
 		4619EE23CC350C97416AC9EA /* NativeConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D6C927A9ACE932C1DB86B3C /* NativeConfiguration.swift */; };
 		48187B54CEDB0FEAF6152176 /* ConversationScrollStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4604628163488DBB55838B79 /* ConversationScrollStateTests.swift */; };
@@ -33,6 +36,7 @@
 		91D7B4961E90E3A2A1136C38 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0EB81945625A6837E85755E0 /* Assets.xcassets */; };
 		93C287D0E71D43128EC5C1BB /* ShalomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F6BA0EDC07D7305617DBCF /* ShalomApp.swift */; };
 		944DBF411E871CE1FC60059F /* FlashcardDeckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203DA7AF990409EE3CADAA06 /* FlashcardDeckTests.swift */; };
+		99840FC3FF6440C4A0D75839 /* AIConsentStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E783A983C6CD361E5C8047 /* AIConsentStoreTests.swift */; };
 		9A50969B7B782ED2C128CFFF /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6BE53D862D1967B7D181ECA /* AuthStore.swift */; };
 		9D7DAE6A7BA28E3245F2B01A /* BundledDeck.json in Resources */ = {isa = PBXBuildFile; fileRef = 84FDC9A0C89EA11CD926689E /* BundledDeck.json */; };
 		A008AE8CC208A0CB9760DDF1 /* ConversationScrollState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2AEC091F3289C04D8F7ABE /* ConversationScrollState.swift */; };
@@ -50,12 +54,15 @@
 		D5409DF0DBB65F27CD5BBDAB /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6020E528CFC6E9170B990CF6 /* ChatViewModel.swift */; };
 		E0FC3C3ADF00FE033C54EB18 /* AuthProblem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA692FBF336C7E5806AEC8B7 /* AuthProblem.swift */; };
 		E52901809CC5C59981BACEB9 /* AccountPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4769EFB5AA680AF3B0AA5E51 /* AccountPolicyTests.swift */; };
+		EA0E0257171FD27B1F0C94F3 /* AIConsentSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD00484FCA17E4DBDEF8ABA8 /* AIConsentSheet.swift */; };
 		EA590559DCFFFBBD30FC2AE5 /* FlashcardsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D14F86E9C10DC9008CCE33C /* FlashcardsScreen.swift */; };
+		EE0D2397E41F74EC3AEFCA67 /* AIConsentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB60A75465DED4F31EF7784D /* AIConsentStore.swift */; };
 		F14F111EE6896F5E5080AA58 /* AccountRequestIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC138A0D589A9180DF21A2E /* AccountRequestIdentity.swift */; };
 		F66D19C43154F5EFE1796FA9 /* ChatViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1646C0D45203CD78B8C4572C /* ChatViewModelTests.swift */; };
 		F8DDF46E9FD2708362287912 /* FlashcardDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74E8419162BDC3B3587E549B /* FlashcardDeck.swift */; };
 		FAA52D6B83D7D5ACBB929D54 /* AnswerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3883B019E8A662978BE740FB /* AnswerView.swift */; };
 		FD20F6B39EC4B868A66545A4 /* GlassBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA82FF2B1D99A5EE6DB92D2 /* GlassBackground.swift */; };
+		FD54F7B70EE07F49A8702CC7 /* CardLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCD1D4AA6D3CB9D5E26D0B72 /* CardLayoutTests.swift */; };
 		FD73EC74978EDED251E8EA2E /* DeckProvenance.json in Resources */ = {isa = PBXBuildFile; fileRef = 968FAD8CBD1C366C7CC3D575 /* DeckProvenance.json */; };
 /* End PBXBuildFile section */
 
@@ -103,8 +110,10 @@
 		744C09F3A0F5B7D11D89B128 /* ShalomUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ShalomUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		74E8419162BDC3B3587E549B /* FlashcardDeck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardDeck.swift; sourceTree = "<group>"; };
 		75F6BA0EDC07D7305617DBCF /* ShalomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShalomApp.swift; sourceTree = "<group>"; };
+		765B89CA125F5307C2CD8C89 /* SupportReportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportReportTests.swift; sourceTree = "<group>"; };
 		7D4491B212678D9CD18BA7D9 /* FlashcardFaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardFaces.swift; sourceTree = "<group>"; };
 		84FDC9A0C89EA11CD926689E /* BundledDeck.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BundledDeck.json; sourceTree = "<group>"; };
+		898FA3BEA136010E65FEF25C /* PrivacyInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyInfoView.swift; sourceTree = "<group>"; };
 		8AAA99EEF85D4F55B9D79755 /* ThirdPartyNotices.sources.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ThirdPartyNotices.sources.json; sourceTree = "<group>"; };
 		8BC138A0D589A9180DF21A2E /* AccountRequestIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRequestIdentity.swift; sourceTree = "<group>"; };
 		8F21F549C9151AD34D865AF0 /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
@@ -115,9 +124,12 @@
 		AE6CB661A065B41C0C68BA1C /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		AF092AD9CACCAE67D34C02B6 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
 		BCA82FF2B1D99A5EE6DB92D2 /* GlassBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassBackground.swift; sourceTree = "<group>"; };
+		BD00484FCA17E4DBDEF8ABA8 /* AIConsentSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIConsentSheet.swift; sourceTree = "<group>"; };
 		C25D6A0AE15742A18398B2D9 /* DeckSwipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckSwipe.swift; sourceTree = "<group>"; };
 		C491CDC9B221650CC2C911C4 /* Shalom.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Shalom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5BC9FEEB219E490F791B940 /* SupportReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportReportSheet.swift; sourceTree = "<group>"; };
 		CA692FBF336C7E5806AEC8B7 /* AuthProblem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProblem.swift; sourceTree = "<group>"; };
+		CCD1D4AA6D3CB9D5E26D0B72 /* CardLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardLayoutTests.swift; sourceTree = "<group>"; };
 		CE840EDE6FF956F1CDF51050 /* GuestImportLedgerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuestImportLedgerTests.swift; sourceTree = "<group>"; };
 		CEAA9504E61A70BE35A25F44 /* BackgroundWriteLease.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundWriteLease.swift; sourceTree = "<group>"; };
 		CFCF64541003D2D69CD2A9E4 /* BrandLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandLogo.swift; sourceTree = "<group>"; };
@@ -126,8 +138,10 @@
 		DD7D1F1749897095498FEA97 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E24B327CA0EEA4CEC56BF584 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		E6BE53D862D1967B7D181ECA /* AuthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStore.swift; sourceTree = "<group>"; };
+		F1E783A983C6CD361E5C8047 /* AIConsentStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIConsentStoreTests.swift; sourceTree = "<group>"; };
 		F3B21B73B5EB77CDBB83B34B /* ThirdPartyNotices.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ThirdPartyNotices.txt; sourceTree = "<group>"; };
 		F506743FE3DD9E6704542695 /* AccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountScreen.swift; sourceTree = "<group>"; };
+		FB60A75465DED4F31EF7784D /* AIConsentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIConsentStore.swift; sourceTree = "<group>"; };
 		FD418A64EA8380708DB6CF4C /* BillingEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingEnvironment.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -191,6 +205,17 @@
 				8F21F549C9151AD34D865AF0 /* App.xcconfig */,
 			);
 			path = Config;
+			sourceTree = "<group>";
+		};
+		51B02FE2A3B59D5AA5BE60C2 /* Privacy */ = {
+			isa = PBXGroup;
+			children = (
+				BD00484FCA17E4DBDEF8ABA8 /* AIConsentSheet.swift */,
+				FB60A75465DED4F31EF7784D /* AIConsentStore.swift */,
+				898FA3BEA136010E65FEF25C /* PrivacyInfoView.swift */,
+				C5BC9FEEB219E490F791B940 /* SupportReportSheet.swift */,
+			);
+			path = Privacy;
 			sourceTree = "<group>";
 		};
 		716EADFCB5565B537B9B34BA /* Chat */ = {
@@ -263,12 +288,15 @@
 			isa = PBXGroup;
 			children = (
 				4769EFB5AA680AF3B0AA5E51 /* AccountPolicyTests.swift */,
+				F1E783A983C6CD361E5C8047 /* AIConsentStoreTests.swift */,
 				4E5E93C645C3A77FE35294BA /* AuthCallbackPolicyTests.swift */,
+				CCD1D4AA6D3CB9D5E26D0B72 /* CardLayoutTests.swift */,
 				1646C0D45203CD78B8C4572C /* ChatViewModelTests.swift */,
 				4604628163488DBB55838B79 /* ConversationScrollStateTests.swift */,
 				0C9BCCBFA16F65BFEEB7FF89 /* DeckSwipeTests.swift */,
 				203DA7AF990409EE3CADAA06 /* FlashcardDeckTests.swift */,
 				CE840EDE6FF956F1CDF51050 /* GuestImportLedgerTests.swift */,
+				765B89CA125F5307C2CD8C89 /* SupportReportTests.swift */,
 			);
 			path = ShalomTests;
 			sourceTree = "<group>";
@@ -281,6 +309,7 @@
 				716EADFCB5565B537B9B34BA /* Chat */,
 				FD7F43007CC57E299612D8A0 /* Flashcards */,
 				334393439BE2101DD42FE455 /* History */,
+				51B02FE2A3B59D5AA5BE60C2 /* Privacy */,
 				0C8058A01F7CC0B0DCD9BC2A /* Resources */,
 				8922301B0430C1E065CA1200 /* Theme */,
 				2CBFCF48BF343157B4DBC44E /* ApplicationModel.swift */,
@@ -445,6 +474,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA0E0257171FD27B1F0C94F3 /* AIConsentSheet.swift in Sources */,
+				EE0D2397E41F74EC3AEFCA67 /* AIConsentStore.swift in Sources */,
 				043D54FD23CE8BC553C3291F /* AccountPolicies.swift in Sources */,
 				F14F111EE6896F5E5080AA58 /* AccountRequestIdentity.swift in Sources */,
 				AD8CAF288AF546F1054BF71A /* AccountScreen.swift in Sources */,
@@ -469,6 +500,7 @@
 				CB0430A2591074A409E8DFCB /* HistoryScreen.swift in Sources */,
 				4619EE23CC350C97416AC9EA /* NativeConfiguration.swift in Sources */,
 				82B4D8A55660B739ADC484D7 /* PaywallView.swift in Sources */,
+				1A9A1D25A5707B2A8A9AA161 /* PrivacyInfoView.swift in Sources */,
 				1F8BCB8A2FE31B498F9D3E39 /* RootView.swift in Sources */,
 				93C287D0E71D43128EC5C1BB /* ShalomApp.swift in Sources */,
 				863D26B913A0E0A1BF6B2224 /* ShalomTheme.swift in Sources */,
@@ -476,6 +508,7 @@
 				73BC7C51C68739A8204138C6 /* SignInFlowView.swift in Sources */,
 				C909C806E22DD72B000B6079 /* SkyBackground.swift in Sources */,
 				213D4FA0DCC70DAD0D5280EF /* StoreKitStoreClient.swift in Sources */,
+				303C14CF48622522646F4C57 /* SupportReportSheet.swift in Sources */,
 				CD44C29D88B428F90667CDBB /* UITestChatAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -484,13 +517,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99840FC3FF6440C4A0D75839 /* AIConsentStoreTests.swift in Sources */,
 				E52901809CC5C59981BACEB9 /* AccountPolicyTests.swift in Sources */,
 				AFE1D412FA25AA87D3334107 /* AuthCallbackPolicyTests.swift in Sources */,
+				FD54F7B70EE07F49A8702CC7 /* CardLayoutTests.swift in Sources */,
 				F66D19C43154F5EFE1796FA9 /* ChatViewModelTests.swift in Sources */,
 				48187B54CEDB0FEAF6152176 /* ConversationScrollStateTests.swift in Sources */,
 				17F56BD20FAE394B97611A96 /* DeckSwipeTests.swift in Sources */,
 				944DBF411E871CE1FC60059F /* FlashcardDeckTests.swift in Sources */,
 				902D37B6498704882DF8BC16 /* GuestImportLedgerTests.swift in Sources */,
+				086AF16A7D497943D49ABC1D /* SupportReportTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -618,7 +654,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGNING_ALLOWED = NO;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -631,7 +667,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -702,7 +738,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGNING_ALLOWED = NO;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -721,7 +757,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

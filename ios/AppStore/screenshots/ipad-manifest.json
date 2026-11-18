@@ -1,0 +1,35 @@
+[
+  {
+    "file": "ios/AppStore/screenshots/ipad-13-inch/01-flashcard-question.jpg",
+    "source": "ios/build/TestFlight-0.1.2-3/ipad13-store-attachments/9311A75D-88E5-494E-89A2-862177DEBBEF.png",
+    "sha256": "fc3da0a444d06f909c6fab778ff78adf12ff90ebe7ccca2fbba14086f2bcbd77",
+    "dimensions": "2752x2064",
+    "hasAlpha": false,
+    "transform": "Applied original orientation8 as 90-degree counterclockwise pixel rotation and stripped rotation metadata; no resizing, crops, overlays or fabricated UI",
+    "captureBuild": "0.1.2 (3) Debug no-network UI-test mode; frozen native app source matches signed Release",
+    "content": "Canonical public cards or empty chat home. No synthetic chat responses.",
+    "status": "candidate; not uploaded"
+  },
+  {
+    "file": "ios/AppStore/screenshots/ipad-13-inch/02-flashcard-answer.jpg",
+    "source": "ios/build/TestFlight-0.1.2-3/ipad13-store-attachments/25155A77-CF82-4167-A186-F837A15004BC.png",
+    "sha256": "7d75a604db9fc08113278c5eea03183e48cd918b6ce89d189bc66157ca8847b1",
+    "dimensions": "2752x2064",
+    "hasAlpha": false,
+    "transform": "Applied original orientation8 as 90-degree counterclockwise pixel rotation and stripped rotation metadata; no resizing, crops, overlays or fabricated UI",
+    "captureBuild": "0.1.2 (3) Debug no-network UI-test mode; frozen native app source matches signed Release",
+    "content": "Canonical public cards or empty chat home. No synthetic chat responses.",
+    "status": "candidate; not uploaded"
+  },
+  {
+    "file": "ios/AppStore/screenshots/ipad-13-inch/03-chat-home.jpg",
+    "source": "ios/build/TestFlight-0.1.2-3/ipad13-store-attachments/7961A0A9-5FC1-4C48-B416-C4560234DD6A.png",
+    "sha256": "b52d87faa19cc85827a352e3ba6999770446c4b67d40c1221394a0aa67a15cde",
+    "dimensions": "2752x2064",
+    "hasAlpha": false,
+    "transform": "Applied original orientation8 as 90-degree counterclockwise pixel rotation and stripped rotation metadata; no resizing, crops, overlays or fabricated UI",
+    "captureBuild": "0.1.2 (3) Debug no-network UI-test mode; frozen native app source matches signed Release",
+    "content": "Canonical public cards or empty chat home. No synthetic chat responses.",
+    "status": "candidate; not uploaded"
+  }
+]

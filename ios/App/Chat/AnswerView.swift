@@ -7,10 +7,12 @@ import UIKit
 /// Plain-text mentions are listed as sources but are never shown as checked.
 struct AnswerView: View {
     let message: ChatMessage
+    let configuration: NativeConfiguration
     let onCard: (String) -> Void
     @State private var selectedPassage: CitedPassage?
     @State private var copied = false
     @State private var showSources = false
+    @State private var reporting = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     /// Readable measure for sustained prose on regular width. The chat column
@@ -130,56 +132,89 @@ struct AnswerView: View {
 
     // MARK: Actions and sources
 
-    /// One quiet action section: a row normally, a leading column at
-    /// accessibility text sizes so the controls wrap instead of truncating.
+    /// One quiet action section: a row when it fits, otherwise (narrow width
+    /// or accessibility text sizes) a leading column, so the controls wrap
+    /// instead of truncating or crowding.
     private func actionRow(sources: [CitedPassage]) -> some View {
-        let layout = dynamicTypeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 0))
-            : AnyLayout(HStackLayout(spacing: 20))
-        return layout {
-            Button {
-                UIPasteboard.general.string = message.text
-                copied = true
-                Task { try? await Task.sleep(for: .seconds(1.5)); copied = false }
-            } label: {
-                Label(copied ? "Copied" : "Copy", systemImage: copied ? "checkmark" : "doc.on.doc")
-                    .labelStyle(.titleAndIcon)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(minHeight: 44)
-                    .contentShape(Rectangle())
-            }
-            .accessibilityIdentifier("answer-copy")
-
-            if !sources.isEmpty {
-                Button { showSources.toggle() } label: {
-                    HStack(spacing: 6) {
-                        Text("Sources")
-                        Text("\(sources.count)").monospacedDigit()
-                            .foregroundStyle(ShalomTheme.mutedInk)
-                        Image(systemName: showSources ? "chevron.up" : "chevron.down")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(ShalomTheme.mutedInk)
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(minHeight: 44)
-                    .contentShape(Rectangle())
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 0) { actionControls(sources: sources) }
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 20) { actionControls(sources: sources) }
+                    VStack(alignment: .leading, spacing: 0) { actionControls(sources: sources) }
                 }
-                .accessibilityLabel("Sources")
-                .accessibilityValue(sourcesValue(sources))
-                .accessibilityHint(showSources ? "Hides the Bible references" : "Shows the Bible references")
-                .accessibilityIdentifier("answer-sources")
-            }
-
-            if message.delivery == .stopped || message.delivery == .incomplete {
-                Text(message.delivery == .stopped ? "Stopped" : "Incomplete answer")
-                    .font(.caption)
-                    .foregroundStyle(ShalomTheme.mutedInk)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityIdentifier("answer-delivery-status")
             }
         }
         .buttonStyle(.plain).font(.subheadline)
         .padding(.top, -6)
+        .sheet(isPresented: $reporting) {
+            SupportReportSheet(message: message, configuration: configuration)
+        }
+    }
+
+    /// Reporting is offered only for a settled, non-empty assistant answer.
+    private var canReport: Bool {
+        message.role == .assistant && message.delivery != .streaming
+            && !message.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    @ViewBuilder
+    private func actionControls(sources: [CitedPassage]) -> some View {
+        Button {
+            UIPasteboard.general.string = message.text
+            copied = true
+            Task { try? await Task.sleep(for: .seconds(1.5)); copied = false }
+        } label: {
+            Label(copied ? "Copied" : "Copy", systemImage: copied ? "checkmark" : "doc.on.doc")
+                .labelStyle(.titleAndIcon)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+        }
+        .accessibilityIdentifier("answer-copy")
+
+        if !sources.isEmpty {
+            Button { showSources.toggle() } label: {
+                HStack(spacing: 6) {
+                    Text("Sources")
+                    Text("\(sources.count)").monospacedDigit()
+                        .foregroundStyle(ShalomTheme.mutedInk)
+                    Image(systemName: showSources ? "chevron.up" : "chevron.down")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(ShalomTheme.mutedInk)
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Sources")
+            .accessibilityValue(sourcesValue(sources))
+            .accessibilityHint(showSources ? "Hides the Bible references" : "Shows the Bible references")
+            .accessibilityIdentifier("answer-sources")
+        }
+
+        if canReport {
+            Button { reporting = true } label: {
+                Label("Report", systemImage: "flag")
+                    .labelStyle(.titleAndIcon)
+                    .foregroundStyle(ShalomTheme.mutedInk)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Report a problem")
+            .accessibilityHint("Prepares a report you can review and share yourself")
+            .accessibilityIdentifier("answer-report")
+        }
+
+        if message.delivery == .stopped || message.delivery == .incomplete {
+            Text(message.delivery == .stopped ? "Stopped" : "Incomplete answer")
+                .font(.caption)
+                .foregroundStyle(ShalomTheme.mutedInk)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("answer-delivery-status")
+        }
     }
 
     private func sourcesValue(_ sources: [CitedPassage]) -> String {

@@ -21,6 +21,9 @@ final class ChatViewModel {
     private(set) var completedTurnRevision = 0
     /// User/navigation actions, separate from streamed text updates.
     private(set) var interactionRevision = 0
+    let consent: AIConsentStore
+    private(set) var isConsentPresented = false
+    private(set) var isDeletingLocalHistory = false
 
     @ObservationIgnored private let api: any ChatStreamingAPI
     @ObservationIgnored private let cache: ChatCache
@@ -29,18 +32,37 @@ final class ChatViewModel {
     @ObservationIgnored private var cooldownTask: Task<Void, Never>?
     @ObservationIgnored private var stoppedSaves: [UUID: Task<Void, Never>] = [:]
     @ObservationIgnored private var generation = UUID()
+    @ObservationIgnored private var invalidationTasks: [UUID: Task<Void, Never>] = [:]
+    @ObservationIgnored private var historyDeletionRevision = 0
 
-    init(api: any ChatStreamingAPI, cache: ChatCache, scope: ChatCacheScope) {
+    init(api: any ChatStreamingAPI, cache: ChatCache, scope: ChatCacheScope,
+         consent: AIConsentStore? = nil) {
         self.api = api; self.cache = cache; self.scope = scope
+        self.consent = consent ?? AIConsentStore(scope: scope)
+    }
+
+    func allowAISharing() {
+        consent.grant()
+        if consent.isAllowed { isConsentPresented = false }
+    }
+
+    func dismissConsent() { isConsentPresented = false }
+
+    func revokeAISharing() {
+        consent.revoke()
+        isConsentPresented = false
+        stop()
     }
 
     var messages: [ChatMessage] { thread.messages }
     var canSend: Bool {
-        !isStreaming && !isReadOnlyOffline && cooldownSeconds == 0
+        !isStreaming && !isDeletingLocalHistory && !isReadOnlyOffline && cooldownSeconds == 0
             && !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     func newChat() {
+        guard !isDeletingLocalHistory else { return }
+        isConsentPresented = false
         interactionRevision += 1
         stop()
         generation = UUID()
@@ -51,6 +73,8 @@ final class ChatViewModel {
     }
 
     func open(_ value: ChatThread, offline: Bool = false) {
+        guard !isDeletingLocalHistory else { return }
+        isConsentPresented = false
         interactionRevision += 1
         stop()
         generation = UUID()
@@ -64,6 +88,8 @@ final class ChatViewModel {
         stop()
         generation = UUID()
         scope = value
+        consent.changeScope(value)
+        isConsentPresented = false
         thread = ChatThread()
         draft = ""
         errorMessage = nil
@@ -73,13 +99,20 @@ final class ChatViewModel {
     /// A suggestion or card may call this only after an explicit in-app tap.
     /// Deep links set `draft` instead and never call send.
     func send(_ suppliedText: String? = nil) {
-        guard !isStreaming, !isReadOnlyOffline, cooldownSeconds == 0 else { return }
+        guard !isStreaming, !isDeletingLocalHistory, !isReadOnlyOffline, cooldownSeconds == 0 else { return }
         let text = (suppliedText ?? draft).trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
         guard text.utf16.count <= 8_000 else {
             errorMessage = "That question is too long. Keep it under 8,000 characters."
             return
         }
+        consent.reload()
+        guard consent.isAllowed else {
+            draft = text
+            isConsentPresented = true
+            return
+        }
+        isConsentPresented = false
         interactionRevision += 1
         let history = HistoryPolicy.forMessages(thread.messages)
         let user = ChatMessage(role: .user, text: text)
@@ -102,6 +135,8 @@ final class ChatViewModel {
             guard let self else { return }
             var finished = false
             do {
+                try Task.checkCancellation()
+                guard generation == ticket, consent.isAllowed else { return }
                 let events = try await api.streamChat(request)
                 for try await event in events {
                     try Task.checkCancellation()
@@ -198,8 +233,10 @@ final class ChatViewModel {
     /// Drain old writes before the caller clears a private cache. Cancellation
     /// alone cannot undo an atomic write that already began on the cache actor.
     func invalidateForAccountChange(preservingDraft: Bool = false) async {
-        var guestDraft = preservingDraft && !thread.messages.isEmpty ? thread : nil
+        var guestDraft = preservingDraft && !isDeletingLocalHistory && !thread.messages.isEmpty ? thread : nil
         let previousScope = scope
+        let deletionRevision = historyDeletionRevision
+        let earlierInvalidations = Array(invalidationTasks.values)
         if var value = guestDraft, let last = value.messages.indices.last,
            value.messages[last].role == .assistant {
             ChatReducer.end(&value.messages[last], .stopped)
@@ -217,17 +254,35 @@ final class ChatViewModel {
         cooldownTask = nil
         cooldownSeconds = 0
         isStreaming = false
+        isConsentPresented = false
         thread = ChatThread()
         draft = ""
         errorMessage = nil
         isReadOnlyOffline = false
-        await previousStream?.value
-        for task in pendingSaves { await task.value }
-        if let guestDraft {
-            // Preserve a guest's interrupted conversation for an explicit
-            // later import. It is not copied into the newly signed-in scope.
-            try? await cache.saveThread(guestDraft, scope: previousScope)
+        let id = UUID()
+        let work = Task { [weak self, cache] in
+            for task in earlierInvalidations { await task.value }
+            await previousStream?.value
+            for task in pendingSaves { await task.value }
+            if let guestDraft, self?.historyDeletionRevision == deletionRevision {
+                try? await cache.saveThread(guestDraft, scope: previousScope)
+            }
         }
+        invalidationTasks[id] = work
+        await work.value
+        invalidationTasks[id] = nil
+    }
+
+    @discardableResult
+    func deleteGuestHistory() async throws -> Bool {
+        guard scope.userID == nil, !isDeletingLocalHistory else { return false }
+        isDeletingLocalHistory = true
+        historyDeletionRevision += 1
+        let targetScope = scope
+        defer { isDeletingLocalHistory = false }
+        await invalidateForAccountChange()
+        try await cache.clear(scope: targetScope)
+        return true
     }
 
     private func finishMessage(_ id: String, _ ending: ChatReducer.StreamEnd) {

@@ -8,6 +8,7 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var sidebarPresented = false
     @State private var columns: NavigationSplitViewVisibility = .all
 
@@ -33,7 +34,7 @@ struct RootView: View {
         }
         .tint(ShalomTheme.skyInk)
         .sheet(isPresented: $application.accountPresented) {
-            AccountScreen(auth: application.auth, api: application.api)
+            AccountScreen(application: application)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
@@ -49,7 +50,12 @@ struct RootView: View {
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { application.chat.stopForBackground() }
-            if phase == .active { Task { await application.auth.resume() } }
+            if phase == .active {
+                Task {
+                    await application.auth.resume()
+                    if application.section == .flashcards { await application.refreshDeck() }
+                }
+            }
         }
         .onChange(of: isWide) { _, wide in if wide { sidebarPresented = false } }
     }
@@ -117,12 +123,14 @@ struct RootView: View {
         }
         ToolbarItem(placement: .principal) {
             if isWide {
-                Picker("Mode", selection: modeSelection) {
-                    Text("Chat").tag(ApplicationModel.Section.chat)
-                    Text("Flashcards").tag(ApplicationModel.Section.flashcards)
+                if dynamicTypeSize.isAccessibilitySize {
+                    modeMenu
+                } else {
+                    ViewThatFits(in: .horizontal) {
+                        modeButtons
+                        modeMenu
+                    }
                 }
-                .pickerStyle(.segmented).frame(maxWidth: 220)
-                .accessibilityIdentifier("mode-switch")
             } else if application.section == .chat {
                 Text("Shalom").font(.headline).foregroundStyle(ShalomTheme.ink)
             } else {
@@ -159,6 +167,47 @@ struct RootView: View {
         .accessibilityIdentifier("new-chat")
     }
 
+    private var modeMenu: some View {
+        Picker("Mode", selection: modeSelection) {
+            Text("Chat").tag(ApplicationModel.Section.chat)
+            Text("Flashcards").tag(ApplicationModel.Section.flashcards)
+        }
+        .pickerStyle(.menu)
+        .accessibilityIdentifier("mode-switch-menu")
+    }
+
+    private var modeButtons: some View {
+        HStack(spacing: 0) {
+            ForEach([ApplicationModel.Section.chat, .flashcards]) { section in
+                let selected = application.section == section
+                Button { application.section = section } label: {
+                    Text(section.title)
+                        .font(.subheadline.weight(.semibold))
+                        .fixedSize(horizontal: true, vertical: true)
+                        .padding(.horizontal, ShalomTheme.Spacing.m)
+                        .padding(.vertical, ShalomTheme.Spacing.xs)
+                        .frame(minHeight: ShalomTheme.Size.minTarget)
+                }
+                .buttonStyle(ModeButtonStyle(selected: selected))
+                .accessibilityIdentifier("mode-\(section.title)")
+                .accessibilityAddTraits(selected ? .isSelected : [])
+            }
+        }
+        .fixedSize(horizontal: true, vertical: true)
+        .padding(.horizontal, ShalomTheme.Spacing.xxs)
+        .background {
+            if reduceTransparency {
+                Capsule().fill(ShalomTheme.factPaper)
+            } else {
+                Capsule().fill(.regularMaterial)
+            }
+        }
+        .environment(\.colorScheme, .light)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Mode")
+        .accessibilityIdentifier("mode-switch")
+    }
+
     private var modeSelection: Binding<ApplicationModel.Section> {
         Binding(
             get: { application.section == .flashcards ? .flashcards : .chat },
@@ -176,34 +225,37 @@ struct RootView: View {
     private func screen(_ section: ApplicationModel.Section) -> some View {
         switch section {
         case .chat:
-            ChatScreen(model: application.chat, onCard: application.showCard)
+            ChatScreen(model: application.chat, configuration: application.configuration, onCard: application.showCard)
         case .flashcards:
-            VStack(spacing: 0) {
-                if let notice = application.deckNotice {
-                    Text(notice).font(.footnote).foregroundStyle(ShalomTheme.ink)
-                        .padding(.horizontal, 20).padding(.vertical, 8)
-                        .frame(maxWidth: .infinity)
-                }
-                FlashcardsScreen(
-                    cards: application.cards,
-                    isOffline: application.deckOffline,
-                    focusedCardID: application.focusedCardID,
-                    onAsk: application.askFromCard
-                )
-            }
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        Task { await application.refreshDeck(force: true) }
-                    } label: {
-                        if application.deckRefreshing { ProgressView() }
-                        else { Label("Refresh cards", systemImage: "arrow.clockwise") }
-                    }
-                    .disabled(application.deckRefreshing)
-                }
-            }
+            FlashcardsScreen(
+                cards: application.cards,
+                isOffline: application.deckOffline,
+                focusedCardID: application.focusedCardID,
+                isLoading: application.deckRefreshing,
+                notice: application.deckNotice,
+                onRetry: { Task { await application.refreshDeck(force: true) } },
+                onAsk: application.askFromCard
+            )
+            .onAppear { Task { await application.refreshDeck() } }
         case .chats:
             HistoryScreen(application: application)
         }
+    }
+}
+
+private struct ModeButtonStyle: ButtonStyle {
+    let selected: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundStyle(selected ? ShalomTheme.skyInk : ShalomTheme.ink)
+            .background {
+                Capsule().fill(selected
+                    ? ShalomTheme.onSky.opacity(configuration.isPressed ? 0.75 : 1)
+                    : ShalomTheme.ink.opacity(configuration.isPressed ? 0.1 : 0))
+                    .padding(.vertical, ShalomTheme.Spacing.xxs)
+            }
+            .contentShape(Capsule())
+            .hoverEffect(.highlight)
     }
 }

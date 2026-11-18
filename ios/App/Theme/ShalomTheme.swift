@@ -83,6 +83,27 @@ enum ShalomTheme {
         static let readableWidth: CGFloat = 600
     }
 
+    /// One spacing rhythm shared by both faces of a flashcard.
+    enum Card {
+        static let frontTop = Color(rgb: 0x1A3E96)
+        static let frontMiddle = Color(rgb: 0x1E46A0)
+        static let frontBottom = Color(rgb: 0x285ABE)
+        static let frontSolidBottom = Color(rgb: 0x2554AE)
+        static let labelGap: CGFloat = Spacing.s
+        /// Gap from the reading area to the pinned actions, front and back.
+        static let actionsGap: CGFloat = Spacing.m
+        /// Gap between stacked actions (Ask Shalom over Next card).
+        static let actionsStack: CGFloat = Spacing.xs
+        /// Gap before the notes that follow an answer (explanation, open
+        /// question note), the same for every card kind.
+        static let notesGap: CGFloat = Spacing.s
+        /// Where a short question rests in the free reading area: this
+        /// share of the spare height sits above it, the rest below, so it
+        /// reads a little above centre. Content taller than the area
+        /// starts at the top and scrolls.
+        static let questionRest: CGFloat = 0.4
+    }
+
     /// Quiet, task-led motion for a reading and study surface: short,
     /// ease-out, no spring, bounce or overshoot, and nothing ambient.
     enum Motion {

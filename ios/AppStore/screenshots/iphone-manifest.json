@@ -1,0 +1,29 @@
+[
+  {
+    "file": "ios/AppStore/screenshots/iphone-dynamic-island-medium/01-flashcard-question.jpg",
+    "source": "ios/build/TestFlight-0.1.2-3/iphone-final-attachments/40FC8FB4-5D6B-4BB8-8910-4B355B7D27B1.png",
+    "sha256": "dd0f34a68e137bdfbb2173a4eb1a15315ff9000755cbaf7c8457a2d83eb479ef",
+    "content": "Real native UI; canonical public deck or empty chat home. No synthetic chat answer.",
+    "captureBuild": "0.1.2 (3) Debug no-network UI-test mode; card data unchanged from Release",
+    "dimensions": "1206x2622",
+    "status": "candidate; not uploaded"
+  },
+  {
+    "file": "ios/AppStore/screenshots/iphone-dynamic-island-medium/02-flashcard-answer.jpg",
+    "source": "ios/build/TestFlight-0.1.2-3/iphone-final-attachments/CD5D7E70-FC54-405F-B59B-DAE2593881FC.png",
+    "sha256": "ed3a036dc02708d456a29a815119b90a56d864e8bf58acf66e803547e9b65f56",
+    "content": "Real native UI; canonical public deck or empty chat home. No synthetic chat answer.",
+    "captureBuild": "0.1.2 (3) Debug no-network UI-test mode; card data unchanged from Release",
+    "dimensions": "1206x2622",
+    "status": "candidate; not uploaded"
+  },
+  {
+    "file": "ios/AppStore/screenshots/iphone-dynamic-island-medium/03-chat-home.jpg",
+    "source": "ios/build/TestFlight-0.1.2-3/iphone-final-attachments/A8326683-5120-4644-9201-28E4C7066944.png",
+    "sha256": "a580d040fd7eae976d27ff7c79e9eeb987e1bdc99e6ebfade782f47180b85c59",
+    "content": "Real native UI; canonical public deck or empty chat home. No synthetic chat answer.",
+    "captureBuild": "0.1.2 (3) Debug no-network UI-test mode; card data unchanged from Release",
+    "dimensions": "1206x2622",
+    "status": "candidate; not uploaded"
+  }
+]

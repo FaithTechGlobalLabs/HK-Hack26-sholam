@@ -6,14 +6,22 @@ import SwiftUI
 /// it sends no email and changes nothing; it only reads `/api/account` when a
 /// native session already exists. No upgrade or restore UI while billing is off.
 struct AccountScreen: View {
-    let auth: AuthStore
-    let api: ShalomAPIClient
+    @Bindable var application: ApplicationModel
+
+    private var auth: AuthStore { application.auth }
+    private var api: ShalomAPIClient { application.api }
 
     @Environment(\.dismiss) private var dismiss
     @State private var nameDraft = ""
     @State private var isEditingName = false
     @State private var editingUserID: String?
     @State private var confirmSignOut = false
+    @State private var confirmRevokeAI = false
+    @State private var confirmDeleteLocal = false
+    @State private var showingSupport = false
+
+    /// Local guest chats exist only while nobody is signed in on this device.
+    private var isGuest: Bool { auth.userID == nil && !application.userIsSignedIn }
 
     private var access: AccessPolicy { BillingEnvironment.accessPolicy(for: auth.configuration) }
 
@@ -38,6 +46,21 @@ struct AccountScreen: View {
                 }
 
                 if let notice = auth.notice { noticeSection(notice) }
+
+                privacySection
+                if isGuest {
+                    localHistorySection
+                } else if let notice = application.localHistoryNotice {
+                    Section("On this device") {
+                        Label(notice, systemImage: "info.circle")
+                            .accessibilityIdentifier("account-local-history-notice")
+                    }
+                }
+                helpSection
+            }
+            .accessibilityIdentifier("account-form")
+            .sheet(isPresented: $showingSupport) {
+                SupportReportSheet(message: nil, configuration: application.configuration)
             }
             .navigationTitle("Account")
             .navigationBarTitleDisplayMode(.inline)
@@ -82,7 +105,7 @@ struct AccountScreen: View {
     private var guestGateSection: some View {
         Section {
             Label("You're using Shalom as a guest", systemImage: "person.crop.circle")
-            Text("App sign-in will be turned on once it has been set up and tested. Chat and flashcards are free without an account; cross-device history will need sign-in.")
+            Text("Sign-in is turned off in this version. Chat and flashcards are free without an account; conversations are saved on this device.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         } header: {
@@ -157,6 +180,87 @@ struct AccountScreen: View {
                         Task { await auth.signOut() }
                     }
                 }
+        }
+    }
+
+    private var privacySection: some View {
+        Section {
+            NavigationLink {
+                PrivacyInfoView(configuration: application.configuration)
+            } label: {
+                Label("Privacy", systemImage: "hand.raised")
+            }
+            .accessibilityIdentifier("account-privacy")
+
+            LabeledContent("AI answers",
+                           value: application.consent.isAllowed ? "Allowed" : "Not allowed")
+                .accessibilityIdentifier("account-ai-state")
+
+            if application.consent.isAllowed {
+                Button("Turn Off AI Sharing", role: .destructive) { confirmRevokeAI = true }
+                    .accessibilityIdentifier("account-ai-revoke")
+                    .confirmationDialog("Turn off AI sharing?", isPresented: $confirmRevokeAI,
+                                        titleVisibility: .visible) {
+                        Button("Turn Off", role: .destructive) { application.revokeAIConsent() }
+                    } message: {
+                        Text("Any answer in progress stops, and future questions won't be sent until you allow it again. This can't undo what was already shared with Shalom's server, OpenRouter or an AI provider.")
+                    }
+            }
+        } header: {
+            Text("Privacy")
+        } footer: {
+            Text(application.consent.isAllowed
+                 ? "Questions you send go to Shalom's server, OpenRouter and an AI provider. Turning this off affects future questions only."
+                 : "You'll be asked before any question is sent to an AI provider. Flashcards and Bible passages work without it.")
+        }
+    }
+
+    private var localHistorySection: some View {
+        Section {
+            Button(role: .destructive) {
+                confirmDeleteLocal = true
+            } label: {
+                HStack {
+                    Text("Delete local chats")
+                    if application.clearingLocalHistory {
+                        Spacer()
+                        ProgressView()
+                    }
+                }
+            }
+            .disabled(application.clearingLocalHistory)
+            .accessibilityIdentifier("account-delete-local-chats")
+            .confirmationDialog("Delete local chats?", isPresented: $confirmDeleteLocal,
+                                titleVisibility: .visible) {
+                Button("Delete local chats", role: .destructive) {
+                    Task { await application.clearGuestHistory() }
+                }
+            } message: {
+                Text("This removes the guest chats saved on this device and any unsent question in the message box. It can't remove copies already sent to Shalom's server, OpenRouter or an AI provider, and it doesn't change the public flashcard deck.")
+            }
+
+            if let notice = application.localHistoryNotice {
+                Label(notice, systemImage: "info.circle")
+                    .font(.subheadline)
+                    .accessibilityIdentifier("account-local-history-notice")
+            }
+        } header: {
+            Text("On this device")
+        } footer: {
+            Text("Guest history is saved on this device. Questions you send are shared as described in Privacy.")
+        }
+    }
+
+    private var helpSection: some View {
+        Section {
+            Button {
+                showingSupport = true
+            } label: {
+                Label("Get Help or Report a Problem", systemImage: "questionmark.circle")
+            }
+            .accessibilityIdentifier("account-support")
+        } header: {
+            Text("Help")
         }
     }
 

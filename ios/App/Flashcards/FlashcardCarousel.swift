@@ -110,15 +110,7 @@ struct FlashcardCarousel: View {
         let words = max(0, 1 - a * 2)
 
         ZStack {
-            FlashcardFront(
-                card: card, position: i, count: cards.count, isActive: active,
-                wordsOpacity: words, onReveal: reveal, a11yFocus: $a11yFocus
-            )
-            .opacity(fade * (active && revealed ? 0 : 1))
-            .allowsHitTesting(!(active && revealed))
-            .accessibilityHidden(!active || revealed)
-
-            if active {
+            if active && revealed {
                 FlashcardBack(
                     card: card, position: i, count: cards.count, isLast: i == cards.count - 1,
                     askDisabled: askedCardID == card.id,
@@ -126,10 +118,15 @@ struct FlashcardCarousel: View {
                     onAsk: { ask(card) },
                     a11yFocus: $a11yFocus
                 )
-                .opacity(revealed ? 1 : 0)
-                .allowsHitTesting(revealed)
-                .accessibilityHidden(!revealed)
-                .transition(.identity)
+                .transition(.opacity)
+            } else {
+                FlashcardFront(
+                    card: card, position: i, count: cards.count, isActive: active,
+                    wordsOpacity: words, onReveal: reveal, a11yFocus: $a11yFocus
+                )
+                .opacity(fade)
+                .accessibilityHidden(!active)
+                .transition(.opacity)
             }
         }
         .frame(width: metrics.cardWidth, height: metrics.cardHeight)

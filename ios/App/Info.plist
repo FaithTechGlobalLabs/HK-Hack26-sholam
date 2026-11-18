@@ -41,12 +41,18 @@
 	<false/>
 	<key>ShalomNativeSignInMode</key>
 	<string>$(SHOLAM_NATIVE_SIGN_IN_MODE)</string>
+	<key>ShalomPrivacyPolicyURL</key>
+	<string>$(SHOLAM_PRIVACY_POLICY_URL)</string>
 	<key>ShalomProductIDs</key>
 	<string>$(SHOLAM_PRODUCT_IDS)</string>
 	<key>ShalomSupabasePublishableKey</key>
 	<string>$(SHOLAM_SUPABASE_PUBLISHABLE_KEY)</string>
 	<key>ShalomSupabaseURL</key>
 	<string>$(SHOLAM_SUPABASE_URL)</string>
+	<key>ShalomSupportEmail</key>
+	<string>$(SHOLAM_SUPPORT_EMAIL)</string>
+	<key>ShalomSupportURL</key>
+	<string>$(SHOLAM_SUPPORT_URL)</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

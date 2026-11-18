@@ -169,7 +169,7 @@ enum FlashcardDeck {
     }
 
     static func askTitle(_ card: Flashcard) -> String {
-        card.kind == .discover ? "Talk it through with Shalom" : "Ask Shalom about this"
+        "Ask Shalom"
     }
 
     static func passageLabels(_ card: Flashcard) -> [String] {

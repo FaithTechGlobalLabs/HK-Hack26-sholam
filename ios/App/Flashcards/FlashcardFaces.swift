@@ -26,8 +26,8 @@ struct FlashcardFront: View {
     var a11yFocus: AccessibilityFocusState<DeckFocusTarget?>.Binding
 
     var body: some View {
-        CardScrollLayout {
-            VStack(alignment: .leading, spacing: ShalomTheme.Spacing.s) {
+        CardScrollLayout(rest: .cardQuestionRest) {
+            VStack(alignment: .leading, spacing: ShalomTheme.Card.labelGap) {
                 Text("\(Text(FlashcardDeck.kindLabel(card)).fontWeight(.semibold)) · \(FlashcardDeck.categoryLabel(card.category))")
                     .font(.footnote)
                     .accessibilityHidden(!isActive)
@@ -56,7 +56,7 @@ struct FlashcardFront: View {
                         fill: .white, pressedFill: Color(rgb: 0xEAF1FF), text: ShalomTheme.skyInk))
                     .accessibilityIdentifier("card-face-reveal")
                     .padding(.horizontal, ShalomTheme.Spacing.l)
-                    .padding(.top, ShalomTheme.Spacing.m)
+                    .padding(.top, ShalomTheme.Card.actionsGap)
             }
         }
         // Side cards: no scrolling or tapping inside, so a tap anywhere on
@@ -79,7 +79,7 @@ private struct FrontGlass: View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         if reduceTransparency {
             shape
-                .fill(LinearGradient(colors: [Color(rgb: 0x1A3E96), Color(rgb: 0x2554AE)],
+                .fill(LinearGradient(colors: [ShalomTheme.Card.frontTop, ShalomTheme.Card.frontSolidBottom],
                                      startPoint: .top, endPoint: .bottom))
                 .overlay { shape.strokeBorder(.white.opacity(0.3), lineWidth: 1) }
         } else {
@@ -91,22 +91,29 @@ private struct FrontGlass: View {
                     shape.fill(LinearGradient(stops: [
                         // The lower half stays dense too: long questions at
                         // accessibility sizes run down over white cloud.
-                        .init(color: Color(rgb: 0x1A3E96).opacity(min(1, 0.94 + boost)), location: 0),
-                        .init(color: Color(rgb: 0x1E46A0).opacity(min(1, 0.92 + boost)), location: 0.45),
-                        .init(color: Color(rgb: 0x285ABE).opacity(min(1, 0.9 + boost)), location: 1),
+                        .init(color: ShalomTheme.Card.frontTop.opacity(min(1, 0.94 + boost)), location: 0),
+                        .init(color: ShalomTheme.Card.frontMiddle.opacity(min(1, 0.92 + boost)), location: 0.45),
+                        .init(color: ShalomTheme.Card.frontBottom.opacity(min(1, 0.9 + boost)), location: 1),
                     ], startPoint: .top, endPoint: .bottom))
                 }
                 .overlay {
-                    // Light resting low at the far corner, away from the words.
-                    shape.fill(RadialGradient(
-                        colors: [.white.opacity(0.04), .white.opacity(0.01), .clear],
-                        center: UnitPoint(x: 0.85, y: 1), startRadius: 0, endRadius: 320))
+                    shape.fill(LinearGradient(stops: [
+                        .init(color: .white.opacity(contrast == .increased ? 0 : 0.035), location: 0),
+                        .init(color: .clear, location: 0.32),
+                    ], startPoint: .topLeading, endPoint: .bottomTrailing))
                 }
                 .overlay {
-                    shape.strokeBorder(
-                        LinearGradient(colors: [.white.opacity(0.5), .white.opacity(0.18)],
-                                       startPoint: .top, endPoint: .bottom),
-                        lineWidth: 1)
+                    shape.strokeBorder(LinearGradient(stops: [
+                        .init(color: .white.opacity(0.65), location: 0),
+                        .init(color: .white.opacity(0.16), location: 0.25),
+                        .init(color: .clear, location: 0.6),
+                        .init(color: ShalomTheme.Card.frontTop.opacity(0.5), location: 1),
+                    ], startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1.5)
+                }
+                .overlay {
+                    shape.inset(by: 2).strokeBorder(
+                        LinearGradient(colors: [.white.opacity(0.12), .clear],
+                                       startPoint: .topLeading, endPoint: .center), lineWidth: 1)
                 }
         }
     }
@@ -133,7 +140,7 @@ struct FlashcardBack: View {
     private var passages: [String] { FlashcardDeck.passageLabels(card) }
 
     var body: some View {
-        CardScrollLayout {
+        CardScrollLayout(rest: .top, showsOverflowCue: true, overflowColor: palette.muted) {
             VStack(alignment: .leading, spacing: 0) {
                 Text("\(Text(FlashcardDeck.kindLabel(card)).fontWeight(.semibold).foregroundStyle(palette.accent))\(Text(" · \(FlashcardDeck.categoryLabel(card.category))").foregroundStyle(palette.muted))")
                     .font(.footnote)
@@ -141,13 +148,13 @@ struct FlashcardBack: View {
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(palette.muted)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, ShalomTheme.Spacing.xs)
+                    .padding(.top, ShalomTheme.Card.labelGap)
                 Rectangle()
                     .fill(palette.rule)
                     .frame(height: 1)
                     .padding(.vertical, ShalomTheme.Spacing.s)
                     .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: ShalomTheme.Spacing.xs) {
+                VStack(alignment: .leading, spacing: 0) {
                     // One VoiceOver element that reads exactly what the deck
                     // announces on reveal; the notes after it read on their own.
                     answerContent
@@ -160,9 +167,12 @@ struct FlashcardBack: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         } actions: {
-            VStack(spacing: ShalomTheme.Spacing.xs) {
-                Button(FlashcardDeck.askTitle(card), action: onAsk)
-                    .buttonStyle(CardQuietButtonStyle(color: palette.accent, pressed: palette.rule))
+            VStack(spacing: ShalomTheme.Card.actionsStack) {
+                Button(action: onAsk) {
+                    Label(FlashcardDeck.askTitle(card), systemImage: "bubble.left.and.bubble.right")
+                }
+                    .buttonStyle(CardQuietButtonStyle(color: ShalomTheme.skyInk, pressed: palette.rule))
+                    .accessibilityHint("Opens Chat and asks about this card")
                     .disabled(askDisabled)
                     .accessibilityIdentifier("card-face-ask")
                 Button(isLast ? "Start over" : "Next card", action: onNext)
@@ -171,7 +181,7 @@ struct FlashcardBack: View {
                     .accessibilityIdentifier("card-face-next")
             }
             .padding(.horizontal, ShalomTheme.Spacing.l)
-            .padding(.top, ShalomTheme.Spacing.s)
+            .padding(.top, ShalomTheme.Card.actionsGap)
         }
         .padding(.vertical, ShalomTheme.Spacing.l)
         .foregroundStyle(palette.ink)
@@ -222,6 +232,7 @@ struct FlashcardBack: View {
             Text("An open question, so there is no single answer.")
                 .font(.body).foregroundStyle(palette.muted)
                 .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, ShalomTheme.Card.notesGap)
         } else if let explanation = card.explanation, !FlashcardDeck.isBlank(explanation) {
             if card.kind == .discover {
                 VStack(alignment: .leading, spacing: ShalomTheme.Spacing.xs) {
@@ -231,11 +242,12 @@ struct FlashcardBack: View {
                     Text(explanation).font(.subheadline).foregroundStyle(palette.muted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(.top, ShalomTheme.Spacing.s)
+                .padding(.top, ShalomTheme.Card.notesGap)
                 .accessibilityElement(children: .combine)
             } else {
                 Text(explanation).font(.subheadline).foregroundStyle(palette.muted)
                     .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, ShalomTheme.Card.notesGap)
             }
         }
     }
@@ -272,24 +284,25 @@ private struct PaperGlass: View {
     }
 }
 
-/// A card face's scrolling content and its actions. No fade masks the text:
-/// content that fits shows whole, and longer content scrolls with the
-/// system indicator, which flashes on appear so the overflow is visible.
-/// The scroll view spans the card's full width so the indicator sits at the
-/// card edge, clear of the words.
-///
-/// At standard sizes the actions stay pinned below the scroll. At
-/// accessibility sizes they scroll after the content instead, so tall,
-/// wrapped buttons can never push themselves off the card.
-///
-/// The content gets the card's horizontal padding here; the actions bring
-/// their own padding (so an absent action takes no space).
+/// Standard-size actions stay pinned; accessibility-size actions scroll
+/// after the content so wrapped controls remain reachable.
 private struct CardScrollLayout<Content: View, Actions: View>: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var coordinateSpace = UUID()
+    @State private var contentFrame = CGRect.null
+    @State private var visibleHeight: CGFloat = 0
+    private let rest: VerticalAlignment
+    private let showsOverflowCue: Bool
+    private let overflowColor: Color
     private let content: Content
     private let actions: Actions
 
-    init(@ViewBuilder content: () -> Content, @ViewBuilder actions: () -> Actions) {
+    init(rest: VerticalAlignment, showsOverflowCue: Bool = false,
+         overflowColor: Color = ShalomTheme.mutedInk,
+         @ViewBuilder content: () -> Content, @ViewBuilder actions: () -> Actions) {
+        self.rest = rest
+        self.showsOverflowCue = showsOverflowCue
+        self.overflowColor = overflowColor
         self.content = content()
         self.actions = actions()
     }
@@ -299,10 +312,10 @@ private struct CardScrollLayout<Content: View, Actions: View>: View {
             scrolling(VStack(spacing: 0) {
                 padded
                 actions
-            })
+            }, rest: .top)
         } else {
             VStack(spacing: 0) {
-                scrolling(padded)
+                scrolling(padded, rest: rest)
                 actions
             }
         }
@@ -314,12 +327,102 @@ private struct CardScrollLayout<Content: View, Actions: View>: View {
             .padding(.horizontal, ShalomTheme.Spacing.l)
     }
 
-    private func scrolling(_ inner: some View) -> some View {
-        ScrollView(.vertical) { inner }
-            .scrollBounceBehavior(.basedOnSize)
-            .scrollIndicators(.automatic)
-            .scrollIndicatorsFlash(onAppear: true)
+    private func scrolling(_ inner: some View, rest: VerticalAlignment) -> some View {
+        GeometryReader { viewport in
+            let metrics = CardReadingMetrics(contentFrame: contentFrame,
+                                             availableHeight: viewport.size.height,
+                                             visibleHeight: visibleHeight)
+            VStack(spacing: 0) {
+                ScrollView(.vertical) {
+                    inner
+                        .background {
+                            GeometryReader { content in
+                                Color.clear.preference(key: CardContentFrameKey.self,
+                                    value: content.frame(in: .named(coordinateSpace)))
+                            }
+                        }
+                        .frame(minHeight: viewport.size.height,
+                               alignment: Alignment(horizontal: .leading, vertical: rest))
+                }
+                .coordinateSpace(name: coordinateSpace)
+                .background {
+                    GeometryReader { visible in
+                        Color.clear.preference(key: CardViewportHeightKey.self, value: visible.size.height)
+                    }
+                }
+                .scrollBounceBehavior(.basedOnSize)
+                .scrollIndicators(.automatic)
+                .scrollIndicatorsFlash(onAppear: true)
+                .accessibilityIdentifier("card-reading-scroll")
+                #if DEBUG
+                .accessibilityValue(Text(verbatim: "content \(contentFrame.height), bottom \(contentFrame.maxY), available \(viewport.size.height), visible \(visibleHeight), more below \(metrics.hasMoreBelow)"))
+                #endif
+
+                // Reserve the cue's space until the content fits the full
+                // area, not until the reader reaches the bottom. Otherwise
+                // hiding it would resize the viewport and move the text.
+                if showsOverflowCue && metrics.overflows {
+                    Label(dynamicTypeSize.isAccessibilitySize ? "More below" : "Scroll to read more",
+                          systemImage: "chevron.down")
+                        .accessibilityLabel("More text below. Scroll to continue reading.")
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(overflowColor)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, ShalomTheme.Spacing.l)
+                        .padding(.top, ShalomTheme.Spacing.xs)
+                        .frame(maxWidth: .infinity)
+                        .opacity(metrics.hasMoreBelow ? 1 : 0)
+                        .accessibilityHidden(!metrics.hasMoreBelow)
+                        .accessibilityIdentifier("card-more-below")
+                        .allowsHitTesting(false)
+                }
+            }
+            .onPreferenceChange(CardContentFrameKey.self) { contentFrame = $0 }
+            .onPreferenceChange(CardViewportHeightKey.self) { visibleHeight = $0 }
+        }
     }
+}
+
+struct CardReadingMetrics: Equatable {
+    let contentFrame: CGRect
+    let availableHeight: CGFloat
+    let visibleHeight: CGFloat
+
+    var overflows: Bool {
+        !contentFrame.isNull && availableHeight > 0 && contentFrame.height > availableHeight + 2
+    }
+
+    var hasMoreBelow: Bool {
+        overflows && visibleHeight > 0 && contentFrame.maxY > visibleHeight + 2
+    }
+}
+
+private struct CardContentFrameKey: PreferenceKey {
+    static let defaultValue = CGRect.null
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        let next = nextValue()
+        if !next.isNull { value = next }
+    }
+}
+
+private struct CardViewportHeightKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
+/// Rests content at `ShalomTheme.Card.questionRest` of its own height, and
+/// the frame around it at the same share of the frame's height, so the
+/// spare height splits that share above and the rest below.
+private enum CardQuestionRest: AlignmentID {
+    static func defaultValue(in d: ViewDimensions) -> CGFloat {
+        d.height * ShalomTheme.Card.questionRest
+    }
+}
+
+private extension VerticalAlignment {
+    static let cardQuestionRest = VerticalAlignment(CardQuestionRest.self)
 }
 
 /// VoiceOver focus binds only on the active card, so moving focus to the

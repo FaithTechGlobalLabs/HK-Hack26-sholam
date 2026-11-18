@@ -17,6 +17,8 @@ struct FlashcardsScreen: View {
     /// Additive to the frozen interface (defaults to false): true while the
     /// first deck is still being fetched, so loading never reads as empty.
     let isLoading: Bool
+    let notice: String?
+    let onRetry: (() -> Void)?
     let onAsk: (String) -> Void
 
     @State private var order: [String]
@@ -24,11 +26,14 @@ struct FlashcardsScreen: View {
     @State private var focusID: String?
 
     init(cards: [Flashcard], isOffline: Bool, focusedCardID: String?,
-         isLoading: Bool = false, onAsk: @escaping (String) -> Void) {
+         isLoading: Bool = false, notice: String? = nil, onRetry: (() -> Void)? = nil,
+         onAsk: @escaping (String) -> Void) {
         self.cards = cards
         self.isOffline = isOffline
         self.focusedCardID = focusedCardID
         self.isLoading = isLoading
+        self.notice = notice
+        self.onRetry = onRetry
         self.onAsk = onAsk
         _order = State(initialValue: FlashcardDeck.shuffledOrder(of: cards))
         _focusID = State(initialValue: focusedCardID.flatMap { id in
@@ -71,32 +76,41 @@ struct FlashcardsScreen: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: ShalomTheme.Spacing.s) {
-            // The title belongs to the navigation bar (RootView); the screen
-            // shows only the deck's own status.
-            if isOffline { OfflineBadge() }
-
             if !cards.isEmpty { filterRow }
 
+            if notice != nil || (isOffline && !cards.isEmpty && !isLoading) {
+                SavedDeckStatus(notice: notice, isLoading: isLoading, onRetry: onRetry)
+            }
+
             if focusID != nil {
-                HStack(spacing: ShalomTheme.Spacing.xs) {
-                    Text("From Shalom Guide")
-                        .font(.subheadline)
-                        .foregroundStyle(ShalomTheme.onSkyMuted)
-                    Spacer(minLength: 0)
-                    Button {
-                        focusID = nil
-                    } label: {
-                        Label("Show the full deck", systemImage: "xmark")
-                            .font(.subheadline.weight(.medium))
-                            .padding(.horizontal, ShalomTheme.Spacing.s)
-                            .frame(minHeight: ShalomTheme.Size.minTarget)
-                            .contentShape(Rectangle())
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: ShalomTheme.Spacing.xs) {
+                        Text("From Shalom Guide")
+                            .font(.subheadline)
+                            .foregroundStyle(ShalomTheme.onSkyMuted)
+                            .fixedSize(horizontal: true, vertical: false)
+                        Spacer(minLength: 0)
+                        clearFocusButton.fixedSize(horizontal: true, vertical: false)
                     }
-                    .buttonStyle(.plain)
-                    .hoverEffect(.highlight)
+                    clearFocusButton
                 }
             }
         }
+    }
+
+    private var clearFocusButton: some View {
+        Button { focusID = nil } label: {
+            Label("Full deck", systemImage: "xmark")
+                .font(.subheadline.weight(.medium))
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, ShalomTheme.Spacing.s)
+                .frame(minHeight: ShalomTheme.Size.minTarget)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .hoverEffect(.highlight)
+        .accessibilityLabel("Show the full deck")
+        .accessibilityHint("This card was opened from Shalom Guide")
     }
 
     private var filterRow: some View {
@@ -151,7 +165,7 @@ struct FlashcardsScreen: View {
             DeckMessage(
                 title: "No cards yet",
                 detail: isOffline
-                    ? "You're offline and no cards are saved on this device yet. They will appear once you're back online."
+                    ? "No cards are saved on this device yet. Connect to download the deck."
                     : "The deck is empty right now. You can still ask about the Bible in Chat.",
                 showsProgress: false
             )
@@ -182,17 +196,37 @@ private struct DeckRevision: Hashable {
     let cardIDs: [String]
 }
 
-/// "Offline" status for a deck served from the on-device cache.
-private struct OfflineBadge: View {
+private struct SavedDeckStatus: View {
+    let notice: String?
+    let isLoading: Bool
+    let onRetry: (() -> Void)?
+
     var body: some View {
-        Label("Offline · saved cards", systemImage: "wifi.slash")
-            .font(.footnote.weight(.semibold))
-            .padding(.horizontal, ShalomTheme.Spacing.s)
-            .padding(.vertical, ShalomTheme.Spacing.xxs)
-            .frame(minHeight: 32)
-            .background { GlassBackground(cornerRadius: 16, emphasis: true) }
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Offline. Showing cards saved on this device.")
+        HStack(alignment: .center, spacing: ShalomTheme.Spacing.s) {
+            Label(notice ?? "Saved cards", systemImage: notice == nil ? "internaldrive" : "exclamationmark.circle")
+                .accessibilityLabel(notice ?? "Showing cards saved on this device.")
+                .font(.footnote)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityIdentifier("deck-saved-status")
+            if notice != nil, let onRetry {
+                Button(action: onRetry) {
+                    HStack(spacing: ShalomTheme.Spacing.xs) {
+                        if isLoading { ProgressView().tint(ShalomTheme.ink) }
+                        Text(isLoading ? "Trying…" : "Try again")
+                            .font(.subheadline.weight(.semibold))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(minWidth: ShalomTheme.Size.minTarget, minHeight: ShalomTheme.Size.minTarget)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .hoverEffect(.highlight)
+                .disabled(isLoading)
+                .accessibilityIdentifier("deck-retry")
+            }
+        }
+        .foregroundStyle(ShalomTheme.ink)
     }
 }
 

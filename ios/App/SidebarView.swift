@@ -9,6 +9,7 @@ struct SidebarView: View {
     var isPersistent = false
     var onClose: () -> Void = {}
     @State private var query = ""
+    @FocusState private var searchFocused: Bool
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private var filteredChats: [ChatSummary] {
@@ -47,7 +48,6 @@ struct SidebarView: View {
                         .accessibilityIdentifier("sidebar-new-chat")
                         destination(.chat, label: "Chat", symbol: "bubble.left.and.bubble.right")
                         destination(.flashcards, label: "Flashcards", symbol: "square.stack")
-                        destination(.chats, label: "All chats", symbol: "clock")
                     }
                     .padding(.horizontal, 8)
 
@@ -57,6 +57,9 @@ struct SidebarView: View {
                             .foregroundStyle(ShalomTheme.mutedInk)
                         TextField(dynamicTypeSize.isAccessibilitySize ? "Search" : "Search chats", text: $query)
                             .textInputAutocapitalization(.never).autocorrectionDisabled()
+                            .focused($searchFocused)
+                            .submitLabel(.search)
+                            .onSubmit { searchFocused = false }
                             .accessibilityLabel("Search chats")
                             .accessibilityIdentifier("sidebar-search")
                     }
@@ -66,10 +69,12 @@ struct SidebarView: View {
                     .background(.white.opacity(0.45), in: RoundedRectangle(cornerRadius: 12))
                     .padding(.horizontal, 12)
 
-                    LazyVStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("Chats").font(.caption.weight(.medium))
                             .foregroundStyle(ShalomTheme.mutedInk)
                             .padding(.horizontal, 12).padding(.bottom, 4)
+                        historyContext
+                            .padding(.horizontal, ShalomTheme.Spacing.s)
                         if filteredChats.isEmpty {
                             Text(query.isEmpty ? "Your conversations appear here." : "No matching chat titles.")
                                 .font(.footnote).foregroundStyle(ShalomTheme.mutedInk)
@@ -77,8 +82,9 @@ struct SidebarView: View {
                         } else {
                             ForEach(filteredChats) { chat in
                                 Button {
-                                    onClose()
-                                    Task { await application.openChat(id: chat.id) }
+                                    Task {
+                                        if await application.openChat(id: chat.id) { onClose() }
+                                    }
                                 } label: {
                                     Text(chat.title)
                                         .font(.subheadline)
@@ -119,6 +125,46 @@ struct SidebarView: View {
         .task { await application.refreshHistory() }
     }
 
+    @ViewBuilder
+    private var historyContext: some View {
+        if !application.userIsSignedIn {
+            Text("Guest chat history is saved here.")
+                .font(.footnote)
+                .foregroundStyle(ShalomTheme.mutedInk)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.bottom, ShalomTheme.Spacing.xs)
+        } else if application.guestImportCount > 0 {
+            VStack(alignment: .leading, spacing: ShalomTheme.Spacing.xs) {
+                Text("Keep \(application.guestImportCount) guest conversations in your account?")
+                    .font(.subheadline.weight(.medium))
+                Text("Their original device copies will not be deleted. Imported text keeps no verified citation status.")
+                    .font(.footnote).foregroundStyle(ShalomTheme.mutedInk)
+                Button {
+                    Task { await application.importGuestHistory() }
+                } label: {
+                    HStack(spacing: ShalomTheme.Spacing.xs) {
+                        if application.importBusy { ProgressView() }
+                        Label(application.importBusy ? "Importing…" : "Keep conversations",
+                              systemImage: "tray.and.arrow.down")
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .frame(minHeight: ShalomTheme.Size.minTarget, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .foregroundStyle(ShalomTheme.skyInk)
+                .disabled(application.importBusy)
+                .accessibilityIdentifier("sidebar-import-guests")
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.vertical, ShalomTheme.Spacing.xs)
+        }
+        if application.userIsSignedIn, let notice = application.importNotice {
+            Text(notice).font(.footnote).foregroundStyle(ShalomTheme.mutedInk)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.bottom, ShalomTheme.Spacing.xs)
+        }
+    }
+
     private var accountButton: some View {
         Button {
             onClose()
@@ -137,6 +183,7 @@ struct SidebarView: View {
                 Image(systemName: "ellipsis").font(.system(size: 14))
             }
             .frame(minHeight: 52).padding(.horizontal, 16)
+            .contentShape(Rectangle())
         }
         .accessibilityLabel("Account")
         .accessibilityIdentifier("account-button")
