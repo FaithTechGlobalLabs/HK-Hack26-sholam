@@ -1,13 +1,13 @@
 # Shalom
 
-Last updated: 2026-11-16
+Last updated: 2026-11-18
 
 A ChatGPT-style web app for exploring the Bible and the Christian faith. Two modes sit at the top of the page:
 
 - **Chat (Shalom Guide)**: ask anything. An OpenRouter-backed guide answers clearly for young people, cites Bible verses it looked up (Berean Standard Bible), never from memory, and links into the flashcard deck when a real card matches.
 - **Flashcards**: a public deck with two kinds of card. **Quick facts** are fun or surprising questions with answers and verses. **Discover** cards are open questions for young people (the FaithMap set) with Scripture starting points to explore in chat. Browse, filter by kind and topic, study one card at a time, or add your own.
 
-Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) and a deck of 179 cards (50 quick facts, 129 FaithMap discover questions) live in Supabase Postgres, and the app deploys to Vercel from `main`. Chat runs Shalom Guide live when `OPENROUTER_API_KEY` is set; otherwise it streams a scripted demo. **Production live chat is currently blocked (2026-11-16):** OpenRouter rejects the configured key and chat returns a public error, so the owner must check the key (see the native section below). See [docs/PLAN.md](docs/PLAN.md).
+Status: **Phase 1 done** (data and deploy). The Bible text (31,086 BSB verses) and a deck of 179 cards (50 quick facts, 129 FaithMap discover questions) live in Supabase Postgres, and the app deploys to Vercel from `main`. Chat runs Shalom Guide live when `OPENROUTER_API_KEY` is set; otherwise it streams a scripted demo. **Production live chat was restored and verified on 2026-11-18** after an owner-supplied credential update and redeployment (see the native section below). See [docs/PLAN.md](docs/PLAN.md).
 
 ## Native iPhone and iPad app
 
@@ -15,12 +15,12 @@ The native SwiftUI port lives in [`ios/`](ios/README.md), alongside this website
 
 Its native shell follows ChatGPT's layout: a leading drawer on iPhone, persistent sidebar on iPad, unboxed answers and a pale composer.
 
-**Current release state (2026-11-16): TestFlight 0.1.1 (2) is uploaded and processed (VALID) but not submitted to external Beta App Review. This is blocked on owner input, not a finished submission, and it is not available to external testers.**
+**Current release state (2026-11-18): TestFlight 0.1.0 (1) is approved and available for external testing. The updated 0.1.1 (2) build is submitted and WAITING_FOR_REVIEW. Production live chat is restored.**
 
-- Native and backend source are committed and pushed to `main` ([`d167cac`](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam/commit/d167cac), merged with latest `main` as [`a9aec36`](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam/commit/a9aec36e82f38f79c01676d69bbb0b5894d3aecb), preserving Share Shalom). [GitHub CI](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam/actions/runs/43806984409) passed. The backend is live on [sholam.vercel.app](https://sholam.vercel.app) (production deployment `dpl_A8TP2KrTyLzPGtVPGpojbQ72guYd`, READY, built from `a9aec36`).
-- Build 0.1.1 (2) is in [App Store Connect](https://appstoreconnect.apple.com/apps/6834994638/testflight/ios) and in the existing External Beta group (public [link](https://testflight.apple.com/join/urQsNaGH), 100-tester cap, unchanged). Its external state is READY_FOR_BETA_SUBMISSION and no Beta App Review submission exists. Build 0.1.0 (1) is untouched and still WAITING_FOR_REVIEW.
-- **Why the submission is held:** production chat currently returns the public error "OpenRouter rejected the API key". The native client's production probes passed for health, deck (179 cards), guest history and invalid-Bearer rejection (401), but both chat requests failed before any text, verses or citations. This is an OpenRouter authentication rejection that needs an owner check; it is not known whether the key was revoked or the configuration is wrong. No credential was shown, changed or rotated, and no routing or paid model was enabled.
-- **Owner action:** check or correct `OPENROUTER_API_KEY` securely in [Vercel Production environment variables](https://vercel.com/owenisas-projects/sholam/settings/environment-variables) (never paste a key into chat or a document), redeploy, verify live chat, then submit the **existing** 0.1.1 (2) build for external review. The key fix needs no new binary.
+- Native and backend source are committed and pushed to `main` ([`d167cac`](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam/commit/d167cac), integrated as [`a9aec36`](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam/commit/a9aec36e82f38f79c01676d69bbb0b5894d3aecb), preserving Share Shalom). [Code CI](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam/actions/runs/43806984409) passed. The same source was redeployed with the owner-supplied replacement credential; production deployment `dpl_FnDzNyDE4zcK3W7PUpL4oZHMMktf` is READY on [sholam.vercel.app](https://sholam.vercel.app).
+- Build 0.1.1 (2) is in [App Store Connect](https://appstoreconnect.apple.com/apps/6834994638/testflight/ios) and the existing External Beta group. Review was submitted on 2026-11-18; Apple reports WAITING_FOR_REVIEW / WAITING_FOR_BETA_REVIEW. It is not yet available to external testers. The [public link](https://testflight.apple.com/join/urQsNaGH) and 100-tester cap are unchanged; the approved 0.1.0 (1) remains available.
+- **Credential recovery verified:** the replacement credential passed OpenRouter authentication, was installed through stdin without being written to a file or the repo, and the same production snapshot was redeployed. A real Swift-client turn completed in 13.1 seconds, fetching and verifying both John 3:16 and 1 John 3:16. A fresh browser question also completed with a fetched verse, final citations and `done`.
+- The source, model route and native binary were not changed for this recovery. Free models only; native sign-in and billing remain disabled. No credential value is included in documentation or release receipts.
 
 See [`ios/README.md`](ios/README.md#testflight-release-011-2) for the release receipt summary, tests and limits. Native sign-in and billing stay off (guest mode, empty product IDs); physical-device runtime, VoiceOver, pre-iOS-26 and native sign-in remain unverified. Raw proof files are operator-local and gitignored; the GitHub CI run, commits and App Store Connect are the stable public proof.
 

@@ -1,6 +1,6 @@
 # Shalom native UI review: Opus
 
-Last updated: 2026-11-16
+Last updated: 2026-11-18
 
 ## Scope and evidence
 
@@ -177,3 +177,9 @@ This supersedes the local-only statements above. The original audit and the 2026
 - **Cleanup (complete, confirmed 2026-11-16).** Removed this release's three Release 0.1.1 `.xcresult` bundles, their three completed MCP test-product directories, its own `tmp` root and `EnvCheck` (public link metadata only). No new simulator was created; the iPhone 18 Pro was reused and is shut down, and the unrelated iPhone 17 was untouched. Retained: the shared DerivedData cache (about 1.1 GiB) and the release folder (about 192 MiB: prototype and final signed archives and IPAs, failure and pass proof, logs, verifier). Build 1 provenance is untouched.
 - **Provider authentication unresolved.** The exact public error is the SSE authentication rejection "OpenRouter rejected the API key". There is no saved local key and the child-environment validation yielded no usable key, so the cloud key's format and expiry are not proven and a revocation is not claimed. No credential or model-routing change was made. `autoNotifyEnabled` reads true (Apple's default), and no individual invites or manual notifications were sent.
 - Receipts: [ios/README.md](../ios/README.md#testflight-release-011-2). Raw proof is operator-local and gitignored.
+
+## Provider recovery and submission, 2026-11-18
+
+The November 16 provider block above is resolved. The owner supplied a replacement credential; it passed OpenRouter authentication and was installed through stdin in Vercel, with no credential value written to a file or the repo. The same production snapshot was redeployed, not a new native binary. The real Swift client completed a live turn in 13.1 seconds with both John 3:16 and 1 John 3:16 fetched and separately verified, no unverified references or quote warnings. A fresh browser question fetched Psalm 23:1, rendered an answer and completed with final citations and `done`.
+
+Apple now reports 0.1.0 (1) APPROVED and IN_BETA_TESTING. The already uploaded 0.1.1 (2) was submitted on November 18 and is WAITING_FOR_REVIEW / WAITING_FOR_BETA_REVIEW. Reviewer notes no longer describe the resolved outage. This completes the previously approved submission; Apple approval of the updated build is still pending. The public link, 100-tester cap, free-only model route, disabled native sign-in and billing remain unchanged. No new Opus UI audit, physical-device run or native build is claimed.

@@ -1,14 +1,14 @@
 # Shalom for iPhone and iPad
 
-Last updated: 2026-11-16
+Last updated: 2026-11-18
 
 Native SwiftUI Shalom, alongside the Next.js website. **Every feature is free. Paywalls and purchasing are disabled.** This is not a WebView wrapper.
 
-## Status: 0.1.1 (2) uploaded; external review submission blocked on owner input
+## Status: 0.1.1 (2) submitted; 0.1.0 (1) approved
 
-**Current (2026-11-16):** build **0.1.1 (2)** is signed, Apple-validated, uploaded and processed VALID, and sits in the existing External Beta group. It is **not submitted** to external Beta App Review (state READY_FOR_BETA_SUBMISSION, no submission exists) because production chat currently fails with a public OpenRouter authentication error. This is a **blocked owner-input state, not a completed TestFlight submission**, and the build is **not available to external testers**. Details, receipts and the owner action are in [TestFlight release: 0.1.1 (2)](#testflight-release-011-2).
+**Current (2026-11-18):** build **0.1.1 (2)** is signed, Apple-validated, uploaded and processed VALID in the existing External Beta group. The production provider credential was replaced and live chat verified, then external Beta App Review was submitted. Apple reports **WAITING_FOR_REVIEW** / **WAITING_FOR_BETA_REVIEW**; the updated build is **not yet available to external testers**. Details and receipts are in [TestFlight release: 0.1.1 (2)](#testflight-release-011-2).
 
-**0.1.0 (1)** was signed, validated, uploaded and processed on 2026-11-15 and remains **WAITING_FOR_REVIEW**, untouched (not expired, not withdrawn). The verified owner also has access through the private internal group.
+**0.1.0 (1)** is now **APPROVED** and **IN_BETA_TESTING** for external testers. It was not expired or withdrawn. The [existing public invitation](https://testflight.apple.com/join/urQsNaGH) and 100-tester cap remain unchanged.
 
 Source is committed and pushed to `main` and the native-compatible backend (Bearer verification, display-only reference normalization) is deployed. Native sign-in and billing remain intentionally off and the app uses guest mode. No purchases, paid products, database migrations, legal acceptance, public App Store submission, individual tester invitations or manual notifications occurred. Authentication defaults were not switched.
 
@@ -22,18 +22,18 @@ The owner requested an Opus review of motion and response formatting on 2026-11-
 
 Local results ([Verification/calm-ui/](Verification/calm-ui/), simulator only, synthetic fixtures): core 184 passed; backend 380 passed / 4 skipped with lint, typecheck and a 179-card source check; full iPhone run 65 passed / 0 failed / 1 iPad-only skipped (50 app unit + 15 UI, [summary](Verification/calm-ui/iphone-final-summary.json)); full iPad UI 16 passed ([summary](Verification/calm-ui/ipad-ui-summary.json)). Both full runs precede only the accessibility-size footer move; focused re-runs afterwards passed (iPhone 54, iPad 4, plus one account-visibility proof each). An independent visual review of the actual screenshots passed. The [audit](../docs/NATIVE-UI-REVIEW.md#local-verification-2026-11-16-separate-from-the-2026-11-15-released-source-results) holds the full table, non-blocking limits and cleanup receipts.
 
-Not verified: motion beyond two earlier simulator recordings, the iPhone keyboard-up matrix, a full VoiceOver audit or accessibility certification, physical devices, native sign-in, pre-iOS-26 fallbacks, and the live model through the native UI (production chat is currently rejected by the provider; see below).
+Not verified: motion beyond two earlier simulator recordings, the iPhone keyboard-up matrix, a full VoiceOver audit or accessibility certification, physical devices, native sign-in, pre-iOS-26 fallbacks, and the live model through a physical native UI. The production Swift-core and browser probes passed on November 18; they do not constitute a physical-device UI run.
 
 ## TestFlight release: 0.1.1 (2)
 
-Last updated: 2026-11-16. Authoritative sanitized receipt: operator-local, gitignored `ios/build/TestFlight-0.1.1-2/release.json` (raw proof is not published). Stable public proof: the GitHub CI run, the commits and App Store Connect, linked below.
+Last updated: 2026-11-18. Current sanitized recovery/submission receipt: operator-local, gitignored `ios/build/TestFlight-0.1.1-2/provider-recovery-20261118.json`. The original `release.json` preserves the November 16 upload and then-blocked state; raw proof is not published. Stable public proof: the GitHub CI run, commits and App Store Connect linked below.
 
 | Item | Value |
 |---|---|
 | Owner approval | Deploy + TestFlight approved by the owner |
 | Source | Native + backend committed as [`d167cac`](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam/commit/d167cac); merged with latest `main` as [`a9aec36`](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam/commit/a9aec36e82f38f79c01676d69bbb0b5894d3aecb), preserving Share Shalom; pushed to `main` as `owenisas` |
 | GitHub CI | [Run 43806984409](https://github.com/FaithTechGlobalLabs/HK-Hack26-sholam/actions/runs/43806984409): success |
-| Vercel production | [sholam.vercel.app](https://sholam.vercel.app), deployment `dpl_A8TP2KrTyLzPGtVPGpojbQ72guYd`, READY, code `a9aec36` |
+| Vercel production | [sholam.vercel.app](https://sholam.vercel.app), credential-refresh deployment `dpl_FnDzNyDE4zcK3W7PUpL4oZHMMktf`, READY, same source snapshot `99d2ce1` (functional code unchanged from `a9aec36`) |
 | Vercel inputs | Strict `.vercelignore` dry run: 127 web files, 1,227,475 bytes (an earlier 125-file figure predates the latest `main` and is obsolete); native, caches, proof, agent files and local env uploads excluded |
 | Version / build | `0.1.1` / `2`, bundle `com.owenisas.shalom`, team `3LHSL95J9H` |
 | Signing | Profile `Owenis-XQ59` with strict authentication (Thomas Suen / Tsz To Suen verified); exact resources, signature, distribution entitlements and absence of DEBUG fixture markers checked; billing off, sign-in disabled, product IDs empty |
@@ -41,24 +41,22 @@ Last updated: 2026-11-16. Authoritative sanitized receipt: operator-local, gitig
 | Apple validation | `altool` VERIFY_SUCCEEDED. The upload API gave no remote checksum, so that optional comparison was skipped |
 | Upload / processing | Processed VALID, build ID `3f260a14-79f2-429f-82b7-522c8cf95c2e`; [App Store Connect app 6834994638](https://appstoreconnect.apple.com/apps/6834994638/testflight/ios) confirmed |
 | External group | Existing External Beta `0ad78ad5-09fc-4e85-8532-ef74cc9ad7b5` contains both 0.1.1 (2) and 0.1.0 (1); [public link](https://testflight.apple.com/join/urQsNaGH) and 100-tester cap unchanged |
-| External state | 0.1.1 (2): **READY_FOR_BETA_SUBMISSION**, **no Beta App Review submission exists**. 0.1.0 (1): still WAITING_FOR_REVIEW, untouched |
+| External state (2026-11-18) | 0.1.1 (2): submitted, **WAITING_FOR_REVIEW** / **WAITING_FOR_BETA_REVIEW**. 0.1.0 (1): **APPROVED** and **IN_BETA_TESTING**, not expired or withdrawn |
 
 **Release-gate fixes included.** Verification now handles First/I John versus Gospel identity, formatted book labels, compact Roman numerals and unsupported compound ordinals. A specific numeric label is verified only if a complete canonical parse remains after emphasis is removed; unknown annotated or translated numeric labels stay unchecked; opaque labels with no numbers keep the target-lookup contract.
 
 **Checks.** Server 411 passed / 4 skipped; post-merge lint, typecheck, 179-card seed check and production build passed; core 198 passed; app unit 50 + 3 citation UI = 53 passed. The first focused UI run was 52 passed / 1 failed on an unexpected drawer; the unchanged UI test then passed standalone on retry and the final run was 53 passed. The failure capture is kept as a limitation, so full stability is not claimed.
 
-### Blocker: production chat rejected by the model provider
+### Provider recovery and external submission, 2026-11-18
 
-Real native Swift client production probes (receipt `production-native-smoke-retry.json`, operator-local): health live with the free Nemotron route, database ok, auth configured; 179 cards; guest has no private history; an invalid Bearer was rejected with 401. **Two chat POSTs failed before any text, verses or citations**, returning the public error "OpenRouter rejected the API key". This is recorded as a **provider authentication rejection that requires an owner check**. It is not inferred whether the key was revoked or the configuration is wrong. No credential value was displayed or rotated, no valid approved local replacement was available, and no routing or paid model was enabled.
+The owner supplied a replacement provider credential. It passed OpenRouter's current-key authentication endpoint (HTTP 200) and was installed in Vercel through stdin, without putting its value in a file or the repo. The same production snapshot was redeployed as `dpl_FnDzNyDE4zcK3W7PUpL4oZHMMktf`; no native build, model-route change or paid model was needed.
 
-Because users could not get a chat answer, the existing build was deliberately **not** submitted for external review. Nothing here claims the beta is available to external testers.
+- The actual Swift client completed a live response in **13.1 seconds**, fetched `JHN.3.16` and `1JN.3.16`, and verified both source links with a final citation check, no unverified references and no quote warnings. Its deck, guest-history isolation and invalid-Bearer 401 checks also passed.
+- A fresh browser question fetched `PSA.23.1`, rendered an answer and completed with final citations and `done`. This is successful live inference, not just a loading website or health response.
+- Clean reviewer notes replaced the obsolete outage note. The existing **0.1.1 (2)** build was submitted to external Beta App Review at `2026-11-18T01:01:06Z`. Apple reports **WAITING_FOR_REVIEW** / **WAITING_FOR_BETA_REVIEW**; this is not approval or external availability yet.
+- The earlier **0.1.0 (1)** is now **APPROVED** and **IN_BETA_TESTING**. The existing public invitation and 100-tester cap remain unchanged.
 
-**Owner action (no new binary needed):**
-
-1. Check or correct `OPENROUTER_API_KEY` securely in the [Vercel Production environment variables](https://vercel.com/owenisas-projects/sholam/settings/environment-variables). Never send a key in chat or write it in a document.
-2. Redeploy production.
-3. Verify live chat returns a streamed answer with verses and citations.
-4. Submit the **existing** 0.1.1 (2) build for external Beta App Review.
+The original November 16 probes and held submission remain in the operator-local `release.json` and `production-native-smoke-retry.json`: two requests then returned the application's generic upstream 401/403 authentication message before any answer. Their exact credential-rejection cause was not established, and a revoked key is not inferred. The replacement restored live functionality; no old key was revoked by this workflow. Never send a credential in chat or a document; use the secure Vercel environment UI for future changes.
 
 ### Not done and not claimed
 
@@ -68,9 +66,9 @@ No individual tester invitations or manual notifications, no public App Store re
 
 Receipt: operator-local `cleanup.json` in the release folder. Removed: this release's exact three Release 0.1.1 `.xcresult` bundles and their three completed MCP test-product directories (after summaries, failure and pass attachments were saved), its own `tmp` root, and `EnvCheck` (public link metadata only; no env or credential files). The existing iPhone 18 Pro was reused and is shut down; the unrelated iPhone 17 was untouched; no new simulator was created. Retained artifacts and evidence: the shared DerivedData cache (about 1.1 GiB) and the release folder (about 192 MiB: prior prototype and final signed archives and IPAs, failure and pass proof, logs, the verifier). Build 1 provenance is untouched. Free disk was last 101 GiB and no further heavy work was started. The final Vercel dry manifest (127 files, 1,227,475 bytes) is in `vercel-final-inputs.json`.
 
-**Apple final read-back:** build `3f260a14-79f2-429f-82b7-522c8cf95c2e` VALID, 0.1.1 (2); the External Beta group includes the new 2 and old 1; external state READY_FOR_BETA_SUBMISSION; no Beta App Review submission exists (the CLI view of that absence exits 4, as expected). `autoNotifyEnabled` reads true as Apple's default. No individual invitations or manual notifications were sent.
+**Historical Apple read-back, 2026-11-16:** build `3f260a14-79f2-429f-82b7-522c8cf95c2e` was VALID in the External Beta group, then READY_FOR_BETA_SUBMISSION without a review submission. This was superseded by the successful November 18 submission recorded above. `autoNotifyEnabled` reads true as Apple's default. No individual invitations or manual notifications were sent by this workflow.
 
-**Provider authentication remains unresolved.** There is no saved local key, and a validation run with the environment supplied to a child process did not yield a usable key, so the real cloud key's format and expiry are **not proven**. The exact public SSE error is the authentication rejection "OpenRouter rejected the API key" (full text in `production-native-smoke-retry.json`). The owner check is blocked input; it is not a definite credential revocation. No credential or model-routing change was made.
+**Historical provider diagnosis, 2026-11-16:** the public SSE message was "OpenRouter rejected the API key" (full text in `production-native-smoke-retry.json`). The real cloud key's format, expiry and exact refusal cause were not proven. The owner-input block was resolved on November 18 by the supplied replacement and verified redeployment; no model-routing change was made.
 
 ## Native interface
 
