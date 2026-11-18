@@ -2,9 +2,11 @@
 
 import { Menu } from "@base-ui/react/menu";
 import { LogOut } from "lucide-react";
+import Link from "next/link";
 import { type ReactNode, useRef } from "react";
 import { type Account, accountInitial } from "@/lib/account/types";
 import { clearLocalChats } from "@/lib/chat/local-history";
+import { PRIVACY_PATH, SUPPORT_PATH } from "@/lib/site-info";
 import { cn } from "@/lib/utils";
 
 /**
@@ -72,6 +74,18 @@ export function AccountMenu({
                   </p>
                 )}
               </div>
+              <Menu.Item
+                render={<Link href={SUPPORT_PATH} prefetch={false} />}
+                className="flex min-h-11 items-center rounded-xl px-3 text-[15px] outline-none data-highlighted:bg-white/15"
+              >
+                Support
+              </Menu.Item>
+              <Menu.Item
+                render={<Link href={PRIVACY_PATH} prefetch={false} />}
+                className="flex min-h-11 items-center rounded-xl px-3 text-[15px] outline-none data-highlighted:bg-white/15"
+              >
+                Privacy policy
+              </Menu.Item>
               <Menu.Item
                 onClick={signOut}
                 className="flex h-10 cursor-default select-none items-center gap-3 rounded-xl px-3 text-[15px] outline-none data-highlighted:bg-white/15"

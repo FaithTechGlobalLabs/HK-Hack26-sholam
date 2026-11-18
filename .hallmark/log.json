@@ -1,0 +1,15 @@
+[
+  {
+    "date": "2026-11-18",
+    "scope": "support/privacy utility pages",
+    "macrostructure": "Long Document",
+    "theme": "existing Shalom sky identity",
+    "enrichment": "none; canonical cross-cloud mark only",
+    "brief": "Readable public support and privacy information, static and account-independent",
+    "preserved": "Geist typography, sky palette, brand geometry, app routes and authentication",
+    "motion": "none added",
+    "preEmitCritique": "P5 H4 E4 S4 R5 V3",
+    "critiqueNotes": "Long Document utility pages intentionally share the established brand and reading frame. Support uses native FAQ disclosure; policy uses a linked contents row and explicit data-flow sections. No landing-page hero, decorative mockup, new font, animation or legal-owner fiction was added.",
+    "verification": "Local browser checks at 320/375/414/768/1280px: no horizontal overflow, 44px nav targets, all seven FAQs, policy anchors, subject-only mailto and skip-link focus verified. Geist 16px/28px body and 66ch max measure inspected. WCAG text contrast measured; header hover corrected. Existing guest chat/cards and sign-in help rail smoke-checked. No chat/email/form sent; no console/server errors. Signed-in account menu built/typechecked, not live-login tested. Production build static for both routes; 415 tests passed, 4 skipped. Not deployed or legally certified."
+  }
+]

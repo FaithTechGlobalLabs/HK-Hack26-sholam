@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-18",
+  "scope": "support and privacy utility pages",
+  "framework": "Next.js 16.4.6 App Router, React 19.3.0, Cache Components",
+  "font": "Existing Geist / Geist Mono variables in src/app/layout.tsx; unchanged",
+  "identity": "Existing sky-blue Shalom and canonical cross-cloud SVG; unchanged",
+  "spacing": "Existing 4-point family; utility-page semantic tokens in src/components/info/tokens.css",
+  "motion": "None added; static reading pages",
+  "structure": "Long Document for public information; two-destination nav and minimal contact footer",
+  "boundaries": "New routes and scoped components; no route replacement, authentication activation, model calls or publication"
+}

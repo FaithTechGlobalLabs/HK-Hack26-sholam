@@ -24,6 +24,12 @@ Its native shell follows ChatGPT's layout: a leading drawer on iPhone, persisten
 
 See [`ios/README.md`](ios/README.md#testflight-release-011-2) for the release receipt summary, tests and limits. Native sign-in and billing stay off (guest mode, empty product IDs); physical-device runtime, VoiceOver, pre-iOS-26 and native sign-in remain unverified. Raw proof files are operator-local and gitignored; the GitHub CI run, commits and App Store Connect are the stable public proof.
 
+## Support and privacy pages
+
+The website includes static [`/support`](src/app/(information)/support/page.tsx) and [`/privacy`](src/app/(information)/privacy/page.tsx) routes, linked from sign-in screens and the signed-in account menu. Both are public and readable without creating an account. Support uses the approved owenisas@gmail.com address; email links add only a fixed subject, never a chat or report body.
+
+The policy describes AI-provider processing, browser/native guest storage, website account history and guest-chat import, cookies, rate limits, support email and deletion limits. It makes no zero-retention or no-training promise. The public URLs are [Support](https://sholam.vercel.app/support) and [Privacy policy](https://sholam.vercel.app/privacy). Website publication does not configure native-app or App Store metadata URLs. Operator identity, provider/host retention details, support delivery/triage and final legal review are not certified by these pages.
+
 ## Where things run
 
 | What | Where |

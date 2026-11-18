@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { LogoMark } from "@/components/brand/Logo";
 import { CloudSky } from "@/components/shell/CloudSky";
 import { BRAND_NAME } from "@/lib/brand";
+import { PRIVACY_PATH, SUPPORT_PATH } from "@/lib/site-info";
 
 /**
  * The sign-in screens sit on the same sky as the app, in one glass panel,
@@ -16,12 +17,29 @@ export function AuthFrame({ children }: { children: ReactNode }) {
         <LogoMark title={BRAND_NAME} className="mb-5 size-9 text-white" />
         {children}
       </main>
-      <Link
-        href="/"
-        className="rounded-md text-sm text-white underline decoration-white/60 underline-offset-4 [text-shadow:0_1px_2px_rgb(18_48_110/0.6)] hover:decoration-white focus-visible:outline-2 focus-visible:outline-white/80"
+      <nav
+        aria-label="Help and navigation"
+        className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 rounded-xl bg-white/95 px-4 text-[var(--sky-ink)] text-sm [text-shadow:none]"
       >
-        Back to chat
-      </Link>
+        <Link
+          href="/"
+          className="inline-flex min-h-11 items-center whitespace-nowrap rounded-md underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
+        >
+          Back to chat
+        </Link>
+        <Link
+          href={SUPPORT_PATH}
+          className="inline-flex min-h-11 items-center whitespace-nowrap rounded-md underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
+        >
+          Support
+        </Link>
+        <Link
+          href={PRIVACY_PATH}
+          className="inline-flex min-h-11 items-center whitespace-nowrap rounded-md underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
+        >
+          Privacy
+        </Link>
+      </nav>
     </div>
   );
 }
